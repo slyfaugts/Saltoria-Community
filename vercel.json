@@ -1,0 +1,11 @@
+{
+  "version": 2,
+  "functions": {
+    "api/youtube-fetch.js": {
+      "maxDuration": 30
+    },
+    "api/upload-asset.js": {
+      "maxDuration": 30
+    }
+  }
+}
