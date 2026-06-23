@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Animation Link Converter — Saltoria Tools</title>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700;900&family=Inter:wght@400;500&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{--bg:#0D0B14;--surface:#1A1528;--surface2:#221C35;--accent:#7C3AED;--accent2:#A855F7;--text:#E2D9F3;--muted:#6B6880;--border:#2D2545;--green:#6EE7B7;--red:#F87171;--yellow:#FCD34D}
+body{background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;font-size:14px;min-height:100vh}
+nav{display:flex;align-items:center;justify-content:space-between;padding:.875rem 2rem;border-bottom:1px solid var(--border);background:rgba(13,11,20,.97);backdrop-filter:blur(12px);position:sticky;top:0;z-index:100}
+.nav-brand{font-family:'Orbitron',monospace;font-size:13px;font-weight:700;color:var(--accent2);letter-spacing:2px}
+.nav-brand span{color:var(--muted);font-weight:400;font-size:11px;margin-left:8px;font-family:'Space Mono',monospace;letter-spacing:1px}
+.nav-back{font-family:'Space Mono',monospace;font-size:10px;color:var(--muted);letter-spacing:1px;text-decoration:none;transition:color .2s}
+.nav-back:hover{color:var(--accent2)}
+.hero{text-align:center;padding:3.5rem 2rem 2.5rem;position:relative;overflow:hidden}
+.hero::before{content:'';position:absolute;top:0;left:50%;transform:translateX(-50%);width:500px;height:300px;background:radial-gradient(ellipse,rgba(124,58,237,.1) 0%,transparent 70%);pointer-events:none}
+.hero-badge{display:inline-flex;align-items:center;gap:6px;background:rgba(124,58,237,.15);border:1px solid rgba(168,85,247,.3);color:var(--accent2);font-family:'Space Mono',monospace;font-size:9px;padding:4px 14px;border-radius:20px;margin-bottom:1.25rem;letter-spacing:2px}
+.hero h1{font-family:'Orbitron',monospace;font-size:clamp(22px,4vw,36px);font-weight:900;color:#fff;margin-bottom:.75rem}
+.hero h1 span{color:var(--accent2)}
+.hero p{color:var(--muted);font-size:13px;max-width:520px;margin:0 auto;line-height:1.8}
+.main{max-width:860px;margin:0 auto;padding:2rem}
+.card{background:var(--surface);border:1px solid var(--border);border-radius:14px;overflow:hidden;margin-bottom:1.25rem}
+.card-header{padding:1rem 1.25rem;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:10px}
+.card-icon{width:32px;height:32px;background:rgba(124,58,237,.2);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:15px;border:1px solid rgba(124,58,237,.3);flex-shrink:0}
+.card-title{font-family:'Orbitron',monospace;font-size:12px;font-weight:700;color:#fff;letter-spacing:.5px}
+.card-sub{font-family:'Space Mono',monospace;font-size:9px;color:var(--muted);margin-top:2px;letter-spacing:1px}
+.card-body{padding:1.25rem}
+label{display:block;font-family:'Space Mono',monospace;font-size:10px;color:var(--muted);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:6px}
+input[type=text]{width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:10px 12px;color:var(--text);font-family:'Space Mono',monospace;font-size:11px;outline:none;transition:border-color .2s}
+input[type=text]:focus{border-color:var(--accent)}
+.field{margin-bottom:1rem}
+.field-hint{font-size:10px;color:var(--muted);margin-top:5px;opacity:.7;line-height:1.6}
+
+/* FOLDER NAME */
+.folder-name-row{display:flex;gap:8px;align-items:center;margin-bottom:1.25rem;background:rgba(124,58,237,.08);border:1px solid rgba(124,58,237,.2);border-radius:8px;padding:.75rem 1rem}
+.folder-name-row span{font-family:'Space Mono',monospace;font-size:11px;color:var(--muted);white-space:nowrap}
+.folder-name-row input{flex:1;background:var(--surface2);border:1px solid var(--border);border-radius:6px;padding:6px 10px;color:var(--accent2);font-family:'Space Mono',monospace;font-size:11px;outline:none}
+.folder-name-row input:focus{border-color:var(--accent)}
+
+/* ANIM ROWS */
+.anim-list{margin-bottom:.75rem}
+.anim-row{display:flex;gap:8px;align-items:center;margin-bottom:.5rem}
+.anim-row .anim-name{width:150px;flex-shrink:0;background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:8px 10px;color:var(--text);font-family:'Space Mono',monospace;font-size:11px;outline:none;transition:border-color .2s}
+.anim-row .anim-name:focus{border-color:var(--accent)}
+.anim-row .anim-link{flex:1;background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:8px 10px;color:var(--text);font-family:'Space Mono',monospace;font-size:11px;outline:none;transition:border-color .2s}
+.anim-row .anim-link:focus{border-color:var(--accent)}
+.anim-row .anim-link.valid{border-color:rgba(110,231,183,.4)}
+.anim-row .anim-link.invalid{border-color:rgba(248,113,113,.4)}
+.anim-status{width:28px;height:28px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:12px;border-radius:6px}
+.remove-btn{width:28px;height:28px;flex-shrink:0;background:rgba(248,113,113,.1);border:1px solid rgba(248,113,113,.2);border-radius:6px;color:var(--red);cursor:pointer;font-size:12px;display:flex;align-items:center;justify-content:center;transition:all .2s}
+.remove-btn:hover{background:rgba(248,113,113,.2)}
+.row-labels{display:flex;gap:8px;margin-bottom:4px;padding-left:0}
+.row-label-name{width:150px;flex-shrink:0;font-family:'Space Mono',monospace;font-size:9px;color:var(--muted);letter-spacing:1px;text-transform:uppercase}
+.row-label-link{flex:1;font-family:'Space Mono',monospace;font-size:9px;color:var(--muted);letter-spacing:1px;text-transform:uppercase}
+
+/* BUTTONS */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:10px 20px;border-radius:8px;font-family:'Space Mono',monospace;font-size:11px;cursor:pointer;letter-spacing:1px;border:none;transition:all .2s}
+.btn-primary{background:var(--accent);color:#fff}
+.btn-primary:hover:not(:disabled){background:var(--accent2);transform:translateY(-1px)}
+.btn-primary:disabled{opacity:.4;cursor:not-allowed}
+.btn-outline{background:transparent;border:1px solid var(--border);color:var(--muted)}
+.btn-outline:hover{border-color:var(--accent);color:var(--accent2)}
+.btn-sm{padding:6px 14px;font-size:10px}
+.btn-full{width:100%}
+.btn-row{display:flex;gap:.75rem;flex-wrap:wrap}
+
+/* OUTPUT */
+.output-wrap{display:none}
+.output-wrap.show{display:block}
+.output-header{display:flex;justify-content:space-between;align-items:center;padding:.75rem 1rem;background:var(--surface2);border-radius:10px 10px 0 0;border:1px solid var(--border);border-bottom:none}
+.output-label{font-family:'Space Mono',monospace;font-size:10px;color:var(--accent2);letter-spacing:1.5px}
+.output-target{font-family:'Space Mono',monospace;font-size:9px;color:var(--muted);background:var(--surface);padding:3px 8px;border-radius:4px;border:1px solid var(--border)}
+pre.code-block{background:#08070C;border:1px solid var(--border);border-radius:0 0 10px 10px;padding:1rem;overflow-x:auto;font-family:'Space Mono',monospace;font-size:11px;line-height:1.8;color:#D4C9F0;margin:0;max-height:480px;overflow-y:auto;white-space:pre}
+.code-kw{color:#A855F7}
+.code-str{color:#6EE7B7}
+.code-fn{color:#7DD3FC}
+.code-cmt{color:#6B6880;font-style:italic}
+.code-num{color:#FCD34D}
+
+/* STRUCTURE PREVIEW */
+.struct-preview{background:rgba(110,231,183,.05);border:1px solid rgba(110,231,183,.2);border-radius:8px;padding:.875rem 1rem;margin-bottom:1rem;font-family:'Space Mono',monospace;font-size:11px;line-height:1.9;color:var(--muted)}
+.struct-preview .s-root{color:var(--accent2)}
+.struct-preview .s-folder{color:var(--yellow)}
+.struct-preview .s-anim{color:var(--green)}
+.struct-preview .s-id{color:var(--muted);font-size:10px}
+
+/* GUIDE */
+.guide-box{background:rgba(168,85,247,.08);border:1px solid rgba(168,85,247,.2);border-radius:8px;padding:.875rem 1rem;margin-top:1rem;font-size:11px;color:var(--muted);line-height:1.8}
+.guide-box b{color:var(--accent2)}
+.guide-box code{background:rgba(124,58,237,.2);color:var(--accent2);padding:1px 6px;border-radius:4px;font-family:'Space Mono',monospace;font-size:10px}
+.guide-step{display:flex;gap:8px;margin-bottom:4px;align-items:flex-start}
+.guide-step:last-child{margin-bottom:0}
+.gs-num{flex-shrink:0;width:18px;height:18px;background:rgba(124,58,237,.3);color:var(--accent2);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:700;margin-top:2px}
+
+.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(100px);background:var(--green);color:#0D0B14;padding:10px 20px;border-radius:8px;font-family:'Space Mono',monospace;font-size:11px;font-weight:700;letter-spacing:1px;transition:transform .3s;z-index:999}
+.toast.show{transform:translateX(-50%) translateY(0)}
+</style>
+</head>
+<body>
+<nav>
+  <a href="../index.html" style="text-decoration:none"><div class="nav-brand">SALTORIA <span>/ ANIMATION LINK CONVERTER</span></div></a>
+  <a href="../index.html#tools" class="nav-back">← BACK TO TOOLS</a>
+</nav>
+
+<div class="hero">
+  <div class="hero-badge">🎞️ SALTORIA TOOLS</div>
+  <h1>Animation Link <span>Converter</span></h1>
+  <p>Paste link katalog animasi Roblox — generate Command Bar script yang otomatis bikin struktur animasi di <code style="background:rgba(124,58,237,.2);color:var(--accent2);padding:2px 8px;border-radius:4px;font-family:'Space Mono',monospace;font-size:12px">ReplicatedStorage</code> siap pakai.</p>
+</div>
+
+<div class="main">
+
+  <!-- STEP 1 -->
+  <div class="card">
+    <div class="card-header">
+      <div class="card-icon">①</div>
+      <div>
+        <div class="card-title">Nama Folder di ReplicatedStorage</div>
+        <div class="card-sub">Struktur: ReplicatedStorage → Folder Utama → Animasi</div>
+      </div>
+    </div>
+    <div class="card-body">
+      <div class="folder-name-row">
+        <span>ReplicatedStorage /</span>
+        <input type="text" id="folder-name" value="Saltoria Animation" placeholder="Nama folder...">
+      </div>
+      <div class="field-hint" style="font-size:10px;color:var(--muted);opacity:.7">
+        Folder ini akan dibuat otomatis di ReplicatedStorage. Kalau sudah ada, script akan pakai yang existing.
+      </div>
+    </div>
+  </div>
+
+  <!-- STEP 2 -->
+  <div class="card">
+    <div class="card-header">
+      <div class="card-icon">②</div>
+      <div>
+        <div class="card-title">Daftar Animasi</div>
+        <div class="card-sub">Nama animasi + link katalog / Asset ID Roblox</div>
+      </div>
+    </div>
+    <div class="card-body">
+      <div class="row-labels">
+        <div class="row-label-name">Nama Animasi</div>
+        <div class="row-label-link">Link / Asset ID</div>
+      </div>
+      <div class="anim-list" id="anim-list"></div>
+      <button class="btn btn-outline btn-sm" onclick="addRow()">+ Tambah Animasi</button>
+    </div>
+  </div>
+
+  <!-- STEP 3 -->
+  <div class="card">
+    <div class="card-header">
+      <div class="card-icon">③</div>
+      <div>
+        <div class="card-title">Generate Script</div>
+        <div class="card-sub">Command Bar script siap paste di Roblox Studio</div>
+      </div>
+    </div>
+    <div class="card-body">
+      <div id="struct-preview-wrap" style="display:none">
+        <div class="struct-preview" id="struct-preview"></div>
+      </div>
+      <button class="btn btn-primary btn-full" onclick="generate()">⚙ Generate Command Bar Script</button>
+
+      <div class="output-wrap" id="output-wrap" style="margin-top:1rem">
+        <div style="position:relative">
+          <div class="output-header">
+            <span class="output-label">// COMMAND BAR SCRIPT</span>
+            <span class="output-target">Roblox Studio → View → Command Bar</span>
+          </div>
+          <button onclick="copyScript()" style="position:absolute;top:3.5rem;right:.75rem;background:var(--accent);color:#fff;border:none;padding:5px 12px;border-radius:6px;font-family:'Space Mono',monospace;font-size:10px;cursor:pointer;letter-spacing:1px;z-index:2">📋 Copy</button>
+          <pre class="code-block" id="code-output"></pre>
+        </div>
+        <div class="guide-box">
+          <div class="guide-step"><span class="gs-num">1</span>Buka <b>Roblox Studio</b> → menu <b>View</b> → <b>Command Bar</b></div>
+          <div class="guide-step"><span class="gs-num">2</span>Copy script di atas, paste ke Command Bar, tekan <code>Enter</code></div>
+          <div class="guide-step"><span class="gs-num">3</span>Script otomatis bikin folder <code id="guide-folder-name">Saltoria Animation</code> di <code>ReplicatedStorage</code> berisi Animation instances siap pakai</div>
+          <div class="guide-step"><span class="gs-num">4</span>Akses dari script pakai: <code>game.ReplicatedStorage["<span id="guide-folder-ref">Saltoria Animation</span>"]["NamaAnimasi"]</code></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<div class="toast" id="toast">✅ Script berhasil di-copy!</div>
+
+<script>
+let rowCount = 0;
+
+// ─── INIT ──────────────────────────────────────────────────────────
+document.addEventListener('DOMContentLoaded', () => {
+  // Start with 3 empty rows
+  addRow(); addRow(); addRow();
+
+  // Live preview update
+  document.getElementById('folder-name').addEventListener('input', updatePreview);
+});
+
+// ─── ADD ROW ──────────────────────────────────────────────────────
+function addRow(name='', link='') {
+  rowCount++;
+  const id = 'row-' + rowCount;
+  const list = document.getElementById('anim-list');
+  const div = document.createElement('div');
+  div.className = 'anim-row';
+  div.id = id;
+  div.innerHTML = `
+    <input type="text" class="anim-name" placeholder="Idle, Walk, Run..." value="${name}" oninput="updatePreview()">
+    <input type="text" class="anim-link" placeholder="Link atau Asset ID animasi..." value="${link}" oninput="validateRow(this); updatePreview()">
+    <div class="anim-status" id="${id}-status">🔗</div>
+    <button class="remove-btn" onclick="removeRow('${id}')">✕</button>
+  `;
+  list.appendChild(div);
+  updatePreview();
+}
+
+function removeRow(id) {
+  const el = document.getElementById(id);
+  if(el) { el.remove(); updatePreview(); }
+}
+
+// ─── VALIDATE ROW ─────────────────────────────────────────────────
+function validateRow(input) {
+  const val = input.value.trim();
+  const id = input.closest('.anim-row').id;
+  const status = document.getElementById(id + '-status');
+  if(!val) { input.classList.remove('valid','invalid'); status.textContent = '🔗'; return; }
+  const assetId = extractAssetId(val);
+  if(assetId) { input.classList.add('valid'); input.classList.remove('invalid'); status.textContent = '✅'; }
+  else { input.classList.add('invalid'); input.classList.remove('valid'); status.textContent = '❌'; }
+}
+
+// ─── EXTRACT ASSET ID ─────────────────────────────────────────────
+function extractAssetId(input) {
+  input = input.trim();
+  if(/^\d+$/.test(input)) return input;
+  const m = input.match(/(?:library|asset|catalog|item|animations?)\/(\d+)/i)
+    || input.match(/id=(\d+)/i)
+    || input.match(/\/(\d{6,})(?:[/?#]|$)/);
+  return m ? m[1] : null;
+}
+
+// ─── GET ENTRIES ──────────────────────────────────────────────────
+function getEntries() {
+  const rows = document.querySelectorAll('.anim-row');
+  const entries = [];
+  rows.forEach(row => {
+    const nameEl = row.querySelector('.anim-name');
+    const linkEl = row.querySelector('.anim-link');
+    const name = nameEl ? nameEl.value.trim() : '';
+    const link = linkEl ? linkEl.value.trim() : '';
+    const id = extractAssetId(link);
+    if(name && id) entries.push({ name, id });
+  });
+  return entries;
+}
+
+// ─── LIVE STRUCTURE PREVIEW ───────────────────────────────────────
+function updatePreview() {
+  const folderName = document.getElementById('folder-name').value.trim() || 'Saltoria Animation';
+  const entries = getEntries();
+  const wrap = document.getElementById('struct-preview-wrap');
+  const preview = document.getElementById('struct-preview');
+
+  if(entries.length === 0) { wrap.style.display = 'none'; return; }
+
+  wrap.style.display = 'block';
+  let html = `<span class="s-root">ReplicatedStorage</span>\n`;
+  html += `  <span class="s-folder">└── ${escHtml(folderName)}</span>\n`;
+  entries.forEach((e, i) => {
+    const prefix = i < entries.length - 1 ? '├──' : '└──';
+    html += `       <span class="s-anim">${prefix} ${escHtml(e.name)}</span> <span class="s-id">(${e.id})</span>\n`;
+  });
+  preview.innerHTML = html;
+}
+
+// ─── GENERATE SCRIPT ──────────────────────────────────────────────
+function generate() {
+  const folderName = document.getElementById('folder-name').value.trim() || 'Saltoria Animation';
+  const entries = getEntries();
+
+  if(entries.length === 0) {
+    alert('Isi minimal 1 animasi dengan nama dan link/asset ID yang valid!');
+    return;
+  }
+
+  // Build the Lua script
+  const animLines = entries.map(e =>
+    `    { name = "${escLua(e.name)}", id = "rbxassetid://${e.id}" },`
+  ).join('\n');
+
+  const script = `-- Saltoria Tools :: Animation Link Converter
+-- Generated: ${new Date().toLocaleString('id-ID')}
+-- Struktur: ReplicatedStorage > ${folderName} > Animation instances
+-- Jalankan via: Roblox Studio > View > Command Bar
+
+local RS = game:GetService("ReplicatedStorage")
+
+-- Daftar animasi yang akan di-import
+local animations = {
+${animLines}
+}
+
+-- Buat atau gunakan folder yang sudah ada
+local folder = RS:FindFirstChild("${escLua(folderName)}")
+if not folder then
+    folder = Instance.new("Folder")
+    folder.Name = "${escLua(folderName)}"
+    folder.Parent = RS
+    print("[Saltoria] Folder '${escLua(folderName)}' dibuat di ReplicatedStorage")
+else
+    print("[Saltoria] Menggunakan folder '${escLua(folderName)}' yang sudah ada")
+end
+
+-- Import semua animasi
+local imported = 0
+for _, data in ipairs(animations) do
+    -- Skip kalau sudah ada dengan nama yang sama
+    if folder:FindFirstChild(data.name) then
+        warn("[Saltoria] Skip '" .. data.name .. "' — sudah ada di folder")
+        continue
+    end
+
+    local anim = Instance.new("Animation")
+    anim.Name = data.name
+    anim.AnimationId = data.id
+    anim.Parent = folder
+    imported = imported + 1
+    print("[Saltoria] ✅ Imported: " .. data.name .. " (" .. data.id .. ")")
+end
+
+print("[Saltoria] Selesai! " .. imported .. "/${entries.length} animasi berhasil di-import ke ReplicatedStorage/${escLua(folderName)}")
+print("[Saltoria] Akses via: game.ReplicatedStorage[\\"${escLua(folderName)}\\"][\\"NamaAnimasi\\"]")`;
+
+  document.getElementById('code-output').innerHTML = highlightLua(script);
+  document.getElementById('guide-folder-name').textContent = folderName;
+  document.getElementById('guide-folder-ref').textContent = folderName;
+  document.getElementById('output-wrap').classList.add('show');
+  document.getElementById('output-wrap').scrollIntoView({ behavior:'smooth', block:'start' });
+}
+
+// ─── SYNTAX HIGHLIGHT ─────────────────────────────────────────────
+function highlightLua(code) {
+  const lines = escHtml(code).split('\n');
+  return lines.map(line => {
+    if(/^\s*--/.test(line)) return `<span class="code-cmt">${line}</span>`;
+    let l = line;
+    l = l.replace(/"([^"]*)"/g, '<span class="code-str">"$1"</span>');
+    l = l.replace(/\b(\d+)\b/g, '<span class="code-num">$1</span>');
+    l = l.replace(/\b(local|if|then|else|not|for|in|ipairs|pairs|end|continue|and|or|function|return|true|false|nil)\b/g, '<span class="code-kw">$1</span>');
+    l = l.replace(/\b(Instance\.new|FindFirstChild|print|warn|game:GetService)\b/g, '<span class="code-fn">$1</span>');
+    return l;
+  }).join('\n');
+}
+
+// ─── COPY ──────────────────────────────────────────────────────────
+function copyScript() {
+  const code = document.getElementById('code-output').textContent;
+  navigator.clipboard.writeText(code).then(() => {
+    const t = document.getElementById('toast');
+    t.classList.add('show');
+    setTimeout(() => t.classList.remove('show'), 2000);
+  });
+}
+
+// ─── HELPERS ──────────────────────────────────────────────────────
+function escHtml(s) { return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+function escLua(s) { return s.replace(/\\/g,'\\\\').replace(/"/g,'\\"'); }
+</script>
+</body>
+</html>
