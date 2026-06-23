@@ -1,0 +1,420 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Roblox Info Lookup — Saltoria Tools</title>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700;900&family=Inter:wght@400;500&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:#0D0B14;--surface:#1A1528;--surface2:#221C35;
+  --accent:#7C3AED;--accent2:#A855F7;
+  --text:#E2D9F3;--muted:#6B6880;--border:#2D2545;
+  --green:#6EE7B7;--red:#F87171;--yellow:#FCD34D;
+}
+body{background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;font-size:14px;min-height:100vh}
+nav{display:flex;align-items:center;justify-content:space-between;padding:0.875rem 2rem;border-bottom:1px solid var(--border);background:rgba(13,11,20,0.97);backdrop-filter:blur(12px);position:sticky;top:0;z-index:100}
+.nav-brand{font-family:'Orbitron',monospace;font-size:13px;font-weight:700;color:var(--accent2);letter-spacing:2px}
+.nav-brand span{color:var(--muted);font-weight:400;font-size:11px;margin-left:8px;font-family:'Space Mono',monospace;letter-spacing:1px}
+.nav-back{font-family:'Space Mono',monospace;font-size:10px;color:var(--muted);letter-spacing:1px;text-decoration:none;transition:color 0.2s}
+.nav-back:hover{color:var(--accent2)}
+.hero{text-align:center;padding:3.5rem 2rem 2.5rem;position:relative;overflow:hidden}
+.hero::before{content:'';position:absolute;top:0;left:50%;transform:translateX(-50%);width:500px;height:300px;background:radial-gradient(ellipse,rgba(124,58,237,0.1) 0%,transparent 70%);pointer-events:none}
+.hero-badge{display:inline-flex;align-items:center;gap:6px;background:rgba(124,58,237,0.15);border:1px solid rgba(168,85,247,0.3);color:var(--accent2);font-family:'Space Mono',monospace;font-size:9px;padding:4px 14px;border-radius:20px;margin-bottom:1.25rem;letter-spacing:2px}
+.hero h1{font-family:'Orbitron',monospace;font-size:clamp(22px,4vw,36px);font-weight:900;color:#fff;margin-bottom:0.75rem}
+.hero h1 span{color:var(--accent2)}
+.hero p{color:var(--muted);font-size:13px;max-width:500px;margin:0 auto;line-height:1.8}
+.main{max-width:800px;margin:0 auto;padding:2rem}
+.card{background:var(--surface);border:1px solid var(--border);border-radius:14px;overflow:hidden;margin-bottom:1.25rem}
+.card-header{padding:1rem 1.25rem;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:10px}
+.card-icon{width:32px;height:32px;background:rgba(124,58,237,0.2);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:15px;border:1px solid rgba(124,58,237,0.3);flex-shrink:0}
+.card-title{font-family:'Orbitron',monospace;font-size:12px;font-weight:700;color:#fff;letter-spacing:0.5px}
+.card-sub{font-family:'Space Mono',monospace;font-size:9px;color:var(--muted);margin-top:2px;letter-spacing:1px}
+.card-body{padding:1.25rem}
+.type-tabs{display:flex;gap:0;border:1px solid var(--border);border-radius:8px;overflow:hidden;margin-bottom:1.25rem}
+.type-tab{flex:1;padding:9px 6px;text-align:center;font-family:'Space Mono',monospace;font-size:9px;letter-spacing:1px;color:var(--muted);cursor:pointer;border:none;background:var(--surface2);transition:all 0.2s}
+.type-tab.active{background:var(--accent);color:#fff}
+.search-row{display:flex;gap:0.75rem}
+input[type=text],input[type=number]{background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:11px 14px;color:var(--text);font-family:'Space Mono',monospace;font-size:12px;outline:none;transition:border-color 0.2s;width:100%}
+input[type=text]:focus,input[type=number]:focus{border-color:var(--accent)}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:11px 22px;border-radius:8px;font-family:'Space Mono',monospace;font-size:11px;cursor:pointer;letter-spacing:1px;border:none;transition:all 0.2s;white-space:nowrap}
+.btn-primary{background:var(--accent);color:#fff;flex-shrink:0}
+.btn-primary:hover:not(:disabled){background:var(--accent2)}
+.btn-primary:disabled{opacity:0.4;cursor:not-allowed}
+.result-card{display:none;margin-top:1.25rem}
+.result-card.show{display:block;animation:fadeUp 0.3s ease}
+@keyframes fadeUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+.profile-header{display:flex;align-items:center;gap:1.25rem;margin-bottom:1.25rem}
+.profile-avatar{width:72px;height:72px;border-radius:50%;border:3px solid var(--accent);background:var(--surface2);object-fit:cover;flex-shrink:0}
+.profile-avatar-placeholder{width:72px;height:72px;border-radius:50%;border:3px solid var(--accent);background:rgba(124,58,237,0.2);display:flex;align-items:center;justify-content:center;font-family:'Orbitron',monospace;font-size:22px;color:var(--accent2);flex-shrink:0}
+.profile-name{font-family:'Orbitron',monospace;font-size:18px;font-weight:900;color:#fff}
+.profile-id{font-family:'Space Mono',monospace;font-size:10px;color:var(--muted);margin-top:4px}
+.profile-badge{display:inline-block;font-family:'Space Mono',monospace;font-size:8px;padding:3px 8px;border-radius:4px;margin-top:6px;letter-spacing:1px}
+.badge-active{background:rgba(110,231,183,0.15);color:var(--green);border:1px solid rgba(110,231,183,0.3)}
+.badge-banned{background:rgba(248,113,113,0.15);color:var(--red);border:1px solid rgba(248,113,113,0.3)}
+.info-grid{display:grid;grid-template-columns:1fr 1fr;gap:0.75rem}
+@media(max-width:520px){.info-grid{grid-template-columns:1fr}}
+.info-item{background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:0.875rem}
+.info-item-label{font-family:'Space Mono',monospace;font-size:9px;color:var(--muted);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:4px}
+.info-item-val{font-family:'Space Mono',monospace;font-size:12px;color:var(--text);font-weight:700;word-break:break-word}
+.info-item-val.green{color:var(--green)}
+.info-item-val.accent{color:var(--accent2)}
+.desc-box{background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:1rem;margin-top:0.75rem;font-size:12px;color:var(--muted);line-height:1.7;word-break:break-word;max-height:120px;overflow-y:auto}
+.error-box{background:rgba(248,113,113,0.08);border:1px solid rgba(248,113,113,0.25);border-radius:8px;padding:1rem;font-family:'Space Mono',monospace;font-size:11px;color:var(--red);line-height:1.6;display:none}
+.error-box.show{display:block}
+.loading-bar{height:3px;background:linear-gradient(90deg,var(--accent),var(--accent2),var(--accent));background-size:200% 100%;border-radius:3px;display:none;animation:shimmer 1.2s infinite}
+@keyframes shimmer{0%{background-position:200% 0}100%{background-position:-200% 0}}
+.loading-bar.show{display:block}
+.info-note{background:rgba(252,211,77,0.07);border:1px solid rgba(252,211,77,0.2);border-radius:8px;padding:0.75rem 1rem;font-size:11px;color:var(--yellow);line-height:1.7;margin-top:1rem}
+.game-thumb{width:100%;height:160px;object-fit:cover;border-radius:8px;background:var(--surface2);display:block;margin-bottom:1rem}
+.game-thumb-placeholder{width:100%;height:160px;border-radius:8px;background:linear-gradient(135deg,var(--surface2),rgba(124,58,237,0.2));display:flex;align-items:center;justify-content:center;font-size:40px;margin-bottom:1rem}
+.stat-row{display:grid;grid-template-columns:repeat(3,1fr);gap:0.75rem;margin-top:0.75rem}
+@media(max-width:480px){.stat-row{grid-template-columns:1fr 1fr}}
+.stat-box{background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:0.875rem;text-align:center}
+.stat-num{font-family:'Orbitron',monospace;font-size:16px;font-weight:900;color:var(--accent2)}
+.stat-lbl{font-family:'Space Mono',monospace;font-size:9px;color:var(--muted);letter-spacing:1px;margin-top:3px}
+.cors-note{background:rgba(168,85,247,0.08);border:1px solid rgba(168,85,247,0.2);border-radius:8px;padding:0.875rem 1rem;font-size:11px;color:var(--muted);line-height:1.7}
+.cors-note b{color:var(--accent2)}
+</style>
+</head>
+<body>
+
+<nav>
+  <a href="../index.html" style="text-decoration:none"><div class="nav-brand">SALTORIA <span>/ ROBLOX LOOKUP</span></div></a>
+  <a href="../index.html" class="nav-back">← BACK TO HOME</a>
+</nav>
+
+<div class="hero">
+  <div class="hero-badge">🔍 LOOKUP TOOL</div>
+  <h1>Roblox <span>Info</span> Lookup</h1>
+  <p>Cari info user, game, atau group Roblox berdasarkan username atau ID — langsung dari Roblox API.</p>
+</div>
+
+<div class="main">
+
+  <div class="cors-note" style="margin-bottom:1.25rem">
+    ℹ️ Tool ini menggunakan <b>Roblox API publik</b>. Tidak semua data tersedia karena CORS restrictions browser — beberapa info di-fetch via proxy publik. <b>Tidak memerlukan API key.</b>
+  </div>
+
+  <div class="card">
+    <div class="card-header">
+      <div class="card-icon">🔍</div>
+      <div>
+        <div class="card-title">Cari Informasi Roblox</div>
+        <div class="card-sub">USER · GAME · GROUP</div>
+      </div>
+    </div>
+    <div class="card-body">
+      <div class="type-tabs">
+        <button class="type-tab active" onclick="setType('user')">👤 User</button>
+        <button class="type-tab" onclick="setType('game')">🎮 Game</button>
+        <button class="type-tab" onclick="setType('group')">👥 Group</button>
+      </div>
+      <div class="search-row">
+        <input type="text" id="search-input" placeholder="Username atau ID..." onkeydown="if(event.key==='Enter')doLookup()">
+        <button class="btn btn-primary" id="btn-lookup" onclick="doLookup()">🔍 LOOKUP</button>
+      </div>
+      <div id="input-hint" style="font-family:'Space Mono',monospace;font-size:10px;color:var(--muted);margin-top:8px;letter-spacing:0.5px">
+        Masukkan username Roblox atau User ID
+      </div>
+
+      <!-- Loading -->
+      <div class="loading-bar" id="loading-bar" style="margin-top:1rem"></div>
+
+      <!-- Error -->
+      <div class="error-box" id="error-box"></div>
+
+      <!-- Result: User -->
+      <div class="result-card" id="result-user">
+        <div class="profile-header">
+          <img id="user-avatar" class="profile-avatar" src="" alt="avatar" onerror="this.style.display='none';document.getElementById('user-avatar-ph').style.display='flex'">
+          <div id="user-avatar-ph" class="profile-avatar-placeholder" style="display:none">?</div>
+          <div>
+            <div class="profile-name" id="user-displayname"></div>
+            <div class="profile-id">@<span id="user-username"></span> · ID: <span id="user-id-val"></span></div>
+            <span class="profile-badge badge-active" id="user-status-badge">ACTIVE</span>
+          </div>
+        </div>
+        <div class="info-grid">
+          <div class="info-item">
+            <div class="info-item-label">Bergabung</div>
+            <div class="info-item-val accent" id="user-joined"></div>
+          </div>
+          <div class="info-item">
+            <div class="info-item-label">Friends</div>
+            <div class="info-item-val green" id="user-friends"></div>
+          </div>
+          <div class="info-item">
+            <div class="info-item-label">Followers</div>
+            <div class="info-item-val accent" id="user-followers"></div>
+          </div>
+          <div class="info-item">
+            <div class="info-item-label">Following</div>
+            <div class="info-item-val" id="user-following"></div>
+          </div>
+        </div>
+        <div id="user-desc-wrap" style="display:none">
+          <div style="font-family:'Space Mono',monospace;font-size:10px;color:var(--muted);letter-spacing:1px;margin-top:1rem;margin-bottom:6px">DESKRIPSI PROFIL</div>
+          <div class="desc-box" id="user-desc"></div>
+        </div>
+      </div>
+
+      <!-- Result: Game -->
+      <div class="result-card" id="result-game">
+        <div id="game-thumb-wrap">
+          <div class="game-thumb-placeholder" id="game-thumb-ph">🎮</div>
+        </div>
+        <div class="profile-name" id="game-name" style="margin-bottom:6px"></div>
+        <div class="profile-id" id="game-creator" style="margin-bottom:0.75rem"></div>
+        <div class="stat-row">
+          <div class="stat-box"><div class="stat-num" id="game-visits"></div><div class="stat-lbl">VISITS</div></div>
+          <div class="stat-box"><div class="stat-num" id="game-playing"></div><div class="stat-lbl">PLAYING</div></div>
+          <div class="stat-box"><div class="stat-num" id="game-favs"></div><div class="stat-lbl">FAVORITES</div></div>
+        </div>
+        <div class="info-grid" style="margin-top:0.75rem">
+          <div class="info-item"><div class="info-item-label">Status</div><div class="info-item-val green" id="game-status"></div></div>
+          <div class="info-item"><div class="info-item-label">Genre</div><div class="info-item-val" id="game-genre"></div></div>
+          <div class="info-item"><div class="info-item-label">Max Players</div><div class="info-item-val accent" id="game-maxplayers"></div></div>
+          <div class="info-item"><div class="info-item-label">Created</div><div class="info-item-val" id="game-created"></div></div>
+        </div>
+        <div id="game-desc-wrap" style="display:none">
+          <div style="font-family:'Space Mono',monospace;font-size:10px;color:var(--muted);letter-spacing:1px;margin-top:1rem;margin-bottom:6px">DESKRIPSI GAME</div>
+          <div class="desc-box" id="game-desc"></div>
+        </div>
+      </div>
+
+      <!-- Result: Group -->
+      <div class="result-card" id="result-group">
+        <div class="profile-header">
+          <div class="profile-avatar-placeholder" id="group-icon" style="border-radius:10px;width:64px;height:64px;font-size:28px">👥</div>
+          <div>
+            <div class="profile-name" id="group-name"></div>
+            <div class="profile-id">Group ID: <span id="group-id-val"></span></div>
+            <span class="profile-badge badge-active" id="group-status-badge">PUBLIC</span>
+          </div>
+        </div>
+        <div class="info-grid">
+          <div class="info-item"><div class="info-item-label">Owner</div><div class="info-item-val accent" id="group-owner"></div></div>
+          <div class="info-item"><div class="info-item-label">Members</div><div class="info-item-val green" id="group-members"></div></div>
+        </div>
+        <div id="group-desc-wrap" style="display:none">
+          <div style="font-family:'Space Mono',monospace;font-size:10px;color:var(--muted);letter-spacing:1px;margin-top:1rem;margin-bottom:6px">DESKRIPSI GROUP</div>
+          <div class="desc-box" id="group-desc"></div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <div class="info-note">
+    ⚠️ Data diambil langsung dari <b>Roblox Public API</b>. Beberapa endpoint memerlukan proxy karena CORS browser. Akun private atau data terbatas mungkin tidak muncul sepenuhnya.
+  </div>
+</div>
+
+<script>
+const PROXY = 'https://corsproxy.io/?';
+let currentType = 'user';
+
+function setType(t) {
+  currentType = t;
+  document.querySelectorAll('.type-tab').forEach((tab, i) => {
+    tab.classList.toggle('active', (t==='user'&&i===0)||(t==='game'&&i===1)||(t==='group'&&i===2));
+  });
+  const hints = {
+    user: 'Masukkan username Roblox atau User ID',
+    game: 'Masukkan Place ID atau Universe ID game',
+    group: 'Masukkan Group ID'
+  };
+  const placeholders = {
+    user: 'Username atau User ID...',
+    game: 'Place ID / Universe ID...',
+    group: 'Group ID...'
+  };
+  document.getElementById('input-hint').textContent = hints[t];
+  document.getElementById('search-input').placeholder = placeholders[t];
+  hideAll();
+}
+
+function hideAll() {
+  ['result-user','result-game','result-group','error-box'].forEach(id => {
+    document.getElementById(id).classList.remove('show');
+    document.getElementById(id).style.display = '';
+  });
+  document.getElementById('error-box').classList.remove('show');
+}
+
+function showError(msg) {
+  const box = document.getElementById('error-box');
+  box.textContent = '❌ ' + msg;
+  box.classList.add('show');
+}
+
+function setLoading(show) {
+  document.getElementById('loading-bar').classList.toggle('show', show);
+  document.getElementById('btn-lookup').disabled = show;
+  document.getElementById('btn-lookup').textContent = show ? '⏳ Loading...' : '🔍 LOOKUP';
+}
+
+async function doLookup() {
+  const q = document.getElementById('search-input').value.trim();
+  if(!q) return;
+  hideAll();
+  setLoading(true);
+
+  try {
+    if(currentType === 'user') await lookupUser(q);
+    else if(currentType === 'game') await lookupGame(q);
+    else await lookupGroup(q);
+  } catch(e) {
+    showError(e.message || 'Gagal fetch data. Coba lagi.');
+  }
+  setLoading(false);
+}
+
+async function fetchJSON(url) {
+  const res = await fetch(PROXY + encodeURIComponent(url));
+  if(!res.ok) throw new Error(`HTTP ${res.status}`);
+  return res.json();
+}
+
+function fmtNum(n) {
+  if(n === undefined || n === null) return '—';
+  if(n >= 1e9) return (n/1e9).toFixed(1)+'B';
+  if(n >= 1e6) return (n/1e6).toFixed(1)+'M';
+  if(n >= 1e3) return (n/1e3).toFixed(1)+'K';
+  return n.toLocaleString('id-ID');
+}
+
+function fmtDate(d) {
+  if(!d) return '—';
+  return new Date(d).toLocaleDateString('id-ID', {year:'numeric',month:'long',day:'numeric'});
+}
+
+async function lookupUser(q) {
+  let userId;
+  if(/^\d+$/.test(q)) {
+    userId = q;
+  } else {
+    // Lookup by username
+    const data = await fetchJSON(`https://users.roblox.com/v1/usernames/users`);
+    // Use POST via corsproxy
+    const res = await fetch(PROXY + encodeURIComponent('https://users.roblox.com/v1/usernames/users'), {
+      method: 'POST',
+      headers: {'Content-Type':'application/json'},
+      body: JSON.stringify({usernames:[q], excludeBannedUsers:false})
+    });
+    const d = await res.json();
+    if(!d.data || d.data.length === 0) throw new Error(`User "${q}" tidak ditemukan`);
+    userId = d.data[0].id;
+  }
+
+  const [profile, friends, followers, following] = await Promise.allSettled([
+    fetchJSON(`https://users.roblox.com/v1/users/${userId}`),
+    fetchJSON(`https://friends.roblox.com/v1/users/${userId}/friends/count`),
+    fetchJSON(`https://friends.roblox.com/v1/users/${userId}/followers/count`),
+    fetchJSON(`https://friends.roblox.com/v1/users/${userId}/followings/count`),
+  ]);
+
+  const p = profile.value;
+  if(!p || p.errors) throw new Error('User tidak ditemukan atau profil private');
+
+  document.getElementById('user-displayname').textContent = p.displayName || p.name;
+  document.getElementById('user-username').textContent = p.name;
+  document.getElementById('user-id-val').textContent = p.id;
+  document.getElementById('user-joined').textContent = fmtDate(p.created);
+  document.getElementById('user-friends').textContent = fmtNum(friends.value?.count);
+  document.getElementById('user-followers').textContent = fmtNum(followers.value?.count);
+  document.getElementById('user-following').textContent = fmtNum(following.value?.count);
+
+  const badge = document.getElementById('user-status-badge');
+  if(p.isBanned) {
+    badge.textContent = 'BANNED';
+    badge.className = 'profile-badge badge-banned';
+  } else {
+    badge.textContent = 'ACTIVE';
+    badge.className = 'profile-badge badge-active';
+  }
+
+  if(p.description) {
+    document.getElementById('user-desc').textContent = p.description;
+    document.getElementById('user-desc-wrap').style.display = 'block';
+  }
+
+  // Fetch avatar headshot
+  try {
+    const av = await fetchJSON(`https://thumbnails.roblox.com/v1/users/avatar-headshot?userIds=${p.id}&size=150x150&format=Png`);
+    if(av.data?.[0]?.imageUrl) {
+      document.getElementById('user-avatar').src = av.data[0].imageUrl;
+      document.getElementById('user-avatar').style.display = '';
+      document.getElementById('user-avatar-ph').style.display = 'none';
+    }
+  } catch(e) {
+    document.getElementById('user-avatar-ph').textContent = p.name[0].toUpperCase();
+    document.getElementById('user-avatar-ph').style.display = 'flex';
+  }
+
+  document.getElementById('result-user').classList.add('show');
+  document.getElementById('result-user').style.display = 'block';
+}
+
+async function lookupGame(q) {
+  if(!/^\d+$/.test(q)) throw new Error('Masukkan angka Place ID atau Universe ID game');
+  const placeId = q;
+
+  let universeId;
+  try {
+    const uni = await fetchJSON(`https://apis.roblox.com/universes/v1/places/${placeId}/universe`);
+    universeId = uni.universeId;
+  } catch(e) {
+    universeId = placeId; // try as universe ID directly
+  }
+
+  const data = await fetchJSON(`https://games.roblox.com/v1/games?universeIds=${universeId}`);
+  if(!data.data || data.data.length === 0) throw new Error('Game tidak ditemukan. Cek Place ID atau Universe ID.');
+  const g = data.data[0];
+
+  document.getElementById('game-name').textContent = g.name;
+  document.getElementById('game-creator').textContent = 'By ' + (g.creator?.name || '—');
+  document.getElementById('game-visits').textContent = fmtNum(g.visits);
+  document.getElementById('game-playing').textContent = fmtNum(g.playing);
+  document.getElementById('game-favs').textContent = fmtNum(g.favoritedCount);
+  document.getElementById('game-status').textContent = g.isPlayable ? 'Playable' : 'Not Playable';
+  document.getElementById('game-genre').textContent = g.genre || '—';
+  document.getElementById('game-maxplayers').textContent = g.maxPlayers || '—';
+  document.getElementById('game-created').textContent = fmtDate(g.created);
+
+  if(g.description) {
+    document.getElementById('game-desc').textContent = g.description;
+    document.getElementById('game-desc-wrap').style.display = 'block';
+  }
+
+  document.getElementById('result-game').classList.add('show');
+  document.getElementById('result-game').style.display = 'block';
+}
+
+async function lookupGroup(q) {
+  if(!/^\d+$/.test(q)) throw new Error('Masukkan Group ID (angka)');
+  const data = await fetchJSON(`https://groups.roblox.com/v1/groups/${q}`);
+  if(data.errors) throw new Error('Group tidak ditemukan');
+
+  document.getElementById('group-name').textContent = data.name;
+  document.getElementById('group-id-val').textContent = data.id;
+  document.getElementById('group-owner').textContent = data.owner?.username || 'N/A';
+  document.getElementById('group-members').textContent = fmtNum(data.memberCount);
+
+  const badge = document.getElementById('group-status-badge');
+  badge.textContent = data.publicEntryAllowed ? 'PUBLIC' : 'PRIVATE';
+  if(!data.publicEntryAllowed) badge.className = 'profile-badge badge-banned';
+
+  if(data.description) {
+    document.getElementById('group-desc').textContent = data.description;
+    document.getElementById('group-desc-wrap').style.display = 'block';
+  }
+
+  document.getElementById('result-group').classList.add('show');
+  document.getElementById('result-group').style.display = 'block';
+}
+</script>
+</body>
+</html>
