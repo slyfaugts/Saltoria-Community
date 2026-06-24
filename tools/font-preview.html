@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Font Preview — Saltoria Tools</title>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700;900&family=Inter:wght@400;500&family=Space+Mono:wght@400;700&family=Bangers&family=Oswald:wght@400;700&family=Rajdhani:wght@400;700&family=Nunito:wght@400;700&family=Fredoka+One&family=Press+Start+2P&family=Permanent+Marker&family=Roboto+Condensed:wght@400;700&family=Ubuntu:wght@400;700&family=Titillium+Web:wght@400;700&family=Exo+2:wght@400;700&family=Russo+One&family=Teko:wght@400;700&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{--bg:#0D0B14;--surface:#1A1528;--surface2:#221C35;--accent:#7C3AED;--accent2:#A855F7;--text:#E2D9F3;--muted:#6B6880;--border:#2D2545;--green:#6EE7B7;--red:#F87171;--yellow:#FCD34D}
+body{background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;font-size:14px;min-height:100vh}
+nav{display:flex;align-items:center;justify-content:space-between;padding:.875rem 2rem;border-bottom:1px solid var(--border);background:rgba(13,11,20,.97);backdrop-filter:blur(12px);position:sticky;top:0;z-index:100}
+.nav-brand{font-family:'Orbitron',monospace;font-size:13px;font-weight:700;color:var(--accent2);letter-spacing:2px}
+.nav-brand span{color:var(--muted);font-weight:400;font-size:11px;margin-left:8px;font-family:'Space Mono',monospace;letter-spacing:1px}
+.nav-back{font-family:'Space Mono',monospace;font-size:10px;color:var(--muted);letter-spacing:1px;text-decoration:none;transition:color .2s}
+.nav-back:hover{color:var(--accent2)}
+.hero{text-align:center;padding:3.5rem 2rem 2.5rem;position:relative;overflow:hidden}
+.hero::before{content:'';position:absolute;top:0;left:50%;transform:translateX(-50%);width:500px;height:300px;background:radial-gradient(ellipse,rgba(124,58,237,.1) 0%,transparent 70%);pointer-events:none}
+.hero-badge{display:inline-flex;align-items:center;gap:6px;background:rgba(124,58,237,.15);border:1px solid rgba(168,85,247,.3);color:var(--accent2);font-family:'Space Mono',monospace;font-size:9px;padding:4px 14px;border-radius:20px;margin-bottom:1.25rem;letter-spacing:2px}
+.hero h1{font-family:'Orbitron',monospace;font-size:clamp(22px,4vw,36px);font-weight:900;color:#fff;margin-bottom:.75rem}
+.hero h1 span{color:var(--accent2)}
+.hero p{color:var(--muted);font-size:13px;max-width:500px;margin:0 auto;line-height:1.8}
+.main{max-width:1000px;margin:0 auto;padding:2rem}
+.controls{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:1.25rem;margin-bottom:1.5rem;display:flex;flex-wrap:wrap;gap:1rem;align-items:flex-end}
+.ctrl-field{flex:1;min-width:160px}
+label{display:block;font-family:'Space Mono',monospace;font-size:9px;color:var(--muted);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:5px}
+input[type=text],select{width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:9px 12px;color:var(--text);font-family:'Inter',sans-serif;font-size:13px;outline:none;transition:border-color .2s}
+input[type=text]:focus,select:focus{border-color:var(--accent)}
+select option{background:var(--surface2)}
+input[type=range]{width:100%;accent-color:var(--accent)}
+.size-display{font-family:'Space Mono',monospace;font-size:10px;color:var(--accent2);margin-top:3px}
+.filter-chips{display:flex;gap:.5rem;flex-wrap:wrap;margin-bottom:1.25rem}
+.filter-chip{background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:5px 14px;font-family:'Space Mono',monospace;font-size:9px;color:var(--muted);cursor:pointer;transition:all .15s;letter-spacing:.5px}
+.filter-chip:hover{border-color:var(--accent);color:var(--accent2)}
+.filter-chip.active{background:rgba(124,58,237,.2);border-color:var(--accent);color:var(--accent2)}
+.font-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:1rem}
+.font-card{background:var(--surface);border:1px solid var(--border);border-radius:12px;overflow:hidden;transition:all .2s;cursor:pointer}
+.font-card:hover{border-color:var(--accent);transform:translateY(-2px)}
+.font-card.selected{border-color:var(--accent2);background:rgba(124,58,237,.07)}
+.font-preview{padding:1.25rem 1.25rem .75rem;min-height:80px;display:flex;align-items:center}
+.font-preview-text{line-height:1.2;word-break:break-word;transition:all .3s}
+.font-meta{padding:.625rem 1.25rem .875rem;border-top:1px solid var(--border);display:flex;align-items:center;justify-content:space-between}
+.font-name-label{font-family:'Orbitron',monospace;font-size:10px;color:#fff;font-weight:700}
+.font-roblox-name{font-family:'Space Mono',monospace;font-size:9px;color:var(--accent2);margin-top:2px;letter-spacing:.5px}
+.font-tags{display:flex;gap:.35rem;flex-wrap:wrap;margin-top:3px}
+.font-tag{font-family:'Space Mono',monospace;font-size:8px;background:rgba(124,58,237,.15);color:var(--muted);padding:1px 6px;border-radius:3px}
+.copy-icon{background:rgba(124,58,237,.2);border:1px solid rgba(124,58,237,.3);border-radius:6px;padding:5px 10px;font-size:12px;cursor:pointer;transition:all .2s;flex-shrink:0}
+.copy-icon:hover{background:rgba(124,58,237,.4)}
+.copy-icon.copied{background:rgba(110,231,183,.2);border-color:rgba(110,231,183,.4)}
+.selected-box{background:rgba(168,85,247,.08);border:1px solid rgba(168,85,247,.25);border-radius:10px;padding:.875rem 1rem;margin-bottom:1.25rem;font-family:'Space Mono',monospace;font-size:11px;display:flex;align-items:center;justify-content:space-between;gap:1rem;flex-wrap:wrap}
+.selected-box .code{color:var(--accent2);font-size:12px;flex:1;word-break:break-all}
+.selected-box .copy-all{background:var(--accent);color:#fff;border:none;border-radius:6px;padding:6px 14px;font-family:'Space Mono',monospace;font-size:9px;cursor:pointer;letter-spacing:1px;transition:all .2s;flex-shrink:0}
+.selected-box .copy-all:hover{background:var(--accent2)}
+.no-result{font-family:'Space Mono',monospace;font-size:11px;color:var(--muted);text-align:center;padding:3rem;letter-spacing:1px}
+</style>
+</head>
+<body>
+<nav>
+  <a href="../index.html" style="text-decoration:none"><div class="nav-brand">SALTORIA <span>/ FONT PREVIEW</span></div></a>
+  <a href="../index.html" class="nav-back">← BACK TO HOME</a>
+</nav>
+<div class="hero">
+  <div class="hero-badge">🔤 UI TOOL</div>
+  <h1>Roblox <span>Font</span> Preview</h1>
+  <p>Preview semua font yang tersedia di Roblox GUI — ketik teks kamu, lihat hasilnya, dan copy nama font langsung ke Luau.</p>
+</div>
+<div class="main">
+  <!-- CONTROLS -->
+  <div class="controls">
+    <div class="ctrl-field" style="flex:2;min-width:200px">
+      <label>Preview Text</label>
+      <input type="text" id="preview-text" value="Saltoria Community" oninput="renderAll()">
+    </div>
+    <div class="ctrl-field">
+      <label>Ukuran Font</label>
+      <input type="range" id="font-size" min="12" max="72" value="28" oninput="renderAll()">
+      <div class="size-display" id="size-display">28px</div>
+    </div>
+    <div class="ctrl-field">
+      <label>Warna Text</label>
+      <input type="color" id="font-color" value="#E2D9F3" oninput="renderAll()" style="width:100%;height:40px;border-radius:8px;border:1px solid var(--border);background:var(--surface2);cursor:pointer;padding:3px">
+    </div>
+    <div class="ctrl-field">
+      <label>Background</label>
+      <input type="color" id="font-bg" value="#1A1528" oninput="renderAll()" style="width:100%;height:40px;border-radius:8px;border:1px solid var(--border);background:var(--surface2);cursor:pointer;padding:3px">
+    </div>
+  </div>
+
+  <!-- FILTER -->
+  <div class="filter-chips">
+    <div class="filter-chip active" onclick="setFilter('all',this)">Semua</div>
+    <div class="filter-chip" onclick="setFilter('bold',this)">Bold</div>
+    <div class="filter-chip" onclick="setFilter('clean',this)">Clean</div>
+    <div class="filter-chip" onclick="setFilter('display',this)">Display</div>
+    <div class="filter-chip" onclick="setFilter('mono',this)">Monospace</div>
+    <div class="filter-chip" onclick="setFilter('game',this)">Game UI</div>
+    <div class="filter-chip" onclick="setFilter('casual',this)">Casual</div>
+  </div>
+
+  <!-- SELECTED OUTPUT -->
+  <div class="selected-box" id="selected-box" style="display:none">
+    <span style="color:var(--muted);font-size:10px;flex-shrink:0">SELECTED:</span>
+    <span class="code" id="selected-code">—</span>
+    <button class="copy-all" onclick="copySelected()">📋 COPY</button>
+  </div>
+
+  <!-- FONT GRID -->
+  <div class="font-grid" id="font-grid"></div>
+  <div class="no-result" id="no-result" style="display:none">Tidak ada font yang cocok dengan filter ini.</div>
+</div>
+
+<script>
+const FONTS = [
+  // name=label, roblox=Roblox enum name, css=Google Fonts family, tags
+  {name:'GothamBold',     roblox:'Enum.Font.GothamBold',       css:'Nunito',             weight:700, tags:['bold','clean','game']},
+  {name:'Gotham',         roblox:'Enum.Font.Gotham',            css:'Nunito',             weight:400, tags:['clean','game']},
+  {name:'GothamMedium',   roblox:'Enum.Font.GothamMedium',      css:'Nunito',             weight:600, tags:['clean']},
+  {name:'GothamBlack',    roblox:'Enum.Font.GothamBlack',       css:'Nunito',             weight:900, tags:['bold','display']},
+  {name:'Bangers',        roblox:'Enum.Font.Bangers',           css:'Bangers',            weight:400, tags:['display','game','bold']},
+  {name:'Arcade',         roblox:'Enum.Font.Arcade',            css:'Press Start 2P',     weight:400, tags:['game','mono','display']},
+  {name:'Code',           roblox:'Enum.Font.Code',              css:'Space Mono',         weight:400, tags:['mono','clean']},
+  {name:'SourceSans',     roblox:'Enum.Font.SourceSans',        css:'Ubuntu',             weight:400, tags:['clean','casual']},
+  {name:'SourceSansBold', roblox:'Enum.Font.SourceSansBold',    css:'Ubuntu',             weight:700, tags:['bold','clean']},
+  {name:'SourceSansLight',roblox:'Enum.Font.SourceSansLight',   css:'Ubuntu',             weight:300, tags:['clean','casual']},
+  {name:'RobotoCondensed',roblox:'Enum.Font.RobotoCondensed',   css:'Roboto Condensed',   weight:400, tags:['clean','display']},
+  {name:'Oswald',         roblox:'Enum.Font.Oswald',            css:'Oswald',             weight:400, tags:['display','bold']},
+  {name:'NunitoSans',     roblox:'Enum.Font.Nunito',            css:'Nunito',             weight:400, tags:['casual','clean']},
+  {name:'Fredoka One',    roblox:'Enum.Font.FredokaOne',        css:'Fredoka One',        weight:400, tags:['casual','display']},
+  {name:'Permanent Marker',roblox:'Enum.Font.PermanentMarker',  css:'Permanent Marker',   weight:400, tags:['casual','display']},
+  {name:'Rajdhani',       roblox:'Enum.Font.Rajdhani',          css:'Rajdhani',           weight:400, tags:['clean','game']},
+  {name:'Titillium Web',  roblox:'Enum.Font.TitilliumWeb',      css:'Titillium Web',      weight:400, tags:['clean','game']},
+  {name:'Exo 2',          roblox:'Enum.Font.Exo2',              css:'Exo 2',              weight:400, tags:['clean','game','display']},
+  {name:'Russo One',      roblox:'Enum.Font.RussoOne',          css:'Russo One',          weight:400, tags:['bold','display','game']},
+  {name:'Teko',           roblox:'Enum.Font.Teko',              css:'Teko',               weight:400, tags:['display','bold']},
+  {name:'Orbitron',       roblox:'Enum.Font.Orbitron',          css:'Orbitron',           weight:700, tags:['display','game','bold']},
+  {name:'Highway Gothic', roblox:'Enum.Font.HighwayGothic',     css:'Oswald',             weight:400, tags:['display','bold']},
+  {name:'Arimo',          roblox:'Enum.Font.Arimo',             css:'Inter',              weight:400, tags:['clean','casual']},
+  {name:'Merriweather',   roblox:'Enum.Font.Merriweather',      css:'Nunito',             weight:400, tags:['casual','clean']},
+];
+
+let currentFilter = 'all';
+let selectedFont  = null;
+
+function setFilter(f, el){
+  currentFilter = f;
+  document.querySelectorAll('.filter-chip').forEach(c=>c.classList.remove('active'));
+  el.classList.add('active');
+  renderAll();
+}
+
+function renderAll(){
+  const txt   = document.getElementById('preview-text').value || 'Saltoria';
+  const size  = document.getElementById('font-size').value;
+  const color = document.getElementById('font-color').value;
+  const bg    = document.getElementById('font-bg').value;
+  document.getElementById('size-display').textContent = size+'px';
+
+  const grid = document.getElementById('font-grid');
+  grid.innerHTML = '';
+  let count = 0;
+
+  FONTS.forEach(f=>{
+    if(currentFilter!=='all' && !f.tags.includes(currentFilter)) return;
+    count++;
+
+    const card = document.createElement('div');
+    card.className = 'font-card' + (selectedFont===f.roblox?' selected':'');
+    card.onclick = ()=>selectFont(f, card);
+
+    const tagHTML = f.tags.map(t=>`<span class="font-tag">${t}</span>`).join('');
+
+    card.innerHTML = `
+      <div class="font-preview" style="background:${bg}">
+        <div class="font-preview-text" style="font-family:'${f.css}';font-weight:${f.weight};font-size:${size}px;color:${color}">${txt}</div>
+      </div>
+      <div class="font-meta">
+        <div>
+          <div class="font-name-label">${f.name}</div>
+          <div class="font-tags">${tagHTML}</div>
+        </div>
+        <div class="copy-icon" title="Copy Enum name" onclick="event.stopPropagation();copyFontName(this,'${f.roblox}')">📋</div>
+      </div>
+    `;
+    grid.appendChild(card);
+  });
+
+  document.getElementById('no-result').style.display = count===0?'block':'none';
+}
+
+function selectFont(f, card){
+  selectedFont = f.roblox;
+  document.querySelectorAll('.font-card').forEach(c=>c.classList.remove('selected'));
+  card.classList.add('selected');
+  document.getElementById('selected-code').textContent = `label.Font = ${f.roblox}`;
+  document.getElementById('selected-box').style.display='flex';
+}
+
+function copyFontName(el, name){
+  navigator.clipboard.writeText(name).then(()=>{
+    el.textContent='✓'; el.classList.add('copied');
+    setTimeout(()=>{el.textContent='📋';el.classList.remove('copied');},1500);
+  });
+}
+
+function copySelected(){
+  const code = document.getElementById('selected-code').textContent;
+  navigator.clipboard.writeText(code).then(()=>{
+    const btn = document.querySelector('.copy-all');
+    btn.textContent='✓ COPIED!';
+    setTimeout(()=>btn.textContent='📋 COPY',1500);
+  });
+}
+
+renderAll();
+</script>
+</body>
+</html>
