@@ -1,0 +1,366 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Tween Calculator — Saltoria Tools</title>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700;900&family=Inter:wght@400;500&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:#0D0B14;--surface:#1A1528;--surface2:#221C35;
+  --accent:#7C3AED;--accent2:#A855F7;
+  --text:#E2D9F3;--muted:#6B6880;--border:#2D2545;
+  --green:#6EE7B7;--red:#F87171;--yellow:#FCD34D;
+}
+body{background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;font-size:14px;min-height:100vh}
+nav{display:flex;align-items:center;justify-content:space-between;padding:0.875rem 2rem;border-bottom:1px solid var(--border);background:rgba(13,11,20,0.97);backdrop-filter:blur(12px);position:sticky;top:0;z-index:100}
+.nav-brand{font-family:'Orbitron',monospace;font-size:13px;font-weight:700;color:var(--accent2);letter-spacing:2px}
+.nav-brand span{color:var(--muted);font-weight:400;font-size:11px;margin-left:8px;font-family:'Space Mono',monospace;letter-spacing:1px}
+.nav-back{font-family:'Space Mono',monospace;font-size:10px;color:var(--muted);letter-spacing:1px;text-decoration:none;transition:color 0.2s}
+.nav-back:hover{color:var(--accent2)}
+.hero{text-align:center;padding:3.5rem 2rem 2.5rem;position:relative;overflow:hidden}
+.hero::before{content:'';position:absolute;top:0;left:50%;transform:translateX(-50%);width:500px;height:300px;background:radial-gradient(ellipse,rgba(124,58,237,0.1) 0%,transparent 70%);pointer-events:none}
+.hero-badge{display:inline-flex;align-items:center;gap:6px;background:rgba(124,58,237,0.15);border:1px solid rgba(168,85,247,0.3);color:var(--accent2);font-family:'Space Mono',monospace;font-size:9px;padding:4px 14px;border-radius:20px;margin-bottom:1.25rem;letter-spacing:2px}
+.hero h1{font-family:'Orbitron',monospace;font-size:clamp(22px,4vw,36px);font-weight:900;color:#fff;margin-bottom:0.75rem}
+.hero h1 span{color:var(--accent2)}
+.hero p{color:var(--muted);font-size:13px;max-width:520px;margin:0 auto;line-height:1.8}
+.main{max-width:860px;margin:0 auto;padding:2rem}
+.card{background:var(--surface);border:1px solid var(--border);border-radius:14px;overflow:hidden;margin-bottom:1.25rem}
+.card-header{padding:1rem 1.25rem;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:10px}
+.card-icon{width:32px;height:32px;background:rgba(124,58,237,0.2);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:15px;border:1px solid rgba(124,58,237,0.3);flex-shrink:0}
+.card-title{font-family:'Orbitron',monospace;font-size:12px;font-weight:700;color:#fff;letter-spacing:0.5px}
+.card-sub{font-family:'Space Mono',monospace;font-size:9px;color:var(--muted);margin-top:2px;letter-spacing:1px}
+.card-body{padding:1.25rem}
+label{display:block;font-family:'Space Mono',monospace;font-size:10px;color:var(--muted);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:6px}
+.field{margin-bottom:1.1rem}
+input[type=text],input[type=number],select{width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:10px 14px;color:var(--text);font-family:'Space Mono',monospace;font-size:12px;outline:none;transition:border-color 0.2s}
+input[type=text]:focus,input[type=number]:focus,select:focus{border-color:var(--accent)}
+select option{background:var(--surface2)}
+.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:1rem}
+.grid-3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:1rem}
+@media(max-width:600px){.grid-2,.grid-3{grid-template-columns:1fr}}
+
+/* EASING VISUAL */
+.easing-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(80px,1fr));gap:0.5rem;margin-bottom:1.25rem}
+.ease-chip{background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:0.5rem;text-align:center;cursor:pointer;transition:all 0.15s;position:relative}
+.ease-chip:hover{border-color:var(--accent)}
+.ease-chip.selected{border-color:var(--accent2);background:rgba(124,58,237,0.15)}
+.ease-canvas{width:60px;height:40px;display:block;margin:0 auto 4px}
+.ease-name{font-family:'Space Mono',monospace;font-size:8px;color:var(--muted);letter-spacing:0.5px;line-height:1.3}
+.ease-chip.selected .ease-name{color:var(--accent2)}
+
+/* CODE OUTPUT */
+.code-block{background:#0A0814;border:1px solid var(--border);border-radius:10px;padding:1.25rem;font-family:'Space Mono',monospace;font-size:12px;line-height:1.9;position:relative;overflow-x:auto;white-space:pre}
+.code-block .kw{color:var(--accent2)}
+.code-block .fn{color:#68D9A4}
+.code-block .str{color:var(--yellow)}
+.code-block .num{color:#F87171}
+.code-block .cm{color:var(--muted);opacity:0.6}
+.copy-btn{position:absolute;top:10px;right:10px;background:var(--surface);border:1px solid var(--border);border-radius:6px;padding:5px 12px;font-family:'Space Mono',monospace;font-size:9px;color:var(--muted);cursor:pointer;letter-spacing:1px;transition:all 0.2s}
+.copy-btn:hover{border-color:var(--accent);color:var(--accent2)}
+.copy-btn.copied{border-color:var(--green);color:var(--green)}
+
+/* PREVIEW ANIMATION */
+.preview-wrap{position:relative;height:80px;background:var(--surface2);border-radius:10px;overflow:hidden;margin-bottom:1rem;border:1px solid var(--border)}
+.preview-ball{position:absolute;top:50%;transform:translateY(-50%);width:28px;height:28px;border-radius:50%;background:linear-gradient(135deg,var(--accent),var(--accent2));box-shadow:0 0 16px rgba(168,85,247,0.5);left:24px;transition:none}
+.preview-track{position:absolute;top:50%;left:24px;right:24px;height:2px;background:var(--border);transform:translateY(-50%);border-radius:1px}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:10px 20px;border-radius:8px;font-family:'Space Mono',monospace;font-size:11px;cursor:pointer;letter-spacing:1px;border:none;transition:all 0.2s}
+.btn-primary{background:var(--accent);color:#fff}
+.btn-primary:hover{background:var(--accent2)}
+.btn-outline{background:transparent;border:1px solid var(--border);color:var(--muted)}
+.btn-outline:hover{border-color:var(--accent);color:var(--accent2)}
+.btn-row{display:flex;gap:0.75rem;flex-wrap:wrap}
+.prop-chip{display:inline-flex;align-items:center;gap:6px;background:var(--surface2);border:1px solid var(--border);border-radius:6px;padding:4px 10px;font-family:'Space Mono',monospace;font-size:10px;color:var(--muted);cursor:pointer;transition:all 0.15s;margin:3px}
+.prop-chip.selected{background:rgba(124,58,237,0.2);border-color:var(--accent);color:var(--accent2)}
+.info-box{background:rgba(168,85,247,0.07);border:1px solid rgba(168,85,247,0.2);border-radius:8px;padding:0.875rem 1rem;font-size:11px;color:var(--muted);line-height:1.7;margin-top:1rem}
+.info-box b{color:var(--accent2)}
+.info-box code{background:rgba(124,58,237,0.2);color:var(--accent2);padding:1px 6px;border-radius:4px;font-family:'Space Mono',monospace;font-size:10px}
+</style>
+</head>
+<body>
+<nav>
+  <a href="../index.html" style="text-decoration:none"><div class="nav-brand">SALTORIA <span>/ TWEEN CALC</span></div></a>
+  <a href="../index.html" class="nav-back">← BACK TO HOME</a>
+</nav>
+<div class="hero">
+  <div class="hero-badge">✨ SCRIPTING TOOL</div>
+  <h1>Tween <span>Calculator</span></h1>
+  <p>Generate kode TweenService Luau siap pakai. Pilih easing, durasi, dan properti — langsung copy paste ke Roblox Studio.</p>
+</div>
+<div class="main">
+
+  <!-- EASING STYLE -->
+  <div class="card">
+    <div class="card-header">
+      <div class="card-icon">📈</div>
+      <div><div class="card-title">Easing Style & Direction</div><div class="card-sub">PILIH KURVA ANIMASI</div></div>
+    </div>
+    <div class="card-body">
+      <div class="grid-2" style="margin-bottom:1.25rem">
+        <div class="field">
+          <label>Easing Style</label>
+          <select id="ease-style" onchange="generate()">
+            <option>Linear</option><option selected>Quad</option><option>Cubic</option>
+            <option>Quart</option><option>Quint</option><option>Sine</option>
+            <option>Bounce</option><option>Elastic</option><option>Back</option>
+            <option>Exponential</option><option>Circular</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>Easing Direction</label>
+          <select id="ease-dir" onchange="generate()">
+            <option>In</option><option selected>Out</option><option>InOut</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- PREVIEW ANIMATION -->
+      <div class="preview-wrap">
+        <div class="preview-track"></div>
+        <div class="preview-ball" id="preview-ball"></div>
+      </div>
+      <div class="btn-row">
+        <button class="btn btn-outline" onclick="playPreview()" style="flex:1">▶ PREVIEW ANIMASI</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- SETTINGS -->
+  <div class="card">
+    <div class="card-header">
+      <div class="card-icon">⚙️</div>
+      <div><div class="card-title">Tween Settings</div><div class="card-sub">DURASI · REPEAT · DELAY</div></div>
+    </div>
+    <div class="card-body">
+      <div class="grid-3">
+        <div class="field">
+          <label>Durasi (detik)</label>
+          <input type="number" id="duration" value="0.5" min="0.01" step="0.1" oninput="generate()">
+        </div>
+        <div class="field">
+          <label>Repeat Count (-1 = loop)</label>
+          <input type="number" id="repeat" value="0" min="-1" step="1" oninput="generate()">
+        </div>
+        <div class="field">
+          <label>Delay (detik)</label>
+          <input type="number" id="delay" value="0" min="0" step="0.1" oninput="generate()">
+        </div>
+      </div>
+      <div class="field">
+        <label>Reverses</label>
+        <select id="reverses" onchange="generate()">
+          <option value="false">false — tidak balik</option>
+          <option value="true">true — balik ke posisi awal</option>
+        </select>
+      </div>
+    </div>
+  </div>
+
+  <!-- PROPERTIES -->
+  <div class="card">
+    <div class="card-header">
+      <div class="card-icon">🎯</div>
+      <div><div class="card-title">Properties yang Di-tween</div><div class="card-sub">PILIH SATU ATAU LEBIH</div></div>
+    </div>
+    <div class="card-body">
+      <div style="margin-bottom:1rem">
+        <div id="prop-chips">
+          <span class="prop-chip selected" data-val="Position = UDim2.new(1, 0, 0.5, 0)" onclick="toggleProp(this)">📍 Position</span>
+          <span class="prop-chip" data-val="Size = UDim2.new(0.5, 0, 0.5, 0)" onclick="toggleProp(this)">📐 Size</span>
+          <span class="prop-chip" data-val="Rotation = 45" onclick="toggleProp(this)">🔄 Rotation</span>
+          <span class="prop-chip" data-val="BackgroundTransparency = 1" onclick="toggleProp(this)">👁️ BG Transparency</span>
+          <span class="prop-chip" data-val="TextTransparency = 1" onclick="toggleProp(this)">📝 Text Transparency</span>
+          <span class="prop-chip" data-val="ImageTransparency = 1" onclick="toggleProp(this)">🖼️ Image Transparency</span>
+          <span class="prop-chip" data-val="BackgroundColor3 = Color3.fromRGB(255, 0, 0)" onclick="toggleProp(this)">🎨 BG Color3</span>
+          <span class="prop-chip" data-val="TextColor3 = Color3.fromRGB(255, 255, 255)" onclick="toggleProp(this)">🔤 Text Color3</span>
+          <span class="prop-chip" data-val="CFrame = CFrame.new(0, 10, 0)" onclick="toggleProp(this)">🧭 CFrame</span>
+          <span class="prop-chip" data-val="Position = Vector3.new(0, 10, 0)" onclick="toggleProp(this)">📦 Position (Part)</span>
+          <span class="prop-chip" data-val="Size = Vector3.new(4, 4, 4)" onclick="toggleProp(this)">📏 Size (Part)</span>
+          <span class="prop-chip" data-val="Transparency = 1" onclick="toggleProp(this)">💨 Transparency (Part)</span>
+          <span class="prop-chip" data-val="Volume = 0" onclick="toggleProp(this)">🔊 Volume (Sound)</span>
+          <span class="prop-chip" data-val="PlaybackSpeed = 2" onclick="toggleProp(this)">⏩ PlaybackSpeed</span>
+        </div>
+      </div>
+      <div class="field">
+        <label>Custom Property (opsional, format: NamaProp = value)</label>
+        <input type="text" id="custom-prop" placeholder="cth: FieldOfView = 70" oninput="generate()">
+      </div>
+    </div>
+  </div>
+
+  <!-- OBJECT -->
+  <div class="card">
+    <div class="card-header">
+      <div class="card-icon">🧩</div>
+      <div><div class="card-title">Nama Variabel</div><div class="card-sub">NAMA OBJECT DAN TWEEN</div></div>
+    </div>
+    <div class="card-body">
+      <div class="grid-2">
+        <div class="field">
+          <label>Nama Object</label>
+          <input type="text" id="obj-name" value="frame" oninput="generate()">
+        </div>
+        <div class="field">
+          <label>Nama Variabel Tween</label>
+          <input type="text" id="tween-name" value="tween" oninput="generate()">
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- OUTPUT -->
+  <div class="card">
+    <div class="card-header">
+      <div class="card-icon">📋</div>
+      <div><div class="card-title">Generated Luau Code</div><div class="card-sub">SIAP PASTE KE ROBLOX STUDIO</div></div>
+    </div>
+    <div class="card-body">
+      <div class="code-block" id="code-out"><button class="copy-btn" id="copy-btn" onclick="copyCode()">📋 COPY</button><span id="code-inner"></span></div>
+      <div class="info-box">
+        Paste kode ini di <b>LocalScript</b> (untuk UI) atau <b>Script</b> (untuk Part). Pastikan variabel <b>object</b> sudah benar-benar mengarah ke instance yang ingin di-tween. Gunakan <code>tween:Play()</code>, <code>tween:Pause()</code>, atau <code>tween:Cancel()</code> untuk kontrol.
+      </div>
+    </div>
+  </div>
+
+</div>
+<script>
+function toggleProp(el){
+  el.classList.toggle('selected');
+  generate();
+}
+
+function generate(){
+  const style = document.getElementById('ease-style').value;
+  const dir   = document.getElementById('ease-dir').value;
+  const dur   = parseFloat(document.getElementById('duration').value)||0.5;
+  const rep   = parseInt(document.getElementById('repeat').value)||0;
+  const delay = parseFloat(document.getElementById('delay').value)||0;
+  const rev   = document.getElementById('reverses').value;
+  const obj   = document.getElementById('obj-name').value||'frame';
+  const tname = document.getElementById('tween-name').value||'tween';
+  const custom= document.getElementById('custom-prop').value.trim();
+
+  const selectedProps = Array.from(document.querySelectorAll('.prop-chip.selected')).map(c=>'\t'+c.dataset.val+',');
+  if(custom) selectedProps.push('\t'+custom+',');
+  const propsStr = selectedProps.length ? selectedProps.join('\n') : '\t-- tambahkan properti di sini';
+
+  const code =
+`<span class="cm">-- Generated by Saltoria Tween Calculator</span>
+<span class="kw">local</span> TweenService <span class="kw">=</span> game:<span class="fn">GetService</span>(<span class="str">"TweenService"</span>)
+
+<span class="cm">-- TweenInfo setup</span>
+<span class="kw">local</span> tweenInfo <span class="kw">=</span> <span class="fn">TweenInfo</span>.new(
+\t<span class="num">${dur}</span>,                              <span class="cm">-- Duration</span>
+\tEnum.EasingStyle.<span class="str">${style}</span>,        <span class="cm">-- EasingStyle</span>
+\tEnum.EasingDirection.<span class="str">${dir}</span>,     <span class="cm">-- EasingDirection</span>
+\t<span class="num">${rep}</span>,                              <span class="cm">-- RepeatCount</span>
+\t<span class="num">${rev}</span>,                           <span class="cm">-- Reverses</span>
+\t<span class="num">${delay}</span>                             <span class="cm">-- DelayTime</span>
+)
+
+<span class="cm">-- Properties target</span>
+<span class="kw">local</span> goals <span class="kw">=</span> {
+${propsStr}
+}
+
+<span class="cm">-- Create & play tween</span>
+<span class="kw">local</span> ${tname} <span class="kw">=</span> TweenService:<span class="fn">Create</span>(${obj}, tweenInfo, goals)
+${tname}:<span class="fn">Play</span>()
+
+<span class="cm">-- Optional: wait until finished</span>
+<span class="cm">-- ${tname}.Completed:Wait()</span>`;
+
+  document.getElementById('code-inner').innerHTML = code;
+}
+
+function copyCode(){
+  const style = document.getElementById('ease-style').value;
+  const dir   = document.getElementById('ease-dir').value;
+  const dur   = parseFloat(document.getElementById('duration').value)||0.5;
+  const rep   = parseInt(document.getElementById('repeat').value)||0;
+  const delay = parseFloat(document.getElementById('delay').value)||0;
+  const rev   = document.getElementById('reverses').value;
+  const obj   = document.getElementById('obj-name').value||'frame';
+  const tname = document.getElementById('tween-name').value||'tween';
+  const custom= document.getElementById('custom-prop').value.trim();
+  const selectedProps = Array.from(document.querySelectorAll('.prop-chip.selected')).map(c=>'\t'+c.dataset.val+',');
+  if(custom) selectedProps.push('\t'+custom+',');
+  const propsStr = selectedProps.length ? selectedProps.join('\n') : '\t-- tambahkan properti di sini';
+
+  const plain =
+`-- Generated by Saltoria Tween Calculator
+local TweenService = game:GetService("TweenService")
+
+local tweenInfo = TweenInfo.new(
+\t${dur},
+\tEnum.EasingStyle.${style},
+\tEnum.EasingDirection.${dir},
+\t${rep},
+\t${rev},
+\t${delay}
+)
+
+local goals = {
+${propsStr}
+}
+
+local ${tname} = TweenService:Create(${obj}, tweenInfo, goals)
+${tname}:Play()`;
+
+  navigator.clipboard.writeText(plain).then(()=>{
+    const btn=document.getElementById('copy-btn');
+    btn.textContent='✓ COPIED!';
+    btn.classList.add('copied');
+    setTimeout(()=>{btn.textContent='📋 COPY';btn.classList.remove('copied');},1800);
+  });
+}
+
+// Preview animation
+function getEasingFn(style, dir){
+  const easings = {
+    Linear: t=>t,
+    Quad:   t=>t*t,
+    Cubic:  t=>t*t*t,
+    Quart:  t=>t*t*t*t,
+    Quint:  t=>t*t*t*t*t,
+    Sine:   t=>1-Math.cos(t*Math.PI/2),
+    Bounce: t=>{ let n=1-t; if(n<1/2.75)return 1-(7.5625*n*n); if(n<2/2.75){n-=1.5/2.75;return 1-(7.5625*n*n+0.75);} if(n<2.5/2.75){n-=2.25/2.75;return 1-(7.5625*n*n+0.9375);}n-=2.625/2.75;return 1-(7.5625*n*n+0.984375);},
+    Elastic:t=>t===0?0:t===1?1:Math.pow(2,-10*t)*Math.sin((t*10-0.75)*(2*Math.PI/3))+1,
+    Back:   t=>{const c=1.70158; return (c+1)*t*t*t - c*t*t;},
+    Exponential: t=>t===0?0:Math.pow(2,10*t-10),
+    Circular: t=>1-Math.sqrt(1-Math.pow(t,2)),
+  };
+  const fn = easings[style]||easings.Quad;
+  return t=>{
+    if(dir==='In') return fn(t);
+    if(dir==='Out') return 1-fn(1-t);
+    if(t<0.5) return fn(2*t)/2;
+    return 1-fn(2*(1-t))/2;
+  };
+}
+
+let animFrame=null;
+function playPreview(){
+  if(animFrame) cancelAnimationFrame(animFrame);
+  const ball = document.getElementById('preview-ball');
+  const wrap  = ball.parentElement;
+  const trackW = wrap.clientWidth - 48 - 28;
+  const style  = document.getElementById('ease-style').value;
+  const dir    = document.getElementById('ease-dir').value;
+  const dur    = (parseFloat(document.getElementById('duration').value)||0.5)*1000;
+  const fn     = getEasingFn(style,dir);
+  const start  = performance.now();
+  function frame(now){
+    const t=Math.min((now-start)/dur,1);
+    ball.style.left=(24 + fn(t)*trackW)+'px';
+    if(t<1)animFrame=requestAnimationFrame(frame);
+    else setTimeout(()=>{ball.style.left='24px';},300);
+  }
+  animFrame=requestAnimationFrame(frame);
+}
+
+generate();
+</script>
+</body>
+</html>

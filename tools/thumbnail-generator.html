@@ -1,0 +1,562 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Thumbnail Generator — Saltoria Tools</title>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700;900&family=Inter:wght@400;500;600&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:#0D0B14;--surface:#1A1528;--surface2:#221C35;
+  --accent:#7C3AED;--accent2:#A855F7;
+  --text:#E2D9F3;--muted:#6B6880;--border:#2D2545;
+  --green:#6EE7B7;--red:#F87171;--yellow:#FCD34D;
+}
+body{background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;font-size:14px;min-height:100vh}
+nav{display:flex;align-items:center;justify-content:space-between;padding:0.875rem 2rem;border-bottom:1px solid var(--border);background:rgba(13,11,20,0.97);backdrop-filter:blur(12px);position:sticky;top:0;z-index:100}
+.nav-brand{font-family:'Orbitron',monospace;font-size:13px;font-weight:700;color:var(--accent2);letter-spacing:2px}
+.nav-brand span{color:var(--muted);font-weight:400;font-size:11px;margin-left:8px;font-family:'Space Mono',monospace;letter-spacing:1px}
+.nav-back{font-family:'Space Mono',monospace;font-size:10px;color:var(--muted);letter-spacing:1px;text-decoration:none;transition:color 0.2s}
+.nav-back:hover{color:var(--accent2)}
+.hero{text-align:center;padding:3rem 2rem 2rem;position:relative;overflow:hidden}
+.hero::before{content:'';position:absolute;top:0;left:50%;transform:translateX(-50%);width:500px;height:300px;background:radial-gradient(ellipse,rgba(124,58,237,0.1) 0%,transparent 70%);pointer-events:none}
+.hero-badge{display:inline-flex;align-items:center;gap:6px;background:rgba(124,58,237,0.15);border:1px solid rgba(168,85,247,0.3);color:var(--accent2);font-family:'Space Mono',monospace;font-size:9px;padding:4px 14px;border-radius:20px;margin-bottom:1.25rem;letter-spacing:2px}
+.hero h1{font-family:'Orbitron',monospace;font-size:clamp(22px,4vw,36px);font-weight:900;color:#fff;margin-bottom:0.75rem}
+.hero h1 span{color:var(--accent2)}
+.hero p{color:var(--muted);font-size:13px;max-width:500px;margin:0 auto;line-height:1.8}
+.layout{max-width:1100px;margin:0 auto;padding:2rem;display:grid;grid-template-columns:340px 1fr;gap:1.5rem;align-items:start}
+@media(max-width:860px){.layout{grid-template-columns:1fr}}
+.card{background:var(--surface);border:1px solid var(--border);border-radius:14px;overflow:hidden;margin-bottom:1rem}
+.card-header{padding:0.875rem 1.25rem;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:10px}
+.card-icon{width:28px;height:28px;background:rgba(124,58,237,0.2);border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:13px;border:1px solid rgba(124,58,237,0.3);flex-shrink:0}
+.card-title{font-family:'Orbitron',monospace;font-size:11px;font-weight:700;color:#fff;letter-spacing:0.5px}
+.card-sub{font-family:'Space Mono',monospace;font-size:9px;color:var(--muted);margin-top:1px;letter-spacing:1px}
+.card-body{padding:1rem}
+label{display:block;font-family:'Space Mono',monospace;font-size:9px;color:var(--muted);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:5px}
+.field{margin-bottom:0.9rem}
+input[type=text],input[type=number],select,textarea{width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:9px 12px;color:var(--text);font-family:'Space Mono',monospace;font-size:11px;outline:none;transition:border-color 0.2s}
+input[type=text]:focus,input[type=number]:focus,select:focus,textarea:focus{border-color:var(--accent)}
+select option{background:var(--surface2)}
+textarea{resize:vertical;min-height:60px;line-height:1.5}
+input[type=color]{width:36px;height:32px;border-radius:6px;border:1px solid var(--border);background:var(--surface2);cursor:pointer;padding:2px;flex-shrink:0}
+input[type=range]{width:100%;accent-color:var(--accent);margin-top:4px}
+.color-row{display:flex;gap:0.5rem;align-items:flex-end}
+.color-row input[type=text]{flex:1}
+.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:0.75rem}
+
+/* PRESET CHIPS */
+.preset-row{display:flex;gap:0.5rem;flex-wrap:wrap;margin-bottom:0.75rem}
+.preset-chip{background:var(--surface2);border:1px solid var(--border);border-radius:6px;padding:5px 11px;font-family:'Space Mono',monospace;font-size:9px;color:var(--muted);cursor:pointer;transition:all 0.15s;letter-spacing:0.5px}
+.preset-chip:hover{border-color:var(--accent);color:var(--accent2)}
+.preset-chip.active{background:rgba(124,58,237,0.2);border-color:var(--accent);color:var(--accent2)}
+
+/* CANVAS PREVIEW */
+.canvas-wrap{position:sticky;top:80px}
+.canvas-container{border-radius:12px;overflow:hidden;border:1px solid var(--border);background:var(--surface2);aspect-ratio:16/9;position:relative;display:flex;align-items:center;justify-content:center}
+canvas{width:100%;height:auto;display:block;max-width:100%}
+.canvas-hint{font-family:'Space Mono',monospace;font-size:9px;color:var(--muted);letter-spacing:1px;text-align:center;margin-top:0.75rem}
+
+/* UPLOAD ZONE */
+.upload-zone{border:2px dashed var(--border);border-radius:10px;padding:1.5rem;text-align:center;cursor:pointer;transition:all 0.2s;background:var(--surface2);position:relative}
+.upload-zone:hover{border-color:var(--accent);background:rgba(124,58,237,0.05)}
+.upload-zone input[type=file]{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%}
+.upload-zone-text{font-family:'Space Mono',monospace;font-size:10px;color:var(--muted);letter-spacing:1px}
+.upload-zone-icon{font-size:24px;margin-bottom:0.5rem}
+.upload-preview-name{font-family:'Space Mono',monospace;font-size:10px;color:var(--green);margin-top:6px;letter-spacing:0.5px}
+
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:10px 20px;border-radius:8px;font-family:'Space Mono',monospace;font-size:10px;cursor:pointer;letter-spacing:1px;border:none;transition:all 0.2s;width:100%;margin-top:0.5rem}
+.btn-primary{background:var(--accent);color:#fff}
+.btn-primary:hover{background:var(--accent2)}
+.btn-green{background:rgba(110,231,183,0.15);border:1px solid rgba(110,231,183,0.3);color:var(--green)}
+.btn-green:hover{background:rgba(110,231,183,0.25)}
+.section-divider{height:1px;background:var(--border);margin:0.75rem 0}
+
+/* SIZE OPTIONS */
+.size-chips{display:flex;gap:0.5rem;flex-wrap:wrap;margin-bottom:0.75rem}
+.size-chip{background:var(--surface2);border:1px solid var(--border);border-radius:6px;padding:4px 10px;font-family:'Space Mono',monospace;font-size:9px;color:var(--muted);cursor:pointer;transition:all 0.15s;letter-spacing:0.5px}
+.size-chip.active{background:rgba(124,58,237,0.2);border-color:var(--accent);color:var(--accent2)}
+</style>
+</head>
+<body>
+<nav>
+  <a href="../index.html" style="text-decoration:none"><div class="nav-brand">SALTORIA <span>/ THUMBNAIL GEN</span></div></a>
+  <a href="../index.html" class="nav-back">← BACK TO HOME</a>
+</nav>
+<div class="hero">
+  <div class="hero-badge">🖼️ DESIGN TOOL</div>
+  <h1>Thumbnail <span>Generator</span></h1>
+  <p>Buat thumbnail game, post Discord, atau cover dengan preset Saltoria atau custom sendiri. Download langsung sebagai PNG.</p>
+</div>
+
+<div class="layout">
+  <!-- LEFT: CONTROLS -->
+  <div>
+
+    <!-- PRESET -->
+    <div class="card">
+      <div class="card-header">
+        <div class="card-icon">🎨</div>
+        <div><div class="card-title">Preset Style</div><div class="card-sub">PILIH TEMA</div></div>
+      </div>
+      <div class="card-body">
+        <div class="preset-row">
+          <div class="preset-chip active" onclick="applyPreset('saltoria')">🟣 Saltoria</div>
+          <div class="preset-chip" onclick="applyPreset('dark')">⚫ Dark</div>
+          <div class="preset-chip" onclick="applyPreset('fire')">🔥 Fire</div>
+          <div class="preset-chip" onclick="applyPreset('ocean')">🌊 Ocean</div>
+          <div class="preset-chip" onclick="applyPreset('gold')">✨ Gold</div>
+          <div class="preset-chip" onclick="applyPreset('custom')">🎛️ Custom</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- TEXT -->
+    <div class="card">
+      <div class="card-header">
+        <div class="card-icon">✏️</div>
+        <div><div class="card-title">Text</div><div class="card-sub">JUDUL & SUBTITLE</div></div>
+      </div>
+      <div class="card-body">
+        <div class="field">
+          <label>Judul Utama</label>
+          <input type="text" id="title-text" value="SALTORIA" oninput="render()" maxlength="40">
+        </div>
+        <div class="field">
+          <label>Subtitle</label>
+          <input type="text" id="sub-text" value="Community Roblox Indonesia" oninput="render()" maxlength="60">
+        </div>
+        <div class="field">
+          <label>Tag / Label (opsional)</label>
+          <input type="text" id="tag-text" value="FREE TOOL" oninput="render()" maxlength="20">
+        </div>
+        <div class="grid-2">
+          <div class="field">
+            <label>Ukuran Judul</label>
+            <input type="range" id="title-size" min="30" max="120" value="72" oninput="render()">
+          </div>
+          <div class="field">
+            <label>Ukuran Subtitle</label>
+            <input type="range" id="sub-size" min="12" max="48" value="22" oninput="render()">
+          </div>
+        </div>
+        <div class="field">
+          <label>Posisi Text</label>
+          <select id="text-align" onchange="render()">
+            <option value="center">Tengah</option>
+            <option value="left">Kiri</option>
+            <option value="right">Kanan</option>
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <!-- BACKGROUND -->
+    <div class="card">
+      <div class="card-header">
+        <div class="card-icon">🌅</div>
+        <div><div class="card-title">Background</div><div class="card-sub">GRADIENT · IMAGE · SOLID</div></div>
+      </div>
+      <div class="card-body">
+        <div class="field">
+          <label>Mode BG</label>
+          <select id="bg-mode" onchange="render()">
+            <option value="gradient">Gradient</option>
+            <option value="solid">Solid Color</option>
+            <option value="image">Upload Image</option>
+          </select>
+        </div>
+        <div id="bg-gradient-opts">
+          <div class="grid-2">
+            <div class="field">
+              <label>Warna 1</label>
+              <div class="color-row">
+                <input type="text" id="bg1-hex" value="#0D0B14" oninput="syncColor('bg1-hex','bg1-pick');render()">
+                <input type="color" id="bg1-pick" value="#0D0B14" oninput="syncColor('bg1-pick','bg1-hex');render()">
+              </div>
+            </div>
+            <div class="field">
+              <label>Warna 2</label>
+              <div class="color-row">
+                <input type="text" id="bg2-hex" value="#2D1B69" oninput="syncColor('bg2-hex','bg2-pick');render()">
+                <input type="color" id="bg2-pick" value="#2D1B69" oninput="syncColor('bg2-pick','bg2-hex');render()">
+              </div>
+            </div>
+          </div>
+          <div class="field">
+            <label>Arah Gradient</label>
+            <select id="grad-dir" onchange="render()">
+              <option value="135">Diagonal ↘</option>
+              <option value="90">Bawah ↓</option>
+              <option value="0">Kanan →</option>
+              <option value="45">Diagonal ↗</option>
+            </select>
+          </div>
+        </div>
+        <div id="bg-solid-opts" style="display:none">
+          <div class="field">
+            <label>Solid Color</label>
+            <div class="color-row">
+              <input type="text" id="solid-hex" value="#0D0B14" oninput="syncColor('solid-hex','solid-pick');render()">
+              <input type="color" id="solid-pick" value="#0D0B14" oninput="syncColor('solid-pick','solid-hex');render()">
+            </div>
+          </div>
+        </div>
+        <div id="bg-image-opts" style="display:none">
+          <div class="upload-zone">
+            <input type="file" id="bg-img-upload" accept="image/*" onchange="loadBGImage()">
+            <div class="upload-zone-icon">🖼️</div>
+            <div class="upload-zone-text">Klik atau drag gambar ke sini</div>
+            <div class="upload-preview-name" id="bg-img-name"></div>
+          </div>
+          <div class="field" style="margin-top:0.75rem">
+            <label>Overlay Opacity</label>
+            <input type="range" id="overlay-opacity" min="0" max="0.9" step="0.05" value="0.5" oninput="render()">
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- COLORS -->
+    <div class="card">
+      <div class="card-header">
+        <div class="card-icon">🎨</div>
+        <div><div class="card-title">Warna Text & Aksen</div><div class="card-sub">CUSTOM COLORS</div></div>
+      </div>
+      <div class="card-body">
+        <div class="grid-2">
+          <div class="field">
+            <label>Warna Judul</label>
+            <div class="color-row">
+              <input type="text" id="title-color-hex" value="#FFFFFF" oninput="syncColor('title-color-hex','title-color-pick');render()">
+              <input type="color" id="title-color-pick" value="#FFFFFF" oninput="syncColor('title-color-pick','title-color-hex');render()">
+            </div>
+          </div>
+          <div class="field">
+            <label>Warna Subtitle</label>
+            <div class="color-row">
+              <input type="text" id="sub-color-hex" value="#A855F7" oninput="syncColor('sub-color-hex','sub-color-pick');render()">
+              <input type="color" id="sub-color-pick" value="#A855F7" oninput="syncColor('sub-color-pick','sub-color-hex');render()">
+            </div>
+          </div>
+          <div class="field">
+            <label>Warna Aksen/Garis</label>
+            <div class="color-row">
+              <input type="text" id="accent-color-hex" value="#7C3AED" oninput="syncColor('accent-color-hex','accent-color-pick');render()">
+              <input type="color" id="accent-color-pick" value="#7C3AED" oninput="syncColor('accent-color-pick','accent-color-hex');render()">
+            </div>
+          </div>
+          <div class="field">
+            <label>Warna Tag</label>
+            <div class="color-row">
+              <input type="text" id="tag-color-hex" value="#A855F7" oninput="syncColor('tag-color-hex','tag-color-pick');render()">
+              <input type="color" id="tag-color-pick" value="#A855F7" oninput="syncColor('tag-color-pick','tag-color-hex');render()">
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- OVERLAY LOGO -->
+    <div class="card">
+      <div class="card-header">
+        <div class="card-icon">🖼️</div>
+        <div><div class="card-title">Logo / Overlay Image</div><div class="card-sub">OPSIONAL</div></div>
+      </div>
+      <div class="card-body">
+        <div class="upload-zone">
+          <input type="file" id="logo-upload" accept="image/*" onchange="loadLogo()">
+          <div class="upload-zone-icon">📷</div>
+          <div class="upload-zone-text">Upload logo / karakter (PNG transparan terbaik)</div>
+          <div class="upload-preview-name" id="logo-name"></div>
+        </div>
+        <div class="field" style="margin-top:0.75rem">
+          <label>Ukuran Logo (%)</label>
+          <input type="range" id="logo-size" min="10" max="100" value="35" oninput="render()">
+        </div>
+        <div class="field">
+          <label>Posisi Logo</label>
+          <select id="logo-pos" onchange="render()">
+            <option value="center">Tengah</option>
+            <option value="right">Kanan</option>
+            <option value="left">Kiri</option>
+            <option value="bottom-right">Kanan Bawah</option>
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <!-- SIZE -->
+    <div class="card">
+      <div class="card-header">
+        <div class="card-icon">📐</div>
+        <div><div class="card-title">Ukuran Output</div><div class="card-sub">RESOLUSI</div></div>
+      </div>
+      <div class="card-body">
+        <div class="size-chips">
+          <div class="size-chip active" onclick="setSize(1280,720,this)">1280×720</div>
+          <div class="size-chip" onclick="setSize(1920,1080,this)">1920×1080</div>
+          <div class="size-chip" onclick="setSize(1080,1080,this)">1080×1080</div>
+          <div class="size-chip" onclick="setSize(1080,566,this)">Discord Banner</div>
+          <div class="size-chip" onclick="setSize(512,512,this)">512×512</div>
+        </div>
+      </div>
+    </div>
+
+    <button class="btn btn-primary" onclick="render()">🔄 UPDATE PREVIEW</button>
+    <button class="btn btn-green" onclick="downloadPNG()">⬇️ DOWNLOAD PNG</button>
+  </div>
+
+  <!-- RIGHT: PREVIEW -->
+  <div class="canvas-wrap">
+    <div class="canvas-container">
+      <canvas id="thumb-canvas" width="1280" height="720"></canvas>
+    </div>
+    <div class="canvas-hint">Preview 1:1 — download hasil asli resolusi penuh</div>
+  </div>
+</div>
+
+<script>
+const canvas = document.getElementById('thumb-canvas');
+const ctx = canvas.getContext('2d');
+let bgImage = null;
+let logoImage = null;
+let outW = 1280, outH = 720;
+
+function syncColor(srcId, dstId){
+  const src = document.getElementById(srcId);
+  const dst = document.getElementById(dstId);
+  if(src.type==='color') dst.value = src.value;
+  else dst.value = src.value;
+}
+
+function setSize(w,h,el){
+  outW=w; outH=h;
+  canvas.width=w; canvas.height=h;
+  document.querySelectorAll('.size-chip').forEach(c=>c.classList.remove('active'));
+  el.classList.add('active');
+  render();
+}
+
+const PRESETS = {
+  saltoria:{bg1:'#0D0B14',bg2:'#2D1B69',titleColor:'#FFFFFF',subColor:'#A855F7',accentColor:'#7C3AED',tagColor:'#A855F7',gradDir:'135'},
+  dark:    {bg1:'#000000',bg2:'#1A1A2E',titleColor:'#FFFFFF',subColor:'#888888',accentColor:'#444444',tagColor:'#888888',gradDir:'90'},
+  fire:    {bg1:'#1A0500',bg2:'#8B1A00',titleColor:'#FFD700',subColor:'#FF6B35',accentColor:'#FF4500',tagColor:'#FF6B35',gradDir:'135'},
+  ocean:   {bg1:'#000C1A',bg2:'#003366',titleColor:'#FFFFFF',subColor:'#00B4D8',accentColor:'#0077B6',tagColor:'#00B4D8',gradDir:'135'},
+  gold:    {bg1:'#1A1200',bg2:'#3D2B00',titleColor:'#FFD700',subColor:'#FFC107',accentColor:'#FF8C00',tagColor:'#FFD700',gradDir:'45'},
+  custom:  null,
+};
+
+function applyPreset(name){
+  document.querySelectorAll('.preset-chip').forEach(c=>c.classList.remove('active'));
+  event.target.classList.add('active');
+  if(name==='custom')return;
+  const p=PRESETS[name];
+  document.getElementById('bg1-hex').value=p.bg1;document.getElementById('bg1-pick').value=p.bg1;
+  document.getElementById('bg2-hex').value=p.bg2;document.getElementById('bg2-pick').value=p.bg2;
+  document.getElementById('title-color-hex').value=p.titleColor;document.getElementById('title-color-pick').value=p.titleColor;
+  document.getElementById('sub-color-hex').value=p.subColor;document.getElementById('sub-color-pick').value=p.subColor;
+  document.getElementById('accent-color-hex').value=p.accentColor;document.getElementById('accent-color-pick').value=p.accentColor;
+  document.getElementById('tag-color-hex').value=p.tagColor;document.getElementById('tag-color-pick').value=p.tagColor;
+  document.getElementById('grad-dir').value=p.gradDir;
+  document.getElementById('bg-mode').value='gradient';
+  updateBGMode();
+  render();
+}
+
+function updateBGMode(){
+  const mode=document.getElementById('bg-mode').value;
+  document.getElementById('bg-gradient-opts').style.display=mode==='gradient'?'':'none';
+  document.getElementById('bg-solid-opts').style.display=mode==='solid'?'':'none';
+  document.getElementById('bg-image-opts').style.display=mode==='image'?'':'none';
+}
+document.getElementById('bg-mode').addEventListener('change',updateBGMode);
+
+function loadBGImage(){
+  const file=document.getElementById('bg-img-upload').files[0];
+  if(!file)return;
+  document.getElementById('bg-img-name').textContent=file.name;
+  const img=new Image();
+  img.onload=()=>{bgImage=img;render();};
+  img.src=URL.createObjectURL(file);
+}
+function loadLogo(){
+  const file=document.getElementById('logo-upload').files[0];
+  if(!file)return;
+  document.getElementById('logo-name').textContent=file.name;
+  const img=new Image();
+  img.onload=()=>{logoImage=img;render();};
+  img.src=URL.createObjectURL(file);
+}
+
+function render(){
+  canvas.width=outW; canvas.height=outH;
+  const W=outW, H=outH;
+  const mode=document.getElementById('bg-mode').value;
+  const titleTxt=document.getElementById('title-text').value||'SALTORIA';
+  const subTxt=document.getElementById('sub-text').value;
+  const tagTxt=document.getElementById('tag-text').value;
+  const titleSize=parseInt(document.getElementById('title-size').value);
+  const subSize=parseInt(document.getElementById('sub-size').value);
+  const align=document.getElementById('text-align').value;
+  const titleColor=document.getElementById('title-color-hex').value||'#fff';
+  const subColor=document.getElementById('sub-color-hex').value||'#A855F7';
+  const accentColor=document.getElementById('accent-color-hex').value||'#7C3AED';
+  const tagColor=document.getElementById('tag-color-hex').value||'#A855F7';
+
+  // BG
+  if(mode==='gradient'){
+    const deg=parseInt(document.getElementById('grad-dir').value);
+    const rad=deg*Math.PI/180;
+    const cx=W/2,cy=H/2;
+    const dx=Math.cos(rad)*Math.max(W,H),dy=Math.sin(rad)*Math.max(W,H);
+    const grad=ctx.createLinearGradient(cx-dx/2,cy-dy/2,cx+dx/2,cy+dy/2);
+    grad.addColorStop(0,document.getElementById('bg1-hex').value||'#0D0B14');
+    grad.addColorStop(1,document.getElementById('bg2-hex').value||'#2D1B69');
+    ctx.fillStyle=grad;
+    ctx.fillRect(0,0,W,H);
+  } else if(mode==='solid'){
+    ctx.fillStyle=document.getElementById('solid-hex').value||'#0D0B14';
+    ctx.fillRect(0,0,W,H);
+  } else if(mode==='image' && bgImage){
+    const scaleX=W/bgImage.width, scaleY=H/bgImage.height;
+    const scale=Math.max(scaleX,scaleY);
+    const dx=(W-bgImage.width*scale)/2, dy=(H-bgImage.height*scale)/2;
+    ctx.drawImage(bgImage,dx,dy,bgImage.width*scale,bgImage.height*scale);
+    const opacity=parseFloat(document.getElementById('overlay-opacity').value)||0.5;
+    ctx.fillStyle=`rgba(0,0,0,${opacity})`;
+    ctx.fillRect(0,0,W,H);
+  } else {
+    ctx.fillStyle='#0D0B14';
+    ctx.fillRect(0,0,W,H);
+  }
+
+  // Decorative circles
+  ctx.save();
+  ctx.globalAlpha=0.08;
+  const glow=ctx.createRadialGradient(W*0.8,H*0.2,0,W*0.8,H*0.2,W*0.4);
+  glow.addColorStop(0,accentColor);glow.addColorStop(1,'transparent');
+  ctx.fillStyle=glow;ctx.fillRect(0,0,W,H);
+  const glow2=ctx.createRadialGradient(W*0.1,H*0.8,0,W*0.1,H*0.8,W*0.3);
+  glow2.addColorStop(0,subColor);glow2.addColorStop(1,'transparent');
+  ctx.fillStyle=glow2;ctx.fillRect(0,0,W,H);
+  ctx.restore();
+
+  // Accent bar top
+  ctx.fillStyle=accentColor;
+  ctx.fillRect(0,0,W,4);
+
+  // Logo / overlay image
+  if(logoImage){
+    const logoSizePct=parseInt(document.getElementById('logo-size').value)/100;
+    const maxLogoW=W*logoSizePct;
+    const maxLogoH=H*logoSizePct;
+    const scale=Math.min(maxLogoW/logoImage.width,maxLogoH/logoImage.height);
+    const lw=logoImage.width*scale, lh=logoImage.height*scale;
+    const pos=document.getElementById('logo-pos').value;
+    let lx,ly;
+    if(pos==='center'){lx=(W-lw)/2;ly=(H-lh)/2;}
+    else if(pos==='right'){lx=W-lw-W*0.05;ly=(H-lh)/2;}
+    else if(pos==='left'){lx=W*0.05;ly=(H-lh)/2;}
+    else{lx=W-lw-W*0.04;ly=H-lh-H*0.06;}
+    ctx.drawImage(logoImage,lx,ly,lw,lh);
+  }
+
+  // Text position
+  const alignX=align==='center'?W/2:align==='left'?W*0.08:W*0.92;
+  const ctxAlign=align==='center'?'center':align==='left'?'left':'right';
+
+  // Tag pill
+  if(tagTxt){
+    const tagFont=`700 ${Math.round(subSize*0.7)}px 'Space Mono'`;
+    ctx.font=tagFont;
+    const tagW=ctx.measureText(tagTxt).width+32;
+    const tagH=subSize*1.1;
+    const tagY=H*0.28;
+    const tagX=align==='center'?(W-tagW)/2:align==='left'?W*0.08:W*0.92-tagW;
+    ctx.save();
+    ctx.fillStyle=tagColor+'30';
+    roundRect(ctx,tagX,tagY-tagH*0.75,tagW,tagH,6);
+    ctx.fill();
+    ctx.strokeStyle=tagColor;ctx.lineWidth=1;
+    roundRect(ctx,tagX,tagY-tagH*0.75,tagW,tagH,6);
+    ctx.stroke();
+    ctx.fillStyle=tagColor;
+    ctx.font=tagFont;
+    ctx.textAlign='center';
+    ctx.fillText(tagTxt,tagX+tagW/2,tagY);
+    ctx.restore();
+  }
+
+  // Title
+  ctx.save();
+  ctx.textAlign=ctxAlign;
+  ctx.textBaseline='middle';
+  ctx.font=`900 ${titleSize}px 'Orbitron'`;
+  ctx.fillStyle=titleColor;
+  // Glow
+  ctx.shadowColor=accentColor;ctx.shadowBlur=30;
+  ctx.fillText(titleTxt,alignX,H*0.5);
+  ctx.shadowBlur=0;
+  ctx.restore();
+
+  // Accent underline
+  const titleMetrics=ctx.measureText(titleTxt);
+  ctx.font=`900 ${titleSize}px 'Orbitron'`;
+  const tw=titleMetrics.width;
+  const lineY=H*0.5+titleSize*0.6+8;
+  const lineX=align==='center'?(W-Math.min(tw,W*0.7))/2:align==='left'?W*0.08:W*0.92-Math.min(tw,W*0.7);
+  const lineW=Math.min(tw,W*0.7);
+  const grad2=ctx.createLinearGradient(lineX,0,lineX+lineW,0);
+  grad2.addColorStop(0,accentColor);grad2.addColorStop(1,subColor);
+  ctx.fillStyle=grad2;
+  ctx.fillRect(lineX,lineY,lineW,3);
+
+  // Subtitle
+  if(subTxt){
+    ctx.save();
+    ctx.textAlign=ctxAlign;
+    ctx.textBaseline='top';
+    ctx.font=`500 ${subSize}px 'Inter'`;
+    ctx.fillStyle=subColor;
+    ctx.fillText(subTxt,alignX,lineY+16);
+    ctx.restore();
+  }
+
+  // Bottom bar
+  ctx.fillStyle=accentColor+'40';
+  ctx.fillRect(0,H-3,W,3);
+
+  // Watermark
+  ctx.save();
+  ctx.globalAlpha=0.25;
+  ctx.fillStyle='#fff';
+  ctx.font=`400 ${Math.round(H*0.018)}px 'Space Mono'`;
+  ctx.textAlign='right';
+  ctx.textBaseline='bottom';
+  ctx.fillText('saltoria.community',W-16,H-10);
+  ctx.restore();
+}
+
+function roundRect(ctx,x,y,w,h,r){
+  ctx.beginPath();
+  ctx.moveTo(x+r,y);
+  ctx.lineTo(x+w-r,y);ctx.quadraticCurveTo(x+w,y,x+w,y+r);
+  ctx.lineTo(x+w,y+h-r);ctx.quadraticCurveTo(x+w,y+h,x+w-r,y+h);
+  ctx.lineTo(x+r,y+h);ctx.quadraticCurveTo(x,y+h,x,y+h-r);
+  ctx.lineTo(x,y+r);ctx.quadraticCurveTo(x,y,x+r,y);
+  ctx.closePath();
+}
+
+function downloadPNG(){
+  render();
+  const link=document.createElement('a');
+  link.download=`saltoria-thumbnail-${outW}x${outH}.png`;
+  link.href=canvas.toDataURL('image/png');
+  link.click();
+}
+
+render();
+</script>
+</body>
+</html>
