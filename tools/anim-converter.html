@@ -1,0 +1,600 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Animation Link Converter — Saltoria Tools</title>
+
+<style>
+/* ── RESET & BASE ── */
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:#07070F;
+  --surface:#0D0D18;
+  --surface2:#12121E;
+  --accent:#8B5CF6;
+  --accent2:#C4B5FD;
+  --text:#F0EEFF;
+  --muted:#6B7280;
+  --border:rgba(255,255,255,0.06);
+  --glass:rgba(255,255,255,0.03);
+  --glass2:rgba(255,255,255,0.06);
+  --glow:rgba(139,92,246,0.2);
+  --green:#6EE7B7;--red:#F87171;--yellow:#FCD34D;
+  --radius:14px;
+}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;font-size:15px;line-height:1.7;overflow-x:hidden;-webkit-font-smoothing:antialiased;min-height:100vh}
+img{max-width:100%;display:block}
+a{text-decoration:none;color:inherit}
+
+/* ── NAV ── */
+nav{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:0 2rem;height:64px;
+  background:rgba(7,7,15,0.92);
+  backdrop-filter:blur(20px) saturate(1.4);
+  -webkit-backdrop-filter:blur(20px) saturate(1.4);
+  border-bottom:1px solid var(--border);
+  position:sticky;top:0;z-index:200;
+}
+.nav-brand{display:flex;align-items:center;gap:10px}
+.nav-logo-text{font-family:'Inter',sans-serif;font-size:14px;font-weight:800;letter-spacing:.5px;color:#fff}
+.nav-logo-text span{color:var(--accent2)}
+.nav-tool-label{
+  font-family:'Space Mono',monospace;font-size:10px;color:var(--muted);
+  letter-spacing:1.5px;padding:3px 10px;border-radius:6px;
+  background:var(--glass2);border:1px solid var(--border);
+}
+.nav-back{
+  display:inline-flex;align-items:center;gap:6px;
+  font-family:'Space Mono',monospace;font-size:10px;
+  color:var(--muted);letter-spacing:1px;
+  padding:7px 14px;border:1px solid var(--border);border-radius:8px;
+  transition:all .2s;
+}
+.nav-back:hover{color:var(--accent2);border-color:rgba(196,181,253,.3)}
+.nav-back svg{transition:transform .2s}
+.nav-back:hover svg{transform:translateX(-2px)}
+
+/* ── HERO ── */
+.tool-hero{
+  text-align:center;padding:4rem 1.5rem 3rem;
+  position:relative;overflow:hidden;
+  border-bottom:1px solid var(--border);
+}
+.tool-hero::before{
+  content:'';position:absolute;top:0;left:50%;transform:translateX(-50%);
+  width:600px;height:350px;
+  background:radial-gradient(ellipse,rgba(139,92,246,.12) 0%,transparent 70%);
+  pointer-events:none;
+}
+.tool-hero-badge{
+  display:inline-flex;align-items:center;gap:8px;
+  background:rgba(139,92,246,.1);border:1px solid rgba(196,181,253,.2);
+  color:var(--accent2);font-size:10px;font-weight:600;letter-spacing:2px;
+  padding:5px 16px;border-radius:100px;margin-bottom:1.5rem;
+  text-transform:uppercase;font-family:'Space Mono',monospace;
+}
+.tool-hero h1{
+  font-size:clamp(26px,5vw,46px);font-weight:900;
+  color:#fff;line-height:1.05;letter-spacing:-1.5px;margin-bottom:1rem;
+}
+.tool-hero h1 em{
+  font-style:normal;
+  background:linear-gradient(135deg,var(--accent2),#fff,var(--accent));
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+}
+.tool-hero p{
+  color:var(--muted);font-size:14px;max-width:500px;
+  margin:0 auto;line-height:1.85;
+}
+
+/* ── MAIN LAYOUT ── */
+.main{max-width:860px;margin:0 auto;padding:2rem 1.5rem}
+
+/* ── CARD ── */
+.card{
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:16px;overflow:hidden;margin-bottom:1.25rem;
+}
+.card-header{
+  padding:1rem 1.25rem;border-bottom:1px solid var(--border);
+  display:flex;align-items:center;gap:10px;
+}
+.card-icon{
+  width:34px;height:34px;border-radius:10px;
+  background:rgba(139,92,246,.12);border:1px solid rgba(139,92,246,.2);
+  display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0;
+}
+.card-title{font-size:13px;font-weight:700;color:#fff;letter-spacing:.2px}
+.card-sub{font-family:'Space Mono',monospace;font-size:9px;color:var(--muted);margin-top:3px;letter-spacing:1px;text-transform:uppercase}
+.card-body{padding:1.25rem}
+
+/* ── TABS ── */
+.tabs{display:flex;gap:0;border-bottom:1px solid var(--border);background:var(--surface);overflow-x:auto}
+.tab{
+  flex-shrink:0;padding:.75rem 1rem;
+  font-family:'Space Mono',monospace;font-size:10px;letter-spacing:1.5px;
+  color:var(--muted);cursor:pointer;
+  border-bottom:2px solid transparent;
+  transition:all .2s;background:none;
+  border-top:none;border-left:none;border-right:none;
+  text-transform:uppercase;white-space:nowrap;
+}
+.tab.active{color:var(--accent2);border-bottom-color:var(--accent2)}
+.tab:hover:not(.active){color:var(--text)}
+.tab-panel{display:none;padding:1.25rem}
+.tab-panel.active{display:block}
+
+/* ── FORM ELEMENTS ── */
+.field{margin-bottom:1rem}
+.field:last-child{margin-bottom:0}
+label{display:block;font-family:'Space Mono',monospace;font-size:10px;color:var(--muted);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:6px}
+input[type=text],input[type=url],input[type=password],input[type=number],select,textarea{
+  width:100%;background:var(--surface2);
+  border:1px solid var(--border);border-radius:10px;
+  padding:10px 14px;color:var(--text);
+  font-family:'Space Mono',monospace;font-size:12px;
+  outline:none;transition:border-color .2s;
+}
+input[type=text]:focus,input[type=url]:focus,input[type=password]:focus,input[type=number]:focus,select:focus,textarea:focus{
+  border-color:rgba(139,92,246,.5);
+  box-shadow:0 0 0 3px rgba(139,92,246,.08);
+}
+select option{background:var(--surface2)}
+textarea{resize:vertical;min-height:80px;line-height:1.6}
+.field-hint{font-size:11px;color:var(--muted);margin-top:5px;opacity:.7;line-height:1.6}
+
+/* ── FILE DROP ── */
+.drop-zone{
+  border:2px dashed var(--border);border-radius:12px;
+  padding:2.5rem;text-align:center;cursor:pointer;
+  transition:all .2s;position:relative;
+}
+.drop-zone:hover,.drop-zone.dragover{border-color:var(--accent);background:rgba(139,92,246,.05)}
+.drop-zone input[type=file]{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%}
+.drop-icon{font-size:28px;margin-bottom:.75rem}
+.drop-text{font-family:'Space Mono',monospace;font-size:11px;color:var(--muted);letter-spacing:1px}
+.drop-hint{font-size:10px;color:var(--muted);opacity:.5;margin-top:4px}
+.file-selected{background:rgba(110,231,183,.05);border-color:rgba(110,231,183,.4)!important}
+.file-name{font-family:'Space Mono',monospace;font-size:11px;color:var(--green);margin-top:6px}
+
+/* ── SLIDERS ── */
+.slider-row{display:flex;align-items:center;gap:12px;margin-bottom:1rem}
+.slider-label{font-family:'Space Mono',monospace;font-size:10px;color:var(--muted);letter-spacing:1px;min-width:90px;text-transform:uppercase}
+.slider-wrap{flex:1;position:relative}
+input[type=range]{-webkit-appearance:none;appearance:none;width:100%;height:4px;background:var(--border);border-radius:2px;outline:none;cursor:pointer}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;appearance:none;width:16px;height:16px;background:var(--accent2);border-radius:50%;cursor:pointer;border:2px solid var(--bg);box-shadow:0 0 0 2px rgba(139,92,246,.3)}
+input[type=range]::-moz-range-thumb{width:16px;height:16px;background:var(--accent2);border-radius:50%;cursor:pointer;border:2px solid var(--bg)}
+.slider-val{font-family:'Space Mono',monospace;font-size:11px;color:var(--accent2);min-width:44px;text-align:right;font-weight:700}
+
+/* ── TOGGLE ── */
+.toggle-row{display:flex;align-items:center;justify-content:space-between;padding:.625rem 0;border-bottom:1px solid var(--border)}
+.toggle-row:last-child{border-bottom:none}
+.toggle-info{flex:1}
+.toggle-info-title{font-size:13px;color:var(--text);font-weight:500}
+.toggle-info-sub{font-size:11px;color:var(--muted);margin-top:2px}
+.toggle{position:relative;width:40px;height:22px;flex-shrink:0}
+.toggle input{opacity:0;width:0;height:0;position:absolute}
+.toggle-slider{position:absolute;cursor:pointer;inset:0;background:var(--border);border-radius:11px;transition:.2s}
+.toggle-slider::before{content:'';position:absolute;height:16px;width:16px;left:3px;bottom:3px;background:#fff;border-radius:50%;transition:.2s}
+.toggle input:checked+.toggle-slider{background:var(--accent)}
+.toggle input:checked+.toggle-slider::before{transform:translateX(18px)}
+
+/* ── BUTTONS ── */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:10px 20px;border-radius:10px;font-family:'Space Mono',monospace;font-size:11px;cursor:pointer;letter-spacing:1px;border:none;transition:all .2s;text-transform:uppercase;font-weight:700}
+.btn-primary{background:linear-gradient(135deg,var(--accent),#7C3AED);color:#fff;box-shadow:0 4px 16px rgba(139,92,246,.3)}
+.btn-primary:hover:not(:disabled){transform:translateY(-1px);box-shadow:0 6px 24px rgba(139,92,246,.5)}
+.btn-primary:disabled{opacity:.4;cursor:not-allowed;transform:none;box-shadow:none}
+.btn-outline{background:transparent;border:1px solid var(--border);color:var(--muted)}
+.btn-outline:hover{border-color:rgba(196,181,253,.3);color:var(--accent2)}
+.btn-green{background:rgba(110,231,183,.1);border:1px solid rgba(110,231,183,.25);color:var(--green)}
+.btn-green:hover{background:rgba(110,231,183,.18)}
+.btn-full{width:100%}
+.btn-row{display:flex;gap:.75rem;flex-wrap:wrap}
+
+/* ── STATUS / LOG ── */
+.status-bar{background:var(--surface2);border-radius:10px;border:1px solid var(--border);padding:.875rem 1rem;font-family:'Space Mono',monospace;font-size:10px;line-height:1.9;min-height:48px;max-height:140px;overflow-y:auto;color:var(--muted)}
+.log-line{margin-bottom:2px}
+.log-ok{color:var(--green)}
+.log-err{color:var(--red)}
+.log-info{color:var(--accent2)}
+.log-warn{color:var(--yellow)}
+
+/* ── OUTPUT BOX ── */
+.output-box{
+  position:relative;background:var(--surface2);
+  border:1px solid var(--border);border-radius:10px;
+  padding:.875rem 1rem;font-family:'Space Mono',monospace;
+  font-size:12px;color:var(--accent2);cursor:pointer;
+  transition:all .2s;word-break:break-all;
+}
+.output-box:hover{border-color:rgba(196,181,253,.3);background:rgba(139,92,246,.06)}
+.copy-hint{position:absolute;top:8px;right:10px;font-size:9px;color:var(--muted);letter-spacing:1px;text-transform:uppercase;transition:color .2s}
+.output-box:hover .copy-hint{color:var(--accent2)}
+.output-box.copied{border-color:rgba(110,231,183,.4);background:rgba(110,231,183,.05)}
+
+/* ── RESULT CARD ── */
+.result-card{background:rgba(110,231,183,.06);border:1px solid rgba(110,231,183,.2);border-radius:12px;padding:1.25rem;display:none}
+.result-card.show{display:block}
+.result-title{font-size:12px;font-weight:700;color:var(--green);margin-bottom:.75rem;font-family:'Space Mono',monospace;letter-spacing:1px;text-transform:uppercase}
+.result-row{display:flex;justify-content:space-between;align-items:center;padding:.5rem 0;border-bottom:1px solid rgba(255,255,255,.04)}
+.result-row:last-child{border-bottom:none}
+.result-key{font-family:'Space Mono',monospace;font-size:10px;color:var(--muted);letter-spacing:1px}
+.result-val{font-family:'Space Mono',monospace;font-size:11px;color:var(--text);font-weight:700}
+.result-val.green{color:var(--green)}
+.asset-id-box{background:var(--surface2);border:1px solid rgba(196,181,253,.25);border-radius:10px;padding:.875rem 1rem;font-family:'Space Mono',monospace;font-size:18px;color:var(--accent2);font-weight:700;text-align:center;letter-spacing:2px;margin:.75rem 0}
+
+/* ── PROGRESS ── */
+.progress-wrap{margin:.75rem 0;display:none}
+.progress-wrap.show{display:block}
+.progress-label{font-family:'Space Mono',monospace;font-size:10px;color:var(--muted);margin-bottom:6px;display:flex;justify-content:space-between}
+.progress-track{height:6px;background:var(--border);border-radius:3px;overflow:hidden}
+.progress-thumb{height:100%;background:linear-gradient(90deg,var(--accent),var(--accent2));border-radius:3px;width:0%;transition:width .3s}
+
+/* ── WAVEFORM ── */
+.waveform-wrap{background:var(--surface2);border:1px solid var(--border);border-radius:10px;overflow:hidden;margin-bottom:1rem;position:relative}
+canvas#waveform{width:100%;height:72px;display:block}
+.waveform-placeholder{height:72px;display:flex;align-items:center;justify-content:center;font-family:'Space Mono',monospace;font-size:10px;color:var(--muted);letter-spacing:1px}
+.audio-controls{display:flex;align-items:center;gap:12px}
+.play-btn{width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,var(--accent),#7C3AED);border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0;transition:all .2s}
+.play-btn:hover{transform:scale(1.08)}
+.time-display{font-family:'Space Mono',monospace;font-size:10px;color:var(--muted);min-width:80px}
+.progress-bar{flex:1;height:4px;background:var(--border);border-radius:2px;cursor:pointer;position:relative}
+.progress-fill{height:100%;background:var(--accent2);border-radius:2px;width:0%;transition:width .1s}
+
+/* ── MISC ── */
+.or-divider{display:flex;align-items:center;gap:1rem;margin:1rem 0;color:var(--muted);font-family:'Space Mono',monospace;font-size:10px;letter-spacing:1px}
+.or-divider::before,.or-divider::after{content:'';flex:1;height:1px;background:var(--border)}
+.upload-type{display:flex;gap:.75rem;margin-bottom:1rem}
+.upload-type-btn{flex:1;padding:.75rem;border:1px solid var(--border);border-radius:10px;background:var(--surface2);color:var(--muted);font-family:'Space Mono',monospace;font-size:10px;cursor:pointer;text-align:center;transition:all .2s;letter-spacing:1px}
+.upload-type-btn.active{border-color:rgba(196,181,253,.3);color:var(--accent2);background:rgba(139,92,246,.1)}
+.api-warning{background:rgba(252,211,77,.08);border:1px solid rgba(252,211,77,.2);border-radius:10px;padding:.875rem;margin-bottom:1rem;display:flex;gap:10px;align-items:flex-start}
+.api-warning-icon{font-size:14px;flex-shrink:0;margin-top:1px}
+.api-warning-text{font-size:11px;color:var(--yellow);line-height:1.7}
+.api-warning-text a{color:var(--yellow);text-decoration:underline}
+.speed-preset{background:var(--surface2);border:1px solid var(--border);border-radius:8px;color:var(--muted);font-family:'Space Mono',monospace;font-size:10px;padding:5px 10px;cursor:pointer;transition:all .15s;letter-spacing:.5px}
+.speed-preset:hover{border-color:rgba(196,181,253,.3);color:var(--accent2)}
+.speed-preset.active{background:rgba(139,92,246,.15);border-color:rgba(196,181,253,.3);color:var(--accent2);font-weight:700}
+.speed-note{background:rgba(139,92,246,.07);border:1px solid rgba(139,92,246,.15);border-radius:10px;padding:.625rem .875rem;margin-top:.625rem;margin-bottom:1rem;display:flex;align-items:flex-start;gap:8px;font-size:11px;color:var(--muted);line-height:1.7}
+.speed-note-icon{flex-shrink:0;font-size:13px}
+.speed-note b{color:var(--accent2)}
+.speed-note code{background:rgba(139,92,246,.18);color:var(--accent2);padding:1px 6px;border-radius:4px;font-family:'Space Mono',monospace;font-size:10px}
+.loading-bar{height:3px;background:linear-gradient(90deg,var(--accent),var(--accent2),var(--accent));background-size:200%;animation:shimmer 1.2s infinite;border-radius:3px;display:none;margin-bottom:1rem}
+.loading-bar.show{display:block}
+@keyframes shimmer{0%{background-position:200% 0}100%{background-position:-200% 0}}
+.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:1rem}
+.grid-3{display:grid;grid-template-columns:repeat(3,1fr);gap:1rem}
+.badge-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:.75rem;margin-top:.75rem}
+.badge-item{background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:.875rem;transition:all .2s}
+.badge-item.has{border-color:rgba(110,231,183,.3);background:rgba(110,231,183,.05)}
+.badge-item.nothas{border-color:rgba(248,113,113,.2);opacity:.6}
+.badge-icon{font-size:24px;margin-bottom:.5rem}
+.badge-name{font-size:12px;font-weight:600;color:var(--text);margin-bottom:2px}
+.badge-id{font-family:'Space Mono',monospace;font-size:9px;color:var(--muted);letter-spacing:.5px}
+.badge-status{font-size:10px;font-weight:700;margin-top:.4rem}
+.badge-status.ok{color:var(--green)}
+.badge-status.no{color:var(--red)}
+.color-preview{width:100%;height:80px;border-radius:12px;margin-top:1rem;display:flex;align-items:center;justify-content:center;border:1px solid var(--border);transition:background .2s}
+.preview-text{font-family:'Space Mono',monospace;font-size:13px;font-weight:700;letter-spacing:1px;text-shadow:0 1px 4px rgba(0,0,0,.5)}
+.color-picker-row{display:flex;gap:.75rem;align-items:center}
+.color-picker-row input[type=text]{flex:1}
+.color-picker-row input[type=color]{width:48px;height:42px;border-radius:8px;border:1px solid var(--border);background:var(--surface2);cursor:pointer;padding:3px;flex-shrink:0}
+.bc-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(100px,1fr));gap:.5rem;max-height:200px;overflow-y:auto;margin-top:.5rem}
+.bc-item{border-radius:8px;padding:.5rem;cursor:pointer;border:2px solid transparent;transition:all .15s;text-align:center}
+.bc-item.selected{border-color:#fff}
+.bc-name{font-family:'Space Mono',monospace;font-size:8px;color:#fff;text-shadow:0 1px 3px rgba(0,0,0,.7);margin-top:3px;letter-spacing:.3px}
+.folder-name-row{display:flex;gap:8px;align-items:center;margin-bottom:1.25rem;background:rgba(139,92,246,.07);border:1px solid rgba(139,92,246,.15);border-radius:10px;padding:.75rem 1rem}
+.folder-name-row span{font-family:'Space Mono',monospace;font-size:11px;color:var(--muted);white-space:nowrap}
+.folder-name-row input{flex:1;background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:6px 10px;color:var(--accent2);font-family:'Space Mono',monospace;font-size:11px;outline:none}
+.folder-name-row input:focus{border-color:rgba(196,181,253,.4)}
+.anim-list{margin-bottom:.75rem}
+.anim-row{display:flex;gap:8px;align-items:center;margin-bottom:.5rem}
+.anim-row .anim-name{width:150px;flex-shrink:0;background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:8px 10px;color:var(--text);font-family:'Space Mono',monospace;font-size:11px;outline:none;transition:border-color .2s}
+.anim-row .anim-name:focus{border-color:rgba(196,181,253,.4)}
+.anim-row .anim-link{flex:1;background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:8px 10px;color:var(--text);font-family:'Space Mono',monospace;font-size:11px;outline:none;transition:border-color .2s}
+.anim-row .anim-link:focus{border-color:rgba(196,181,253,.4)}
+.anim-row .anim-link.valid{border-color:rgba(110,231,183,.4)}
+.anim-row .anim-link.invalid{border-color:rgba(248,113,113,.4)}
+.hidden{display:none!important}
+
+/* ── RESPONSIVE ── */
+@media(max-width:600px){
+  .main{padding:1rem}
+  nav{padding:0 1rem}
+  .slider-row{flex-wrap:wrap}
+  .slider-label{min-width:auto;width:100%}
+  .grid-2{grid-template-columns:1fr}
+  .grid-3{grid-template-columns:1fr 1fr}
+  .badge-grid{grid-template-columns:1fr 1fr}
+  .anim-row{flex-wrap:wrap}
+  .anim-row .anim-name{width:100%}
+}
+@media(max-width:400px){
+  .grid-3{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body>
+<nav>
+  <a href="../index.html" class="nav-brand">
+    <span class="nav-logo-text">SALT<span>ORIA</span></span>
+    <span class="nav-tool-label">ANIM CONVERTER</span>
+  </a>
+  <a href="../index.html#tools" class="nav-back">
+    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>
+    Tools
+  </a>
+</nav>
+
+<div class="tool-hero">
+  <div class="tool-hero-badge">🎞️ SALTORIA TOOLS</div>
+  <h1>Anim Link <em>Converter</em></h1>
+  <p>Paste link katalog animasi Roblox — generate Command Bar script yang otomatis bikin struktur animasi di <code style="background:rgba(124,58,237,.2);color:var(--accent2);padding:2px 8px;border-radius:4px;font-family:'Space Mono',monospace;font-size:12px">ReplicatedStorage</code> siap pakai.</p>
+</div>
+<div class="main">
+
+  <!-- STEP 1 -->
+  <div class="card">
+    <div class="card-header">
+      <div class="card-icon">①</div>
+      <div>
+        <div class="card-title">Nama Folder di ReplicatedStorage</div>
+        <div class="card-sub">Struktur: ReplicatedStorage → Folder Utama → Animasi</div>
+      </div>
+    </div>
+    <div class="card-body">
+      <div class="folder-name-row">
+        <span>ReplicatedStorage /</span>
+        <input type="text" id="folder-name" value="Saltoria Animation" placeholder="Nama folder...">
+      </div>
+      <div class="field-hint" style="font-size:10px;color:var(--muted);opacity:.7">
+        Folder ini akan dibuat otomatis di ReplicatedStorage. Kalau sudah ada, script akan pakai yang existing.
+      </div>
+    </div>
+  </div>
+
+  <!-- STEP 2 -->
+  <div class="card">
+    <div class="card-header">
+      <div class="card-icon">②</div>
+      <div>
+        <div class="card-title">Daftar Animasi</div>
+        <div class="card-sub">Nama animasi + link katalog / Asset ID Roblox</div>
+      </div>
+    </div>
+    <div class="card-body">
+      <div class="row-labels">
+        <div class="row-label-name">Nama Animasi</div>
+        <div class="row-label-link">Link / Asset ID</div>
+      </div>
+      <div class="anim-list" id="anim-list"></div>
+      <button class="btn btn-outline btn-sm" onclick="addRow()">+ Tambah Animasi</button>
+    </div>
+  </div>
+
+  <!-- STEP 3 -->
+  <div class="card">
+    <div class="card-header">
+      <div class="card-icon">③</div>
+      <div>
+        <div class="card-title">Generate Script</div>
+        <div class="card-sub">Command Bar script siap paste di Roblox Studio</div>
+      </div>
+    </div>
+    <div class="card-body">
+      <div id="struct-preview-wrap" style="display:none">
+        <div class="struct-preview" id="struct-preview"></div>
+      </div>
+      <button class="btn btn-primary btn-full" onclick="generate()">⚙ Generate Command Bar Script</button>
+
+      <div class="output-wrap" id="output-wrap" style="margin-top:1rem">
+        <div style="position:relative">
+          <div class="output-header">
+            <span class="output-label">// COMMAND BAR SCRIPT</span>
+            <span class="output-target">Roblox Studio → View → Command Bar</span>
+          </div>
+          <button onclick="copyScript()" style="position:absolute;top:3.5rem;right:.75rem;background:var(--accent);color:#fff;border:none;padding:5px 12px;border-radius:6px;font-family:'Space Mono',monospace;font-size:10px;cursor:pointer;letter-spacing:1px;z-index:2">📋 Copy</button>
+          <pre class="code-block" id="code-output"></pre>
+        </div>
+        <div class="guide-box">
+          <div class="guide-step"><span class="gs-num">1</span>Buka <b>Roblox Studio</b> → menu <b>View</b> → <b>Command Bar</b></div>
+          <div class="guide-step"><span class="gs-num">2</span>Copy script di atas, paste ke Command Bar, tekan <code>Enter</code></div>
+          <div class="guide-step"><span class="gs-num">3</span>Script otomatis bikin folder <code id="guide-folder-name">Saltoria Animation</code> di <code>ReplicatedStorage</code> berisi Animation instances siap pakai</div>
+          <div class="guide-step"><span class="gs-num">4</span>Akses dari script pakai: <code>game.ReplicatedStorage["<span id="guide-folder-ref">Saltoria Animation</span>"]["NamaAnimasi"]</code></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<div class="toast" id="toast">✅ Script berhasil di-copy!</div>
+
+<script>
+let rowCount = 0;
+
+// ─── INIT ──────────────────────────────────────────────────────────
+document.addEventListener('DOMContentLoaded', () => {
+  // Start with 3 empty rows
+  addRow(); addRow(); addRow();
+
+  // Live preview update
+  document.getElementById('folder-name').addEventListener('input', updatePreview);
+});
+
+// ─── ADD ROW ──────────────────────────────────────────────────────
+function addRow(name='', link='') {
+  rowCount++;
+  const id = 'row-' + rowCount;
+  const list = document.getElementById('anim-list');
+  const div = document.createElement('div');
+  div.className = 'anim-row';
+  div.id = id;
+  div.innerHTML = `
+    <input type="text" class="anim-name" placeholder="Idle, Walk, Run..." value="${name}" oninput="updatePreview()">
+    <input type="text" class="anim-link" placeholder="Link atau Asset ID animasi..." value="${link}" oninput="validateRow(this); updatePreview()">
+    <div class="anim-status" id="${id}-status">🔗</div>
+    <button class="remove-btn" onclick="removeRow('${id}')">✕</button>
+  `;
+  list.appendChild(div);
+  updatePreview();
+}
+
+function removeRow(id) {
+  const el = document.getElementById(id);
+  if(el) { el.remove(); updatePreview(); }
+}
+
+// ─── VALIDATE ROW ─────────────────────────────────────────────────
+function validateRow(input) {
+  const val = input.value.trim();
+  const id = input.closest('.anim-row').id;
+  const status = document.getElementById(id + '-status');
+  if(!val) { input.classList.remove('valid','invalid'); status.textContent = '🔗'; return; }
+  const assetId = extractAssetId(val);
+  if(assetId) { input.classList.add('valid'); input.classList.remove('invalid'); status.textContent = '✅'; }
+  else { input.classList.add('invalid'); input.classList.remove('valid'); status.textContent = '❌'; }
+}
+
+// ─── EXTRACT ASSET ID ─────────────────────────────────────────────
+function extractAssetId(input) {
+  input = input.trim();
+  if(/^\d+$/.test(input)) return input;
+  const m = input.match(/(?:library|asset|catalog|item|animations?)\/(\d+)/i)
+    || input.match(/id=(\d+)/i)
+    || input.match(/\/(\d{6,})(?:[/?#]|$)/);
+  return m ? m[1] : null;
+}
+
+// ─── GET ENTRIES ──────────────────────────────────────────────────
+function getEntries() {
+  const rows = document.querySelectorAll('.anim-row');
+  const entries = [];
+  rows.forEach(row => {
+    const nameEl = row.querySelector('.anim-name');
+    const linkEl = row.querySelector('.anim-link');
+    const name = nameEl ? nameEl.value.trim() : '';
+    const link = linkEl ? linkEl.value.trim() : '';
+    const id = extractAssetId(link);
+    if(name && id) entries.push({ name, id });
+  });
+  return entries;
+}
+
+// ─── LIVE STRUCTURE PREVIEW ───────────────────────────────────────
+function updatePreview() {
+  const folderName = document.getElementById('folder-name').value.trim() || 'Saltoria Animation';
+  const entries = getEntries();
+  const wrap = document.getElementById('struct-preview-wrap');
+  const preview = document.getElementById('struct-preview');
+
+  if(entries.length === 0) { wrap.style.display = 'none'; return; }
+
+  wrap.style.display = 'block';
+  let html = `<span class="s-root">ReplicatedStorage</span>\n`;
+  html += `  <span class="s-folder">└── ${escHtml(folderName)}</span>\n`;
+  entries.forEach((e, i) => {
+    const prefix = i < entries.length - 1 ? '├──' : '└──';
+    html += `       <span class="s-anim">${prefix} ${escHtml(e.name)}</span> <span class="s-id">(${e.id})</span>\n`;
+  });
+  preview.innerHTML = html;
+}
+
+// ─── GENERATE SCRIPT ──────────────────────────────────────────────
+function generate() {
+  const folderName = document.getElementById('folder-name').value.trim() || 'Saltoria Animation';
+  const entries = getEntries();
+
+  if(entries.length === 0) {
+    alert('Isi minimal 1 animasi dengan nama dan link/asset ID yang valid!');
+    return;
+  }
+
+  // Build the Lua script
+  const animLines = entries.map(e =>
+    `    { name = "${escLua(e.name)}", id = "rbxassetid://${e.id}" },`
+  ).join('\n');
+
+  const script = `-- Saltoria Tools :: Animation Link Converter
+-- Generated: ${new Date().toLocaleString('id-ID')}
+-- Struktur: ReplicatedStorage > ${folderName} > Animation instances
+-- Jalankan via: Roblox Studio > View > Command Bar
+
+local RS = game:GetService("ReplicatedStorage")
+
+-- Daftar animasi yang akan di-import
+local animations = {
+${animLines}
+}
+
+-- Buat atau gunakan folder yang sudah ada
+local folder = RS:FindFirstChild("${escLua(folderName)}")
+if not folder then
+    folder = Instance.new("Folder")
+    folder.Name = "${escLua(folderName)}"
+    folder.Parent = RS
+    print("[Saltoria] Folder '${escLua(folderName)}' dibuat di ReplicatedStorage")
+else
+    print("[Saltoria] Menggunakan folder '${escLua(folderName)}' yang sudah ada")
+end
+
+-- Import semua animasi
+local imported = 0
+for _, data in ipairs(animations) do
+    -- Skip kalau sudah ada dengan nama yang sama
+    if folder:FindFirstChild(data.name) then
+        warn("[Saltoria] Skip '" .. data.name .. "' — sudah ada di folder")
+        continue
+    end
+
+    local anim = Instance.new("Animation")
+    anim.Name = data.name
+    anim.AnimationId = data.id
+    anim.Parent = folder
+    imported = imported + 1
+    print("[Saltoria] ✅ Imported: " .. data.name .. " (" .. data.id .. ")")
+end
+
+print("[Saltoria] Selesai! " .. imported .. "/${entries.length} animasi berhasil di-import ke ReplicatedStorage/${escLua(folderName)}")
+print("[Saltoria] Akses via: game.ReplicatedStorage[\\"${escLua(folderName)}\\"][\\"NamaAnimasi\\"]")`;
+
+  document.getElementById('code-output').innerHTML = highlightLua(script);
+  document.getElementById('guide-folder-name').textContent = folderName;
+  document.getElementById('guide-folder-ref').textContent = folderName;
+  document.getElementById('output-wrap').classList.add('show');
+  document.getElementById('output-wrap').scrollIntoView({ behavior:'smooth', block:'start' });
+}
+
+// ─── SYNTAX HIGHLIGHT ─────────────────────────────────────────────
+function highlightLua(code) {
+  const lines = escHtml(code).split('\n');
+  return lines.map(line => {
+    if(/^\s*--/.test(line)) return `<span class="code-cmt">${line}</span>`;
+    let l = line;
+    l = l.replace(/"([^"]*)"/g, '<span class="code-str">"$1"</span>');
+    l = l.replace(/\b(\d+)\b/g, '<span class="code-num">$1</span>');
+    l = l.replace(/\b(local|if|then|else|not|for|in|ipairs|pairs|end|continue|and|or|function|return|true|false|nil)\b/g, '<span class="code-kw">$1</span>');
+    l = l.replace(/\b(Instance\.new|FindFirstChild|print|warn|game:GetService)\b/g, '<span class="code-fn">$1</span>');
+    return l;
+  }).join('\n');
+}
+
+// ─── COPY ──────────────────────────────────────────────────────────
+function copyScript() {
+  const code = document.getElementById('code-output').textContent;
+  navigator.clipboard.writeText(code).then(() => {
+    const t = document.getElementById('toast');
+    t.classList.add('show');
+    setTimeout(() => t.classList.remove('show'), 2000);
+  });
+}
+
+// ─── HELPERS ──────────────────────────────────────────────────────
+function escHtml(s) { return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+function escLua(s) { return s.replace(/\\/g,'\\\\').replace(/"/g,'\\"'); }
+</script>
+</body>
+</html>
