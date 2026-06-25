@@ -1,0 +1,1486 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Saltoria Community — Built Different</title>
+<meta name="description" content="Komunitas Roblox yang solid dari builder, scripter, sampai pemain aktif. 16 tools gratis, maps, dan project kelas atas.">
+<meta name="theme-color" content="#8B5CF6">
+<meta property="og:title" content="Saltoria Community — Built Different">
+<meta property="og:description" content="16 tools gratis untuk developer & player Roblox Indonesia.">
+<meta property="og:image" content="assets/og-image.png">
+<meta property="og:url" content="https://saltoria.vercel.app">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Saltoria Community">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="icon" type="image/png" href="assets/favicon.png">
+<link rel="apple-touch-icon" href="assets/favicon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet">
+<style>
+/* ── RESET & BASE ── */
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:#07070F;
+  --surface:#0D0D18;
+  --surface2:#12121E;
+  --accent:#8B5CF6;
+  --accent2:#C4B5FD;
+  --text:#F0EEFF;
+  --muted:#6B7280;
+  --border:rgba(255,255,255,0.06);
+  --glass:rgba(255,255,255,0.03);
+  --glass2:rgba(255,255,255,0.06);
+  --glow:rgba(139,92,246,0.2);
+  --green:#6EE7B7;--red:#F87171;--yellow:#FCD34D;
+  --radius:14px;
+}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;font-size:15px;line-height:1.7;overflow-x:hidden;-webkit-font-smoothing:antialiased}
+img{max-width:100%;display:block}
+a{text-decoration:none;color:inherit}
+.ms{font-family:'Material Symbols Rounded';font-weight:normal;font-style:normal;line-height:1;display:inline-block;white-space:nowrap;word-wrap:normal;direction:ltr;font-variation-settings:'FILL' 0,'wght' 300,'GRAD' 0,'opsz' 24;vertical-align:middle}
+
+/* ── ANNOUNCE ── */
+.announce-bar{background:linear-gradient(90deg,rgba(139,92,246,.85),rgba(196,181,253,.6));padding:8px 3rem;display:flex;align-items:center;justify-content:center;gap:.75rem;position:relative;font-family:'Space Mono',monospace;font-size:10px;color:#fff;letter-spacing:.5px;z-index:300;border-bottom:1px solid rgba(255,255,255,.08)}
+.announce-bar a{color:#fff;text-decoration:underline;text-underline-offset:3px;opacity:.85}
+.announce-bar.hidden{display:none}
+.announce-dismiss{position:absolute;right:1rem;top:50%;transform:translateY(-50%);background:none;border:none;color:#fff;cursor:pointer;font-size:18px;opacity:.6;line-height:1;transition:opacity .2s}
+.announce-dismiss:hover{opacity:1}
+
+/* ── NAV ── */
+nav{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:0 2.5rem;height:68px;
+  position:fixed;top:0;left:0;right:0;z-index:200;
+  transition:all .4s cubic-bezier(0.16,1,0.3,1);
+}
+nav.scrolled{
+  background:rgba(7,7,15,0.88);
+  backdrop-filter:blur(24px) saturate(1.5);
+  -webkit-backdrop-filter:blur(24px) saturate(1.5);
+  border-bottom:1px solid var(--border);
+  box-shadow:0 8px 48px rgba(0,0,0,0.5);
+}
+.nav-logo-wrap{display:flex;align-items:center;gap:10px}
+.nav-logo{height:32px;object-fit:contain}
+.nav-logo-text{font-family:'Inter',sans-serif;font-size:15px;font-weight:800;letter-spacing:.5px;color:#fff}
+.nav-logo-text span{color:var(--accent2)}
+.nav-links{display:flex;gap:.25rem;list-style:none;align-items:center}
+.nav-links a{
+  color:var(--muted);font-size:13px;font-weight:500;
+  padding:6px 14px;border-radius:8px;
+  transition:all .2s;position:relative;
+}
+.nav-links a:hover,.nav-links a.active{color:#fff;background:var(--glass2)}
+.nav-right{display:flex;align-items:center;gap:8px}
+.nav-icon-btn{background:none;border:1px solid var(--border);border-radius:8px;padding:7px 9px;cursor:pointer;font-size:15px;color:var(--muted);transition:all .2s;line-height:1;flex-shrink:0}
+.nav-icon-btn:hover{border-color:rgba(196,181,253,.3);color:var(--accent2)}
+.nav-discord{
+  display:inline-flex;align-items:center;gap:6px;
+  background:linear-gradient(135deg,var(--accent),#7C3AED);
+  color:#fff;border:none;padding:8px 18px;border-radius:9px;
+  font-size:12px;font-weight:600;cursor:pointer;letter-spacing:.3px;
+  transition:all .25s;box-shadow:0 4px 20px rgba(139,92,246,.3);
+}
+.nav-discord:hover{transform:translateY(-1px);box-shadow:0 6px 28px rgba(139,92,246,.5)}
+.nav-roblox{
+  display:inline-flex;align-items:center;gap:6px;
+  background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.12);
+  color:#fff;padding:8px 14px;border-radius:9px;
+  font-size:12px;font-weight:600;letter-spacing:.3px;
+  transition:all .25s;
+}
+.nav-roblox:hover{background:rgba(255,255,255,.12);border-color:rgba(255,255,255,.22);transform:translateY(-1px)}
+.nav-social-btns{display:flex;align-items:center;gap:6px}
+.mobile-social-btns{display:flex;gap:10px;margin-top:1rem;flex-wrap:wrap}
+.mobile-roblox-btn,.mobile-discord-btn{
+  flex:1;min-width:120px;display:inline-flex;align-items:center;justify-content:center;gap:8px;
+  padding:13px 16px;border-radius:10px;font-size:13px;font-weight:600;
+  transition:all .2s;cursor:pointer;text-align:center;
+}
+.mobile-roblox-btn{background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.12);color:#fff}
+.mobile-roblox-btn:hover{background:rgba(255,255,255,.12)}
+.mobile-discord-btn{background:linear-gradient(135deg,var(--accent),#7C3AED);color:#fff;border:none;box-shadow:0 4px 16px rgba(139,92,246,.3)}
+.mobile-discord-btn:hover{box-shadow:0 6px 24px rgba(139,92,246,.5)}
+.hamburger{display:none;flex-direction:column;gap:5px;cursor:pointer;padding:4px;background:none;border:none}
+.hamburger span{display:block;width:22px;height:2px;background:var(--text);border-radius:2px;transition:all .3s}
+.hamburger.open span:nth-child(1){transform:translateY(7px) rotate(45deg)}
+.hamburger.open span:nth-child(2){opacity:0}
+.hamburger.open span:nth-child(3){transform:translateY(-7px) rotate(-45deg)}
+
+/* ── MOBILE MENU ── */
+.mobile-menu{
+  display:none;position:fixed;top:68px;left:0;right:0;bottom:0;
+  background:rgba(7,7,15,0.98);backdrop-filter:blur(24px);
+  z-index:199;padding:2rem 2.5rem;flex-direction:column;gap:.5rem;
+  overflow-y:auto;
+}
+.mobile-menu.open{display:flex}
+.mobile-menu a{
+  color:var(--muted);font-size:14px;font-weight:500;
+  padding:.875rem 1rem;border-radius:10px;border:1px solid transparent;
+  transition:all .2s;
+}
+.mobile-menu a:hover{color:#fff;background:var(--glass2);border-color:var(--border)}
+.mobile-menu .nav-discord{margin-top:1rem;justify-content:center;padding:14px}
+
+/* ── HERO ── */
+.hero{
+  position:relative;min-height:100vh;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  text-align:center;padding:8rem 1.5rem 5rem;overflow:hidden;
+}
+.hero-video{
+  position:absolute;inset:0;z-index:0;
+  object-fit:cover;width:100%;height:100%;opacity:.25;
+  filter:saturate(0.6) brightness(0.7);
+}
+.hero-overlay{
+  position:absolute;inset:0;z-index:1;
+  background:linear-gradient(180deg,rgba(7,7,15,.4) 0%,rgba(7,7,15,.1) 40%,rgba(7,7,15,.85) 100%);
+}
+.hero-glow{
+  position:absolute;top:30%;left:50%;transform:translateX(-50%);
+  width:700px;height:700px;border-radius:50%;z-index:1;
+  background:radial-gradient(circle,rgba(139,92,246,.15) 0%,transparent 65%);
+  animation:glow-breathe 8s ease-in-out infinite;pointer-events:none;
+}
+@keyframes glow-breathe{0%,100%{transform:translateX(-50%) scale(1);opacity:.7}50%{transform:translateX(-50%) scale(1.08);opacity:1}}
+.hero-content{position:relative;z-index:2;max-width:780px}
+.hero-badge{
+  display:inline-flex;align-items:center;gap:8px;
+  background:rgba(139,92,246,.12);border:1px solid rgba(196,181,253,.2);
+  color:var(--accent2);font-size:11px;font-weight:600;letter-spacing:2px;
+  padding:6px 18px;border-radius:100px;margin-bottom:2rem;
+  text-transform:uppercase;
+}
+.hero-badge-dot{width:6px;height:6px;border-radius:50%;background:var(--green);box-shadow:0 0 8px var(--green);animation:pulse-dot 2s infinite}
+@keyframes pulse-dot{0%,100%{box-shadow:0 0 4px var(--green)}50%{box-shadow:0 0 12px var(--green)}}
+.hero-eyebrow{font-size:11px;font-weight:600;letter-spacing:5px;color:var(--accent2);text-transform:uppercase;margin-bottom:1.5rem;opacity:.7}
+.hero h1{
+  font-size:clamp(44px,8vw,88px);font-weight:900;
+  line-height:.97;letter-spacing:-3px;
+  color:#fff;margin-bottom:1.75rem;
+}
+.hero h1 em{
+  font-style:normal;
+  background:linear-gradient(135deg,var(--accent2),#fff,var(--accent));
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+  background-clip:text;
+}
+.hero-sub{font-size:16px;color:var(--muted);max-width:500px;margin:0 auto 2.75rem;line-height:1.85;font-weight:400}
+.hero-btns{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;margin-bottom:3.5rem}
+.btn-hero-primary{
+  display:inline-flex;align-items:center;gap:8px;
+  background:linear-gradient(135deg,var(--accent),#7C3AED);color:#fff;
+  border:none;padding:14px 30px;border-radius:12px;
+  font-size:13px;font-weight:600;cursor:pointer;letter-spacing:.3px;
+  transition:all .3s;box-shadow:0 8px 28px rgba(139,92,246,.4);
+}
+.btn-hero-primary:hover{transform:translateY(-2px);box-shadow:0 12px 36px rgba(139,92,246,.6)}
+.btn-hero-outline{
+  display:inline-flex;align-items:center;gap:8px;
+  background:rgba(255,255,255,.05);color:#fff;
+  border:1px solid rgba(255,255,255,.12);padding:14px 30px;border-radius:12px;
+  font-size:13px;font-weight:600;cursor:pointer;letter-spacing:.3px;
+  transition:all .3s;backdrop-filter:blur(8px);
+}
+.btn-hero-outline:hover{background:rgba(255,255,255,.09);border-color:rgba(255,255,255,.2);transform:translateY(-2px)}
+
+/* TRUSTED BY */
+.trusted-by{display:flex;align-items:center;justify-content:center;gap:1.25rem;flex-wrap:wrap}
+.trusted-label{font-size:10px;font-weight:600;letter-spacing:3px;color:var(--muted);text-transform:uppercase;opacity:.5}
+.trusted-chips{display:flex;align-items:center;gap:.625rem;flex-wrap:wrap;justify-content:center}
+.trusted-chip{
+  display:flex;align-items:center;gap:6px;
+  background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);
+  padding:5px 14px;border-radius:100px;backdrop-filter:blur(8px);
+}
+.trusted-chip img{width:16px;height:16px;border-radius:50%;object-fit:cover}
+.trusted-chip span{font-size:11px;color:var(--muted);font-weight:500}
+
+/* ── TICKER ── */
+.ticker-wrap{
+  background:rgba(139,92,246,.08);
+  border-top:1px solid rgba(139,92,246,.15);
+  border-bottom:1px solid rgba(139,92,246,.15);
+  padding:.625rem 0;overflow:hidden;white-space:nowrap;
+}
+.ticker-track{
+  display:inline-flex;gap:0;
+  animation:ticker 30s linear infinite;
+}
+.ticker-track:hover{animation-play-state:paused}
+.ticker-item{
+  display:inline-flex;align-items:center;gap:.5rem;
+  padding:0 1.25rem;font-size:11px;font-weight:600;
+  letter-spacing:2px;text-transform:uppercase;color:var(--accent2);opacity:.7;
+}
+.ticker-dot{color:var(--accent);opacity:.5}
+@keyframes ticker{0%{transform:translateX(0)}100%{transform:translateX(-50%)}}
+
+/* ── STATS ── */
+.stats-section{padding:4rem 1.5rem}
+.stats-inner{max-width:960px;margin:0 auto;display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--border);border:1px solid var(--border);border-radius:20px;overflow:hidden}
+.stat-box{
+  background:var(--surface);padding:2rem 1.5rem;text-align:center;
+  transition:background .2s;
+}
+.stat-box:hover{background:var(--surface2)}
+.stat-num{
+  font-size:36px;font-weight:900;letter-spacing:-1px;
+  background:linear-gradient(135deg,#fff,var(--accent2));
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+  background-clip:text;display:block;line-height:1;margin-bottom:.5rem;
+}
+.stat-label{font-size:10px;font-weight:600;letter-spacing:3px;color:var(--muted);text-transform:uppercase}
+
+/* ── SECTION BASE ── */
+.section{padding:5.5rem 1.5rem}
+.section-inner{max-width:1080px;margin:0 auto}
+.section-header{margin-bottom:3rem}
+.eyebrow{font-size:10px;font-weight:700;letter-spacing:5px;color:var(--accent2);text-transform:uppercase;opacity:.65;display:block;margin-bottom:.75rem}
+.section-title{font-size:clamp(28px,4vw,44px);font-weight:900;color:#fff;line-height:1.05;letter-spacing:-1.5px;margin-bottom:1rem}
+.section-title em{font-style:normal;color:var(--accent2)}
+.section-desc{font-size:14px;color:var(--muted);max-width:480px;line-height:1.85}
+.section-header-row{display:flex;align-items:flex-end;justify-content:space-between;gap:1rem;flex-wrap:wrap}
+.view-all{
+  display:inline-flex;align-items:center;gap:6px;
+  font-size:12px;font-weight:600;color:var(--accent2);
+  padding:8px 16px;border:1px solid rgba(196,181,253,.2);border-radius:8px;
+  transition:all .2s;flex-shrink:0;white-space:nowrap;
+}
+.view-all:hover{background:rgba(139,92,246,.1);border-color:rgba(196,181,253,.35)}
+.divider{width:40px;height:2px;background:linear-gradient(90deg,var(--accent),transparent);border-radius:2px;margin-top:.75rem}
+
+/* REVEAL */
+.reveal{opacity:0;transform:translateY(32px);transition:opacity .75s cubic-bezier(0.16,1,0.3,1),transform .75s cubic-bezier(0.16,1,0.3,1)}
+.reveal.visible{opacity:1;transform:translateY(0)}
+
+/* ── PROJECTS ── */
+.projects-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:1px;background:var(--border);border:1px solid var(--border);border-radius:20px;overflow:hidden}
+.project-card{background:var(--surface);transition:background .25s;position:relative;overflow:hidden}
+.project-card:hover{background:var(--surface2)}
+.project-thumb{width:100%;height:200px;object-fit:cover}
+.project-thumb-ph{width:100%;height:200px;background:linear-gradient(135deg,var(--surface2),rgba(139,92,246,.15));display:flex;align-items:center;justify-content:center;font-size:48px}
+.project-body{padding:1.5rem}
+.proj-badge{display:inline-flex;align-items:center;gap:5px;font-size:9px;font-weight:700;letter-spacing:2px;padding:3px 10px;border-radius:100px;margin-bottom:1rem;text-transform:uppercase}
+.proj-badge.active{background:rgba(110,231,183,.1);color:var(--green);border:1px solid rgba(110,231,183,.2)}
+.proj-badge.process{background:rgba(139,92,246,.1);color:var(--accent2);border:1px solid rgba(139,92,246,.2)}
+.proj-badge-dot{width:5px;height:5px;border-radius:50%}
+.proj-badge.active .proj-badge-dot{background:var(--green)}
+.proj-badge.process .proj-badge-dot{background:var(--accent2)}
+.proj-name{font-size:18px;font-weight:800;color:#fff;margin-bottom:.5rem;letter-spacing:-.3px}
+.proj-desc{font-size:13px;color:var(--muted);line-height:1.75;margin-bottom:1.25rem}
+.proj-link{display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:600;color:var(--accent2);transition:gap .2s}
+.proj-link:hover{gap:10px}
+
+/* ── TOOLS ── */
+.tools-search-wrap{position:relative;margin-bottom:1.5rem}
+.tools-search-icon{position:absolute;left:16px;top:50%;transform:translateY(-50%);color:var(--muted);font-size:18px}
+.tools-search{
+  width:100%;background:var(--surface);border:1px solid var(--border);border-radius:12px;
+  padding:12px 16px 12px 46px;color:var(--text);font-size:13px;font-weight:500;
+  outline:none;transition:all .2s;
+}
+.tools-search:focus{border-color:rgba(196,181,253,.25);box-shadow:0 0 0 3px rgba(139,92,246,.08)}
+.tools-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:1px;background:var(--border);border:1px solid var(--border);border-radius:20px;overflow:hidden}
+.tool-card{
+  background:var(--surface);padding:1.25rem 1.25rem 1.5rem;
+  display:flex;flex-direction:column;gap:.875rem;
+  transition:background .2s;text-decoration:none;position:relative;
+}
+.tool-card:hover{background:var(--surface2)}
+.tool-card-top{display:flex;align-items:center;justify-content:space-between}
+.tool-icon-wrap{
+  width:44px;height:44px;border-radius:12px;
+  background:rgba(139,92,246,.1);border:1px solid rgba(139,92,246,.15);
+  display:flex;align-items:center;justify-content:center;font-size:20px;
+  transition:all .25s;
+}
+.tool-card:hover .tool-icon-wrap{background:rgba(139,92,246,.18);border-color:rgba(196,181,253,.25)}
+.tool-arrow{color:var(--muted);font-size:18px;opacity:0;transform:translateX(-4px);transition:all .25s}
+.tool-card:hover .tool-arrow{opacity:1;transform:translateX(0)}
+.tool-name{font-size:13px;font-weight:700;color:#fff;margin-bottom:3px}
+.tool-sub{font-size:11px;color:var(--muted);line-height:1.5}
+.tool-no-result{font-family:'Space Mono',monospace;font-size:11px;color:var(--muted);text-align:center;padding:3rem;letter-spacing:1px;display:none;grid-column:1/-1}
+
+/* TOOL RATING */
+.tool-rating{position:absolute;bottom:10px;right:12px;display:flex;gap:5px;opacity:0;transition:opacity .2s;align-items:center}
+.tool-card:hover .tool-rating{opacity:1}
+.rate-btn{background:none;border:none;cursor:pointer;font-size:13px;padding:2px 3px;border-radius:4px;transition:all .15s;line-height:1}
+.rate-btn:hover{transform:scale(1.2)}
+.rate-count{font-size:9px;color:var(--muted);font-family:'Space Mono',monospace}
+
+/* ── STORE ── */
+.store-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:1px;background:var(--border);border:1px solid var(--border);border-radius:20px;overflow:hidden}
+.store-card{background:var(--surface);transition:background .2s;overflow:hidden}
+.store-card:hover{background:var(--surface2)}
+.store-thumb{width:100%;height:140px;object-fit:cover}
+.store-thumb-ph{width:100%;height:140px;background:linear-gradient(135deg,var(--surface2),rgba(139,92,246,.12));display:flex;align-items:center;justify-content:center;font-size:40px}
+.store-body{padding:1.25rem}
+.store-type{font-size:9px;font-weight:700;letter-spacing:2px;color:var(--muted);text-transform:uppercase;margin-bottom:.5rem}
+.store-name{font-size:14px;font-weight:700;color:#fff;margin-bottom:.75rem;line-height:1.4}
+.store-price{font-size:16px;font-weight:800;color:var(--accent2);margin-bottom:1rem}
+.store-btn{
+  display:block;text-align:center;
+  background:linear-gradient(135deg,var(--accent),#7C3AED);color:#fff;
+  border:none;padding:10px;border-radius:10px;
+  font-size:11px;font-weight:600;cursor:pointer;letter-spacing:.5px;width:100%;
+  transition:all .2s;box-shadow:0 4px 14px rgba(139,92,246,.25);
+}
+.store-btn:hover{transform:translateY(-1px);box-shadow:0 6px 20px rgba(139,92,246,.4)}
+
+/* ── MAPS ── */
+.maps-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:1px;background:var(--border);border:1px solid var(--border);border-radius:20px;overflow:hidden}
+.map-card{background:var(--surface);transition:background .2s;overflow:hidden}
+.map-card:hover{background:var(--surface2)}
+.map-thumb{width:100%;height:120px;object-fit:cover}
+.map-thumb-ph{width:100%;height:120px;background:linear-gradient(135deg,rgba(139,92,246,.15),rgba(196,181,253,.05));display:flex;align-items:center;justify-content:center;font-size:32px}
+.map-body{padding:1rem}
+.map-status-row{display:flex;align-items:center;gap:5px;margin-bottom:5px}
+.status-dot{width:6px;height:6px;border-radius:50%;flex-shrink:0}
+.status-dot.active{background:var(--green);box-shadow:0 0 6px var(--green)}
+.status-dot.progress{background:var(--accent2)}
+.status-txt{font-size:9px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase}
+.status-txt.active{color:var(--green)}
+.status-txt.progress{color:var(--accent2)}
+.map-name{font-size:13px;font-weight:700;color:#fff;margin-bottom:4px}
+.map-play{display:inline-flex;align-items:center;gap:4px;font-size:10px;font-weight:600;color:var(--accent2);margin-top:4px;transition:gap .2s}
+.map-play:hover{gap:8px}
+
+/* ── TEAM ── */
+.team-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:1px;background:var(--border);border:1px solid var(--border);border-radius:20px;overflow:hidden}
+.admin-card{background:var(--surface);padding:1.5rem 1rem;text-align:center;transition:background .2s;position:relative;overflow:hidden}
+.admin-card:hover{background:var(--surface2)}
+.admin-card.owner::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--accent),var(--accent2))}
+.admin-avatar-wrap{position:relative;margin:0 auto 1rem;width:60px;height:60px}
+.admin-avatar-img{width:60px;height:60px;border-radius:50%;object-fit:cover;border:2px solid var(--border)}
+.admin-card.owner .admin-avatar-img{border-color:rgba(196,181,253,.4)}
+.admin-avatar-ph{width:60px;height:60px;border-radius:50%;background:rgba(139,92,246,.15);border:2px solid rgba(139,92,246,.3);display:flex;align-items:center;justify-content:center;font-family:'Inter',sans-serif;font-size:18px;font-weight:800;color:var(--accent2)}
+.admin-role{font-size:8px;font-weight:700;letter-spacing:2px;color:var(--accent2);text-transform:uppercase;margin-bottom:4px;opacity:.7}
+.admin-name{font-size:13px;font-weight:700;color:#fff;margin-bottom:2px}
+.admin-dc{font-size:10px;color:var(--muted);font-family:'Space Mono',monospace}
+
+/* ── DISCORD WIDGET ── */
+.discord-widget{
+  background:var(--surface);border:1px solid var(--border);border-radius:20px;
+  padding:2rem;display:flex;align-items:center;gap:2rem;flex-wrap:wrap;
+}
+.discord-logo-box{
+  width:56px;height:56px;flex-shrink:0;background:rgba(88,101,242,.12);
+  border-radius:14px;display:flex;align-items:center;justify-content:center;
+  border:1px solid rgba(88,101,242,.25);
+}
+.discord-logo-box svg{width:32px;height:32px}
+.discord-info{flex:1;min-width:140px}
+.discord-name{font-size:16px;font-weight:800;color:#fff;margin-bottom:.5rem;letter-spacing:-.3px}
+.discord-stats{display:flex;gap:1.25rem;flex-wrap:wrap}
+.discord-stat{display:flex;align-items:center;gap:6px;font-size:11px;color:var(--muted);font-weight:500}
+.dc-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+.dc-dot.online{background:#3ba55d;box-shadow:0 0 6px #3ba55d}
+.dc-dot.total{background:var(--muted)}
+.discord-join{
+  background:linear-gradient(135deg,#5865F2,#4752C4);color:#fff;
+  border:none;border-radius:12px;padding:12px 24px;
+  font-size:12px;font-weight:700;cursor:pointer;letter-spacing:.5px;
+  transition:all .25s;box-shadow:0 6px 20px rgba(88,101,242,.3);
+  text-decoration:none;display:inline-block;flex-shrink:0;
+}
+.discord-join:hover{transform:translateY(-2px);box-shadow:0 10px 28px rgba(88,101,242,.5)}
+
+/* ── PARTNERS ── */
+.partner-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:1px;background:var(--border);border:1px solid var(--border);border-radius:20px;overflow:hidden}
+.partner-card{
+  background:var(--surface);padding:1.75rem 1.5rem;text-align:center;
+  transition:background .2s;display:block;
+}
+.partner-card:hover{background:var(--surface2)}
+.partner-card.official{position:relative;overflow:hidden}
+.partner-card.official::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--accent),var(--accent2))}
+.partner-logo-wrap{width:56px;height:56px;border-radius:50%;margin:0 auto 1rem;overflow:hidden;background:var(--surface2);border:2px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:24px}
+.partner-logo-wrap img{width:100%;height:100%;object-fit:cover}
+.partner-name{font-size:14px;font-weight:700;color:#fff;margin-bottom:4px}
+.partner-type{font-size:9px;font-weight:700;letter-spacing:2px;color:var(--muted);text-transform:uppercase;margin-bottom:1rem}
+.partner-btns{display:flex;gap:6px;justify-content:center;flex-wrap:wrap}
+.partner-btn{
+  display:inline-flex;align-items:center;gap:5px;
+  font-size:10px;font-weight:600;letter-spacing:.3px;
+  padding:6px 12px;border-radius:7px;
+  transition:all .2s;cursor:pointer;white-space:nowrap;
+}
+.partner-btn-roblox{background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.12);color:var(--text)}
+.partner-btn-roblox:hover{background:rgba(255,255,255,.13);border-color:rgba(255,255,255,.22);color:#fff}
+.partner-btn-discord{background:rgba(88,101,242,.15);border:1px solid rgba(88,101,242,.25);color:#BAC2FF}
+.partner-btn-discord:hover{background:rgba(88,101,242,.28);border-color:rgba(88,101,242,.45);color:#fff}
+
+/* ── CHANGELOG ── */
+.changelog-list{display:flex;flex-direction:column;gap:0;max-width:700px;margin:0 auto;border:1px solid var(--border);border-radius:20px;overflow:hidden}
+.cl-item{background:var(--surface);padding:1.5rem;display:flex;gap:1.25rem;border-bottom:1px solid var(--border);transition:background .2s}
+.cl-item:last-child{border-bottom:none}
+.cl-item:hover{background:var(--surface2)}
+.cl-ver{font-family:'Space Mono',monospace;font-size:10px;color:var(--accent2);letter-spacing:1px;flex-shrink:0;padding-top:3px;min-width:52px}
+.cl-ver.old{color:var(--muted)}
+.cl-bar{width:2px;flex-shrink:0;background:linear-gradient(180deg,var(--accent),transparent);border-radius:2px;margin:4px 0;align-self:stretch}
+.cl-bar.old{background:var(--border)}
+.cl-body{flex:1}
+.cl-title{font-size:13px;font-weight:700;color:#fff;margin-bottom:.5rem}
+.cl-items{font-size:11px;color:var(--muted);line-height:2;font-family:'Space Mono',monospace}
+
+/* ── CTA ── */
+.cta{
+  padding:7rem 1.5rem;text-align:center;position:relative;overflow:hidden;
+  background:linear-gradient(180deg,transparent,rgba(139,92,246,.05),transparent);
+}
+.cta::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,rgba(139,92,246,.3),transparent)}
+.cta::after{content:'';position:absolute;bottom:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,rgba(139,92,246,.3),transparent)}
+.cta-glow{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:600px;height:600px;border-radius:50%;background:radial-gradient(circle,rgba(139,92,246,.08) 0%,transparent 65%);pointer-events:none}
+.cta-content{position:relative;z-index:1}
+.cta-badge{display:inline-flex;align-items:center;gap:6px;background:rgba(88,101,242,.1);border:1px solid rgba(88,101,242,.2);color:#BAC2FF;font-size:9px;font-weight:700;padding:5px 16px;border-radius:100px;margin-bottom:1.5rem;letter-spacing:2px;text-transform:uppercase}
+.cta h2{font-size:clamp(30px,5vw,52px);font-weight:900;color:#fff;margin-bottom:1rem;letter-spacing:-2px;line-height:1.05}
+.cta h2 em{font-style:normal;color:var(--accent2)}
+.cta-sub{color:var(--muted);font-size:15px;margin-bottom:2.5rem;max-width:420px;margin-left:auto;margin-right:auto;line-height:1.85}
+.btn-discord{
+  display:inline-flex;align-items:center;gap:10px;
+  background:linear-gradient(135deg,#5865F2,#4752C4);color:#fff;
+  border:none;padding:16px 40px;border-radius:14px;
+  font-size:14px;font-weight:700;cursor:pointer;letter-spacing:.3px;
+  transition:all .3s;box-shadow:0 8px 28px rgba(88,101,242,.4);
+  text-decoration:none;
+}
+.btn-discord:hover{transform:translateY(-3px);box-shadow:0 14px 40px rgba(88,101,242,.6)}
+
+/* ── FOOTER TICKER ── */
+.footer-ticker-wrap{
+  background:var(--surface);border-top:1px solid var(--border);
+  border-bottom:1px solid var(--border);
+  padding:.75rem 0;overflow:hidden;white-space:nowrap;
+}
+.footer-ticker-track{
+  display:inline-flex;gap:0;
+  animation:ticker 25s linear infinite;
+}
+.footer-ticker-item{display:inline-flex;align-items:center;gap:.5rem;padding:0 1.5rem;font-size:11px;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:var(--muted)}
+.footer-ticker-dot{color:var(--accent);opacity:.4}
+
+/* ── FOOTER ── */
+footer{background:var(--surface);padding:3rem 2.5rem 2rem}
+.footer-inner{max-width:1080px;margin:0 auto}
+.footer-top{display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:3rem;margin-bottom:2.5rem}
+@media(max-width:768px){.footer-top{grid-template-columns:1fr 1fr;gap:2rem}}
+@media(max-width:480px){.footer-top{grid-template-columns:1fr}}
+.footer-brand p{font-size:13px;color:var(--muted);line-height:1.8;margin-top:.75rem;max-width:260px}
+.footer-logo-text{font-size:18px;font-weight:800;color:#fff;letter-spacing:.3px}
+.footer-logo-text span{color:var(--accent2)}
+.footer-col h4{font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-bottom:1rem}
+.footer-col a{display:block;font-size:13px;color:var(--muted);padding:4px 0;transition:color .2s;font-weight:500}
+.footer-col a:hover{color:#fff}
+.footer-bottom{border-top:1px solid var(--border);padding-top:1.5rem;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:1rem}
+.footer-copy{font-size:11px;color:var(--muted);opacity:.5;font-family:'Space Mono',monospace}
+.footer-socials{display:flex;gap:.5rem}
+.footer-social{width:34px;height:34px;border-radius:8px;background:var(--glass2);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;color:var(--muted);font-size:13px;transition:all .2s;text-decoration:none}
+.footer-social:hover{background:rgba(139,92,246,.15);border-color:rgba(196,181,253,.2);color:var(--accent2)}
+
+/* ── ANNOUNCE ── */
+.mute-btn,.theme-btn{background:none;border:1px solid var(--border);border-radius:8px;padding:7px 9px;cursor:pointer;font-size:15px;color:var(--muted);transition:all .2s;line-height:1;flex-shrink:0}
+.mute-btn:hover,.theme-btn:hover{border-color:rgba(196,181,253,.3);color:var(--accent2)}
+
+/* LIGHT MODE */
+body.light-mode{
+  --bg:#F5F4FF;--surface:#FFFFFF;--surface2:#EDE9FA;
+  --text:#1A1040;--muted:#7B6F9A;--border:rgba(0,0,0,0.07);
+  --glass:rgba(0,0,0,0.02);--glass2:rgba(0,0,0,0.04);
+}
+body.light-mode nav.scrolled{background:rgba(245,244,255,0.92)}
+
+/* ── RESPONSIVE ── */
+@media(max-width:900px){
+  nav{padding:0 1.5rem}
+  .nav-links,.nav-social-btns{display:none}
+  .hamburger{display:flex}
+  .stats-inner{grid-template-columns:repeat(2,1fr)}
+}
+@media(max-width:600px){
+  .hero h1{letter-spacing:-2px}
+  .stats-inner{grid-template-columns:repeat(2,1fr)}
+  .hero-btns{flex-direction:column;align-items:center}
+  .btn-hero-primary,.btn-hero-outline{width:100%;max-width:280px;justify-content:center}
+  .section{padding:3.5rem 1.25rem}
+  .footer-top{grid-template-columns:1fr}
+  .tools-grid{grid-template-columns:1fr 1fr}
+}
+@media(max-width:400px){
+  .tools-grid{grid-template-columns:1fr}
+  .stats-inner{grid-template-columns:1fr 1fr}
+}
+/* ── MAP BUILDER SLIDESHOW ── */
+.mapbuilder-hero{
+  position:relative;min-height:520px;
+  display:flex;align-items:center;justify-content:center;
+  overflow:hidden;
+}
+.mapbuilder-slides{position:absolute;inset:0;z-index:0}
+.mapbuilder-slide{
+  position:absolute;inset:0;
+  background-size:cover;background-position:center;
+  opacity:0;transition:opacity 1.2s ease;
+}
+.mapbuilder-slide.active{opacity:1}
+.slide-name{
+  position:absolute;bottom:0;left:0;right:0;
+  font-family:'Space Mono',monospace;font-size:10px;font-weight:700;
+  letter-spacing:3px;text-transform:uppercase;color:rgba(255,255,255,.5);
+  padding:1rem 2rem;text-align:right;
+  background:linear-gradient(0deg,rgba(7,7,15,.6) 0%,transparent 100%);
+}
+.mapbuilder-overlay{
+  position:absolute;inset:0;z-index:1;
+  background:linear-gradient(180deg,
+    rgba(7,7,15,.55) 0%,
+    rgba(7,7,15,.35) 40%,
+    rgba(7,7,15,.72) 100%
+  );
+}
+.mapbuilder-content{
+  position:relative;z-index:2;
+  text-align:center;padding:5rem 1.5rem;max-width:640px;
+}
+.mapbuilder-eyebrow{
+  display:block;font-size:10px;font-weight:700;
+  letter-spacing:5px;color:var(--accent2);
+  text-transform:uppercase;opacity:.75;margin-bottom:1rem;
+}
+.mapbuilder-title{
+  font-size:clamp(34px,6vw,58px);font-weight:900;
+  color:#fff;line-height:1.05;letter-spacing:-2px;margin-bottom:1.25rem;
+}
+.mapbuilder-title em{
+  font-style:normal;
+  background:linear-gradient(135deg,var(--accent2),#fff,var(--accent));
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+}
+.mapbuilder-divider{
+  width:40px;height:2px;
+  background:linear-gradient(90deg,var(--accent),transparent);
+  border-radius:2px;margin:0 auto 1.5rem;
+}
+.mapbuilder-desc{
+  font-size:14px;color:rgba(240,238,255,.65);
+  line-height:1.9;margin-bottom:2rem;
+}
+.mapbuilder-btn{
+  display:inline-flex;align-items:center;gap:9px;
+  background:linear-gradient(135deg,#5865F2,#4752C4);color:#fff;
+  border:none;padding:13px 28px;border-radius:12px;
+  font-size:13px;font-weight:700;cursor:pointer;letter-spacing:.3px;
+  transition:all .3s;box-shadow:0 8px 28px rgba(88,101,242,.4);
+  text-decoration:none;
+}
+.mapbuilder-btn:hover{transform:translateY(-2px);box-shadow:0 14px 36px rgba(88,101,242,.6)}
+.mapbuilder-dots{
+  display:flex;gap:6px;justify-content:center;margin-top:2rem;
+}
+.mapbuilder-dot{
+  width:6px;height:6px;border-radius:50%;
+  background:rgba(255,255,255,.25);border:none;cursor:pointer;
+  transition:all .3s;padding:0;
+}
+.mapbuilder-dot.active{
+  background:#fff;width:20px;border-radius:3px;
+}
+
+</style>
+</head>
+<body>
+
+<!-- ANNOUNCE -->
+<div class="announce-bar" id="announce-bar">
+  <span>🚀</span>
+  <span>16 tools gratis tersedia! Coba <a href="#tools">Loot Table Calc</a> & <a href="#tools">Instance Tree Gen</a> sekarang.</span>
+  <button class="announce-dismiss" onclick="dismissAnnounce()">✕</button>
+</div>
+
+<!-- NAV -->
+<nav id="main-nav">
+  <a href="#" class="nav-logo-wrap">
+    <img src="assets/logo.png" alt="Saltoria" class="nav-logo" onerror="this.style.display='none'">
+    <span class="nav-logo-text">SALT<span>ORIA</span></span>
+  </a>
+  <ul class="nav-links">
+    <li><a href="#projects">Projects</a></li>
+    <li><a href="#tools">Tools</a></li>
+    <li><a href="#store">Store</a></li>
+    <li><a href="#maps">Maps</a></li>
+    <li><a href="#jasa-map">Jasa Map</a></li>
+    <li><a href="#team">Team</a></li>
+    <li><a href="#partners">Partners</a></li>
+  </ul>
+  <div class="nav-right">
+    <button class="theme-btn" id="theme-btn" onclick="toggleTheme()" title="Dark/Light mode">🌙</button>
+    <button class="mute-btn" id="mute-btn" onclick="toggleMute()" title="Toggle audio">🔇</button>
+    <div class="nav-social-btns">
+      <a href="https://www.roblox.com/share/g/209723897" target="_blank" class="nav-roblox" title="Roblox Group">
+        <svg width="14" height="14" viewBox="0 0 512 512" fill="currentColor"><path d="M117.3 0L0 394.7 394.7 512 512 117.3zm166.1 311.9l-94.3-27.5 27.6-94.3 94.3 27.6z"/></svg>
+        Roblox
+      </a>
+      <a href="https://discord.gg/VRQFamarnW" target="_blank" class="nav-discord">
+        <svg width="14" height="14" viewBox="0 0 71 55" fill="currentColor"><path d="M60.1 4.9A58.5 58.5 0 0045.7.6a.22.22 0 00-.23.11 40.8 40.8 0 00-1.8 3.7 54 54 0 00-16.2 0 37.4 37.4 0 00-1.83-3.7.23.23 0 00-.23-.11 58.3 58.3 0 00-14.4 4.3.21.21 0 00-.09.08C1.58 18.7-.96 32.1.3 45.3a.24.24 0 00.09.17 58.8 58.8 0 0017.7 8.9.23.23 0 00.25-.08 42 42 0 003.6-5.9.22.22 0 00-.12-.31 38.7 38.7 0 01-5.5-2.6.23.23 0 01-.02-.37c.37-.28.74-.57 1.1-.86a.22.22 0 01.23-.03c11.55 5.27 24.06 5.27 35.47 0a.22.22 0 01.23.03l1.1.86a.23.23 0 01-.02.37 36.2 36.2 0 01-5.52 2.6.23.23 0 00-.12.32 47.1 47.1 0 003.6 5.88.22.22 0 00.25.09 58.6 58.6 0 0017.73-8.9.23.23 0 00.09-.16c1.5-15.45-2.5-28.88-10.58-40.78a.18.18 0 00-.09-.09zM23.7 37.3c-3.5 0-6.38-3.22-6.38-7.17s2.82-7.17 6.38-7.17c3.59 0 6.44 3.25 6.38 7.17 0 3.95-2.82 7.17-6.38 7.17zm23.6 0c-3.5 0-6.38-3.22-6.38-7.17s2.82-7.17 6.38-7.17c3.59 0 6.44 3.25 6.38 7.17 0 3.95-2.79 7.17-6.38 7.17z"/></svg>
+        Discord
+      </a>
+    </div>
+  </div>
+  <button class="hamburger" id="hamburger" onclick="toggleMenu()">
+    <span></span><span></span><span></span>
+  </button>
+</nav>
+
+<!-- MOBILE MENU -->
+<div class="mobile-menu" id="mobileMenu">
+  <a href="#projects" onclick="closeMenu()">Projects</a>
+  <a href="#tools" onclick="closeMenu()">Tools</a>
+  <a href="#store" onclick="closeMenu()">Store</a>
+  <a href="#maps" onclick="closeMenu()">Maps</a>
+  <a href="#jasa-map" onclick="closeMenu()">Jasa Map</a>
+  <a href="#team" onclick="closeMenu()">Team</a>
+  <a href="#partners" onclick="closeMenu()">Partners</a>
+  <div class="mobile-social-btns">
+    <a href="https://www.roblox.com/share/g/209723897" target="_blank" class="mobile-roblox-btn" onclick="closeMenu()">
+      <svg width="13" height="13" viewBox="0 0 512 512" fill="currentColor"><path d="M117.3 0L0 394.7 394.7 512 512 117.3zm166.1 311.9l-94.3-27.5 27.6-94.3 94.3 27.6z"/></svg>
+      Roblox Group
+    </a>
+    <a href="https://discord.gg/VRQFamarnW" target="_blank" class="mobile-discord-btn" onclick="closeMenu()">
+      <svg width="13" height="13" viewBox="0 0 71 55" fill="currentColor"><path d="M60.1 4.9A58.5 58.5 0 0045.7.6a.22.22 0 00-.23.11 40.8 40.8 0 00-1.8 3.7 54 54 0 00-16.2 0 37.4 37.4 0 00-1.83-3.7.23.23 0 00-.23-.11 58.3 58.3 0 00-14.4 4.3.21.21 0 00-.09.08C1.58 18.7-.96 32.1.3 45.3a.24.24 0 00.09.17 58.8 58.8 0 0017.7 8.9.23.23 0 00.25-.08 42 42 0 003.6-5.9.22.22 0 00-.12-.31 38.7 38.7 0 01-5.5-2.6.23.23 0 01-.02-.37c.37-.28.74-.57 1.1-.86a.22.22 0 01.23-.03c11.55 5.27 24.06 5.27 35.47 0a.22.22 0 01.23.03l1.1.86a.23.23 0 01-.02.37 36.2 36.2 0 01-5.52 2.6.23.23 0 00-.12.32 47.1 47.1 0 003.6 5.88.22.22 0 00.25.09 58.6 58.6 0 0017.73-8.9.23.23 0 00.09-.16c1.5-15.45-2.5-28.88-10.58-40.78a.18.18 0 00-.09-.09zM23.7 37.3c-3.5 0-6.38-3.22-6.38-7.17s2.82-7.17 6.38-7.17c3.59 0 6.44 3.25 6.38 7.17 0 3.95-2.82 7.17-6.38 7.17zm23.6 0c-3.5 0-6.38-3.22-6.38-7.17s2.82-7.17 6.38-7.17c3.59 0 6.44 3.25 6.38 7.17 0 3.95-2.79 7.17-6.38 7.17z"/></svg>
+      Join Discord
+    </a>
+  </div>
+</div>
+
+<!-- HERO -->
+<section class="hero">
+  <video class="hero-video" autoplay muted loop playsinline preload="auto">
+    <source src="assets/videos/hero.webm" type="video/webm">
+    <source src="assets/videos/hero.mp4" type="video/mp4">
+  </video>
+  <div class="hero-overlay"></div>
+  <div class="hero-glow"></div>
+
+  <div class="hero-content">
+    <div class="hero-badge">
+      <span class="hero-badge-dot"></span>
+      Roblox Community · Indonesia
+    </div>
+    <p class="hero-eyebrow">Saltoria Community</p>
+    <h1>Built<br><em>Different.</em></h1>
+    <p class="hero-sub">Komunitas Roblox yang solid — dari builder, scripter, sampai pemain aktif. 16 tools gratis, maps, dan project kelas atas.</p>
+    <div class="hero-btns">
+      <a href="https://discord.gg/VRQFamarnW" target="_blank" class="btn-hero-primary">
+        <span class="ms" style="font-size:17px">tag</span> Join Community
+      </a>
+      <a href="#tools" class="btn-hero-outline">
+        <span class="ms" style="font-size:17px">rocket_launch</span> Explore Tools
+      </a>
+    </div>
+    <div class="trusted-by">
+      <span class="trusted-label">Partner</span>
+      <div class="trusted-chips">
+        <div class="trusted-chip">
+          <img src="assets/partners/inston.png" onerror="this.style.display='none'">
+          <span>Inston Community</span>
+        </div>
+        <div class="trusted-chip">
+          <img src="assets/partners/lumira.png" onerror="this.style.display='none'">
+          <span>Lumira Community</span>
+        </div>
+        <div class="trusted-chip"><span>& 500+ Members</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- TICKER -->
+<div class="ticker-wrap">
+  <div class="ticker-track" id="ticker-track">
+    <div class="ticker-item">Audio Optimizer <span class="ticker-dot">◆</span></div>
+    <div class="ticker-item">Skybox Converter <span class="ticker-dot">◆</span></div>
+    <div class="ticker-item">Tween Calculator <span class="ticker-dot">◆</span></div>
+    <div class="ticker-item">Loot Table Calc <span class="ticker-dot">◆</span></div>
+    <div class="ticker-item">Color Converter <span class="ticker-dot">◆</span></div>
+    <div class="ticker-item">DS Key Generator <span class="ticker-dot">◆</span></div>
+    <div class="ticker-item">Badge Checker <span class="ticker-dot">◆</span></div>
+    <div class="ticker-item">Font Preview <span class="ticker-dot">◆</span></div>
+    <div class="ticker-item">Instance Tree Gen <span class="ticker-dot">◆</span></div>
+    <div class="ticker-item">Thumbnail Generator <span class="ticker-dot">◆</span></div>
+    <div class="ticker-item">Script Header Gen <span class="ticker-dot">◆</span></div>
+    <div class="ticker-item">Server Status <span class="ticker-dot">◆</span></div>
+    <!-- duplicate for seamless loop -->
+    <div class="ticker-item">Audio Optimizer <span class="ticker-dot">◆</span></div>
+    <div class="ticker-item">Skybox Converter <span class="ticker-dot">◆</span></div>
+    <div class="ticker-item">Tween Calculator <span class="ticker-dot">◆</span></div>
+    <div class="ticker-item">Loot Table Calc <span class="ticker-dot">◆</span></div>
+    <div class="ticker-item">Color Converter <span class="ticker-dot">◆</span></div>
+    <div class="ticker-item">DS Key Generator <span class="ticker-dot">◆</span></div>
+    <div class="ticker-item">Badge Checker <span class="ticker-dot">◆</span></div>
+    <div class="ticker-item">Font Preview <span class="ticker-dot">◆</span></div>
+    <div class="ticker-item">Instance Tree Gen <span class="ticker-dot">◆</span></div>
+    <div class="ticker-item">Thumbnail Generator <span class="ticker-dot">◆</span></div>
+    <div class="ticker-item">Script Header Gen <span class="ticker-dot">◆</span></div>
+    <div class="ticker-item">Server Status <span class="ticker-dot">◆</span></div>
+  </div>
+</div>
+
+<!-- STATS -->
+<div class="stats-section">
+  <div class="stats-inner reveal">
+    <div class="stat-box"><span class="stat-num" data-count="16">0</span><div class="stat-label">Free Tools</div></div>
+    <div class="stat-box"><span class="stat-num" data-count="4">0</span><div class="stat-label">Active Maps</div></div>
+    <div class="stat-box"><span class="stat-num" data-count="3">0</span><div class="stat-label">Core Projects</div></div>
+    <div class="stat-box"><span class="stat-num" data-count="500" data-suffix="+">0</span><div class="stat-label">Members</div></div>
+  </div>
+</div>
+
+<!-- PROJECTS -->
+<section class="section" id="projects">
+  <div class="section-inner reveal">
+    <div class="section-header-row section-header">
+      <div>
+        <span class="eyebrow">Portfolio</span>
+        <h2 class="section-title">Our <em>Projects</em></h2>
+        <div class="divider"></div>
+      </div>
+    </div>
+    <div class="projects-grid">
+      <!-- 1. Vierra Peak -->
+      <div class="project-card">
+        <img src="assets/maps/vierra-peak.jpg" class="project-thumb" onerror="this.style.display='none';this.nextElementSibling&&(this.nextElementSibling.style.display='flex')" alt="Vierra Peak">
+        <div class="project-thumb-ph" style="display:none">🏔️</div>
+        <div class="project-body">
+          <div class="proj-badge active"><span class="proj-badge-dot"></span>ACTIVE</div>
+          <div class="proj-name">Vierra Peak</div>
+          <p class="proj-desc">Map Roblox original milik Saltoria Community — climbing experience dengan terrain dan atmosphere kelas atas.</p>
+          <a href="https://www.roblox.com/games/72354997411397/VIERRA-PEAK" target="_blank" class="proj-link">Play Now <span class="ms" style="font-size:16px">arrow_forward</span></a>
+        </div>
+      </div>
+      <!-- 2. Premium Summit Kit -->
+      <div class="project-card">
+        <img src="assets/projects/premium-summit-kit.jpg" class="project-thumb" onerror="this.style.display='none';this.nextElementSibling&&(this.nextElementSibling.style.display='flex')" alt="Premium Summit Kit">
+        <div class="project-thumb-ph" style="display:none">🧩</div>
+        <div class="project-body">
+          <div class="proj-badge active"><span class="proj-badge-dot"></span>ACTIVE</div>
+          <div class="proj-name">Premium Summit Kit</div>
+          <p class="proj-desc">Framework modular untuk server Roblox — race system, leaderboard, VIP shop, staff tools, donation system, dan lebih.</p>
+          <a href="#store" class="proj-link">Lihat di Store <span class="ms" style="font-size:16px">arrow_forward</span></a>
+        </div>
+      </div>
+      <!-- 3. Roblox Dev Tools -->
+      <div class="project-card">
+        <img src="assets/projects/roblox-dev-tools.jpg" class="project-thumb" onerror="this.style.display='none';this.nextElementSibling&&(this.nextElementSibling.style.display='flex')" alt="Roblox Dev Tools">
+        <div class="project-thumb-ph" style="display:none">🛠️</div>
+        <div class="project-body">
+          <div class="proj-badge active"><span class="proj-badge-dot"></span>ACTIVE</div>
+          <div class="proj-name">Roblox Dev Tools</div>
+          <p class="proj-desc">16+ web tools gratis untuk developer Roblox Indonesia — audio, skybox, color converter, tween calc, dan terus berkembang.</p>
+          <a href="#tools" class="proj-link">Explore Tools <span class="ms" style="font-size:16px">arrow_forward</span></a>
+        </div>
+      </div>
+      <!-- 4. V Club -->
+      <div class="project-card">
+        <img src="assets/maps/v-club.jpg" class="project-thumb" onerror="this.style.display='none';this.nextElementSibling&&(this.nextElementSibling.style.display='flex')" alt="V Club">
+        <div class="project-thumb-ph" style="display:none">🎪</div>
+        <div class="project-body">
+          <div class="proj-badge process"><span class="proj-badge-dot"></span>IN PROGRESS</div>
+          <div class="proj-name">V Club</div>
+          <p class="proj-desc">Club & hangout map Roblox dengan vibes malam hari yang premium. Venue virtual untuk komunitas Saltoria.</p>
+          <a href="#" class="proj-link">Coming Soon <span class="ms" style="font-size:16px">arrow_forward</span></a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- TOOLS -->
+<section class="section" id="tools" style="background:var(--surface)">
+  <div class="section-inner reveal">
+    <div class="section-header-row section-header">
+      <div>
+        <span class="eyebrow">Free Tools</span>
+        <h2 class="section-title">Developer <em>Tools</em></h2>
+        <div class="divider"></div>
+      </div>
+      <a href="#tools" class="view-all">View All <span class="ms" style="font-size:16px">chevron_right</span></a>
+    </div>
+    <div class="tools-search-wrap">
+      <span class="ms tools-search-icon">search</span>
+      <input class="tools-search" id="tool-search" type="text" placeholder="Cari tool..." oninput="filterTools()">
+    </div>
+    <div class="tools-grid" id="tools-grid">
+      <a href="tools/audio-optimizer.html" class="tool-card" data-name="audio optimizer convert normalize upload">
+        <div class="tool-card-top"><div class="tool-icon-wrap">🎙️</div><span class="ms tool-arrow">arrow_outward</span></div>
+        <div><div class="tool-name">Audio Optimizer</div><div class="tool-sub">Convert · Normalize · Upload ke Roblox</div></div>
+      </a>
+      <a href="tools/skybox-converter.html" class="tool-card" data-name="skybox converter panorama 360 face">
+        <div class="tool-card-top"><div class="tool-icon-wrap">🌌</div><span class="ms tool-arrow">arrow_outward</span></div>
+        <div><div class="tool-name">Skybox Converter</div><div class="tool-sub">Panorama 360° → 6 face skybox</div></div>
+      </a>
+      <a href="tools/anim-converter.html" class="tool-card" data-name="anim animation converter link command bar">
+        <div class="tool-card-top"><div class="tool-icon-wrap">🎞️</div><span class="ms tool-arrow">arrow_outward</span></div>
+        <div><div class="tool-name">Anim Converter</div><div class="tool-sub">Link → Command Bar script</div></div>
+      </a>
+      <a href="tools/robux-tax-calculator.html" class="tool-card" data-name="robux tax calculator hitung fee marketplace">
+        <div class="tool-card-top"><div class="tool-icon-wrap">💰</div><span class="ms tool-arrow">arrow_outward</span></div>
+        <div><div class="tool-name">Robux Tax Calc</div><div class="tool-sub">Hitung tax & penerimaan bersih</div></div>
+      </a>
+      <a href="tools/roblox-info-lookup.html" class="tool-card" data-name="roblox info lookup player user game group">
+        <div class="tool-card-top"><div class="tool-icon-wrap">🔍</div><span class="ms tool-arrow">arrow_outward</span></div>
+        <div><div class="tool-name">Roblox Info Lookup</div><div class="tool-sub">Player · Game · Group lookup</div></div>
+      </a>
+      <a href="tools/ds-key-gen.html" class="tool-card" data-name="datastore key generator ds gen lua roblox">
+        <div class="tool-card-top"><div class="tool-icon-wrap">🗝️</div><span class="ms tool-arrow">arrow_outward</span></div>
+        <div><div class="tool-name">DS Key Generator</div><div class="tool-sub">DataStore key builder & batch gen</div></div>
+      </a>
+      <a href="tools/server-status.html" class="tool-card" data-name="server status roblox cek ping online down">
+        <div class="tool-card-top"><div class="tool-icon-wrap">📡</div><span class="ms tool-arrow">arrow_outward</span></div>
+        <div><div class="tool-name">Server Status</div><div class="tool-sub">Pantau status Roblox real-time</div></div>
+      </a>
+      <a href="tools/color-converter.html" class="tool-card" data-name="color converter hex rgb color3 brickcolor luau">
+        <div class="tool-card-top"><div class="tool-icon-wrap">🎨</div><span class="ms tool-arrow">arrow_outward</span></div>
+        <div><div class="tool-name">Color Converter</div><div class="tool-sub">Hex/RGB → Color3 · BrickColor · HSV</div></div>
+      </a>
+      <a href="tools/tween-calculator.html" class="tool-card" data-name="tween calculator tweenservice easing luau script">
+        <div class="tool-card-top"><div class="tool-icon-wrap">✨</div><span class="ms tool-arrow">arrow_outward</span></div>
+        <div><div class="tool-name">Tween Calculator</div><div class="tool-sub">Generate TweenService Luau code</div></div>
+      </a>
+      <a href="tools/thumbnail-generator.html" class="tool-card" data-name="thumbnail generator gambar cover discord banner design">
+        <div class="tool-card-top"><div class="tool-icon-wrap">🖼️</div><span class="ms tool-arrow">arrow_outward</span></div>
+        <div><div class="tool-name">Thumbnail Generator</div><div class="tool-sub">Cover game & Discord banner</div></div>
+      </a>
+      <a href="tools/badge-checker.html" class="tool-card" data-name="badge checker roblox verifikasi event bulk">
+        <div class="tool-card-top"><div class="tool-icon-wrap">🏅</div><span class="ms tool-arrow">arrow_outward</span></div>
+        <div><div class="tool-name">Badge Checker</div><div class="tool-sub">Verifikasi badge user · bulk mode</div></div>
+      </a>
+      <a href="tools/script-header-gen.html" class="tool-card" data-name="script header generator luau comment author versi">
+        <div class="tool-card-top"><div class="tool-icon-wrap">📄</div><span class="ms tool-arrow">arrow_outward</span></div>
+        <div><div class="tool-name">Script Header Gen</div><div class="tool-sub">Generate comment header profesional</div></div>
+      </a>
+      <a href="tools/font-preview.html" class="tool-card" data-name="font preview roblox gui text label luau enum">
+        <div class="tool-card-top"><div class="tool-icon-wrap">🔤</div><span class="ms tool-arrow">arrow_outward</span></div>
+        <div><div class="tool-name">Font Preview</div><div class="tool-sub">Preview semua font Roblox GUI</div></div>
+      </a>
+      <a href="tools/instance-tree-gen.html" class="tool-card" data-name="instance tree generator luau new gui part model folder">
+        <div class="tool-card-top"><div class="tool-icon-wrap">🌳</div><span class="ms tool-arrow">arrow_outward</span></div>
+        <div><div class="tool-name">Instance Tree Gen</div><div class="tool-sub">Hierarki Instance → Luau code</div></div>
+      </a>
+      <a href="tools/loot-table-calc.html" class="tool-card" data-name="loot table calculator drop rate rarity weight random luau">
+        <div class="tool-card-top"><div class="tool-icon-wrap">🎲</div><span class="ms tool-arrow">arrow_outward</span></div>
+        <div><div class="tool-name">Loot Table Calc</div><div class="tool-sub">Weighted random + simulasi drop</div></div>
+      </a>
+      <a href="tools/roblox-info-lookup.html" class="tool-card" data-name="asset lookup roblox id thumbnail creator">
+        <div class="tool-card-top"><div class="tool-icon-wrap">🔮</div><span class="ms tool-arrow">arrow_outward</span></div>
+        <div><div class="tool-name">More Coming Soon</div><div class="tool-sub">Tools baru terus ditambahkan</div></div>
+      </a>
+      <div id="tool-no-result" class="tool-no-result">Tidak ada tool yang cocok 🔍</div>
+    </div>
+  </div>
+</section>
+
+<!-- STORE -->
+<section class="section" id="store">
+  <div class="section-inner reveal">
+    <div class="section-header-row section-header">
+      <div>
+        <span class="eyebrow">Marketplace</span>
+        <h2 class="section-title">Our <em>Store</em></h2>
+        <div class="divider"></div>
+      </div>
+      <a href="https://discord.gg/VRQFamarnW" target="_blank" class="view-all">Order via Discord <span class="ms" style="font-size:16px">chevron_right</span></a>
+    </div>
+    <div class="store-grid">
+      <div class="store-card">
+        <img src="assets/store/premium-summit-kit.jpg" class="store-thumb" onerror="this.style.display='none';this.nextElementSibling&&(this.nextElementSibling.style.display='flex')" alt="Premium Summit Kit">
+        <div class="store-thumb-ph" style="display:none">🧩</div>
+        <div class="store-body">
+          <div class="store-type">System Kit</div>
+          <div class="store-name">Premium Summit Kit V2</div>
+          <div class="store-price">Rp 450.000</div>
+          <a href="https://discord.gg/VRQFamarnW" target="_blank" class="store-btn">ORDER VIA DISCORD</a>
+        </div>
+      </div>
+      <div class="store-card">
+        <img src="assets/store/ojek-npc.jpg" class="store-thumb" onerror="this.style.display='none';this.nextElementSibling&&(this.nextElementSibling.style.display='flex')" alt="Ojek NPC">
+        <div class="store-thumb-ph" style="display:none">🛺</div>
+        <div class="store-body">
+          <div class="store-type">NPC System</div>
+          <div class="store-name">Ojek NPC Sistem</div>
+          <div class="store-price">Rp 150.000</div>
+          <a href="https://discord.gg/VRQFamarnW" target="_blank" class="store-btn">ORDER VIA DISCORD</a>
+        </div>
+      </div>
+      <div class="store-card">
+        <img src="assets/store/clubkit.jpg" class="store-thumb" onerror="this.style.display='none';this.nextElementSibling&&(this.nextElementSibling.style.display='flex')" alt="ClubKit">
+        <div class="store-thumb-ph" style="display:none">🎪</div>
+        <div class="store-body">
+          <div class="store-type">Club Kit</div>
+          <div class="store-name">ClubKit</div>
+          <div class="store-price">Rp 450.000</div>
+          <a href="https://discord.gg/VRQFamarnW" target="_blank" class="store-btn">ORDER VIA DISCORD</a>
+        </div>
+      </div>
+      <div class="store-card">
+        <img src="assets/store/jasa-developer.jpg" class="store-thumb" onerror="this.style.display='none';this.nextElementSibling&&(this.nextElementSibling.style.display='flex')" alt="Jasa Developer">
+        <div class="store-thumb-ph" style="display:none">🗺️</div>
+        <div class="store-body">
+          <div class="store-type">Jasa</div>
+          <div class="store-name">Developer & Map Builder</div>
+          <div class="store-price">Pricelist</div>
+          <a href="https://discord.gg/VRQFamarnW" target="_blank" class="store-btn">CEK DISCORD</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- MAPS -->
+<section class="section" id="maps" style="background:var(--surface)">
+  <div class="section-inner reveal">
+    <div class="section-header-row section-header">
+      <div>
+        <span class="eyebrow">Explore Worlds</span>
+        <h2 class="section-title">Maps <em>Showcase</em></h2>
+        <div class="divider"></div>
+      </div>
+    </div>
+    <div class="maps-grid">
+      <div class="map-card">
+        <img src="assets/maps/vierra-peak.jpg" class="map-thumb" onerror="this.style.display='none';this.nextElementSibling&&(this.nextElementSibling.style.display='flex')" alt="Vierra Peak">
+        <div class="map-thumb-ph" style="display:none">🏔️</div>
+        <div class="map-body">
+          <div class="map-status-row"><div class="status-dot active"></div><span class="status-txt active">ACTIVE</span></div>
+          <div class="map-name">Vierra Peak</div>
+          <a href="https://www.roblox.com/games/72354997411397/VIERRA-PEAK" target="_blank" class="map-play">
+            <span class="ms" style="font-size:14px">play_arrow</span> Play
+          </a>
+        </div>
+      </div>
+      <div class="map-card">
+        <img src="assets/maps/clarius-obstacle.jpg" class="map-thumb" onerror="this.style.display='none';this.nextElementSibling&&(this.nextElementSibling.style.display='flex')" alt="Clarius Obstacle">
+        <div class="map-thumb-ph" style="display:none">🏟️</div>
+        <div class="map-body">
+          <div class="map-status-row"><div class="status-dot active"></div><span class="status-txt active">ACTIVE</span></div>
+          <div class="map-name">Clarius Obstacle</div>
+          <a href="https://www.roblox.com/games/92651368943258/Clarius-Obstacle" target="_blank" class="map-play">
+            <span class="ms" style="font-size:14px">play_arrow</span> Play
+          </a>
+        </div>
+      </div>
+      <div class="map-card">
+        <img src="assets/maps/v-club.jpg" class="map-thumb" onerror="this.style.display='none';this.nextElementSibling&&(this.nextElementSibling.style.display='flex')" alt="V Club">
+        <div class="map-thumb-ph" style="display:none">🎪</div>
+        <div class="map-body">
+          <div class="map-status-row"><div class="status-dot progress"></div><span class="status-txt progress">IN PROGRESS</span></div>
+          <div class="map-name">V Club</div>
+        </div>
+      </div>
+      <div class="map-card">
+        <img src="assets/maps/rumah-pati.jpg" class="map-thumb" onerror="this.style.display='none';this.nextElementSibling&&(this.nextElementSibling.style.display='flex')" alt="Rumah Pati">
+        <div class="map-thumb-ph" style="display:none">🏚️</div>
+        <div class="map-body">
+          <div class="map-status-row"><div class="status-dot progress"></div><span class="status-txt progress">IN PROGRESS</span></div>
+          <div class="map-name">Rumah Pati</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- JASA MAP BUILDER -->
+<section class="section" id="jasa-map" style="padding:0;overflow:hidden">
+  <div class="mapbuilder-hero">
+    <!-- Background slides -->
+    <div class="mapbuilder-slides">
+      <div class="mapbuilder-slide active" style="background-image:url('assets/ordermaps/bbq-obstacle.jpg')"><div class="slide-name">BBQ Obstacle</div></div>
+      <div class="mapbuilder-slide" style="background-image:url('assets/ordermaps/zihan-obstacle.jpg')"><div class="slide-name">Zihan Obstacle</div></div>
+      <div class="mapbuilder-slide" style="background-image:url('assets/ordermaps/moonveil-obstacle.jpg')"><div class="slide-name">Moonveil Obstacle</div></div>
+      <div class="mapbuilder-slide" style="background-image:url('assets/ordermaps/mount-skyward.jpg')"><div class="slide-name">Mount Skyward</div></div>
+      <div class="mapbuilder-slide" style="background-image:url('assets/ordermaps/cyberion-club.jpg')"><div class="slide-name">Cyberion Club</div></div>
+      <div class="mapbuilder-slide" style="background-image:url('assets/ordermaps/rubby-obstacle.jpg')"><div class="slide-name">Rubby Obstacle</div></div>
+      <div class="mapbuilder-slide" style="background-image:url('assets/ordermaps/mount-infinity.jpg')"><div class="slide-name">Mount Infinity</div></div>
+      <div class="mapbuilder-slide" style="background-image:url('assets/ordermaps/inston-obstacle.jpg')"><div class="slide-name">Inston Obstacle</div></div>
+      <div class="mapbuilder-slide" style="background-image:url('assets/ordermaps/rexmountain.jpg')"><div class="slide-name">Rexmountain</div></div>
+      <div class="mapbuilder-slide" style="background-image:url('assets/ordermaps/mount-eunola.jpg')"><div class="slide-name">Mount Eunola</div></div>
+    </div>
+    <!-- Overlay -->
+    <div class="mapbuilder-overlay"></div>
+    <!-- Content -->
+    <div class="mapbuilder-content">
+      <span class="mapbuilder-eyebrow">MAP BUILDER SERVICE</span>
+      <h2 class="mapbuilder-title">Jasa <em>Map Builder</em></h2>
+      <div class="mapbuilder-divider"></div>
+      <p class="mapbuilder-desc">Obstacle, club, mountain, RPG map — custom sesuai request.<br>Harga terjangkau, kualitas premium.</p>
+      <a href="https://discord.gg/VRQFamarnW" target="_blank" class="mapbuilder-btn">
+        <svg width="15" height="15" viewBox="0 0 71 55" fill="currentColor"><path d="M60.1 4.9A58.5 58.5 0 0045.7.6a.22.22 0 00-.23.11 40.8 40.8 0 00-1.8 3.7 54 54 0 00-16.2 0 37.4 37.4 0 00-1.83-3.7.23.23 0 00-.23-.11 58.3 58.3 0 00-14.4 4.3.21.21 0 00-.09.08C1.58 18.7-.96 32.1.3 45.3a.24.24 0 00.09.17 58.8 58.8 0 0017.7 8.9.23.23 0 00.25-.08 42 42 0 003.6-5.9.22.22 0 00-.12-.31 38.7 38.7 0 01-5.5-2.6.23.23 0 01-.02-.37c.37-.28.74-.57 1.1-.86a.22.22 0 01.23-.03c11.55 5.27 24.06 5.27 35.47 0a.22.22 0 01.23.03l1.1.86a.23.23 0 01-.02.37 36.2 36.2 0 01-5.52 2.6.23.23 0 00-.12.32 47.1 47.1 0 003.6 5.88.22.22 0 00.25.09 58.6 58.6 0 0017.73-8.9.23.23 0 00.09-.16c1.5-15.45-2.5-28.88-10.58-40.78a.18.18 0 00-.09-.09zM23.7 37.3c-3.5 0-6.38-3.22-6.38-7.17s2.82-7.17 6.38-7.17c3.59 0 6.44 3.25 6.38 7.17 0 3.95-2.82 7.17-6.38 7.17zm23.6 0c-3.5 0-6.38-3.22-6.38-7.17s2.82-7.17 6.38-7.17c3.59 0 6.44 3.25 6.38 7.17 0 3.95-2.79 7.17-6.38 7.17z"/></svg>
+        Hubungi via Discord
+      </a>
+      <!-- Slide dots -->
+      <div class="mapbuilder-dots" id="mapbuilder-dots"></div>
+    </div>
+  </div>
+</section>
+
+<!-- TEAM -->
+<section class="section" id="team">
+  <div class="section-inner reveal">
+    <div class="section-header">
+      <span class="eyebrow">Tim Pengelola</span>
+      <h2 class="section-title">Admin <em>Team</em></h2>
+      <div class="divider"></div>
+    </div>
+    <div class="team-grid">
+      <div class="admin-card owner">
+        <div class="admin-avatar-wrap">
+          <img src="assets/staff/ahmadsaltoria.jpg" class="admin-avatar-img" onerror="this.style.display='none';this.nextElementSibling&&(this.nextElementSibling.style.display='flex')" alt="AhmadSaltoria">
+          <div class="admin-avatar-ph" style="display:none">SA</div>
+        </div>
+        <div class="admin-role">Owner / Founder</div>
+        <div class="admin-name">AhmadSaltoria</div>
+        <div class="admin-dc">@slyfaugts</div>
+      </div>
+      <div class="admin-card">
+        <div class="admin-avatar-wrap">
+          <img src="assets/staff/admin2.jpg" class="admin-avatar-img" onerror="this.style.display='none';this.nextElementSibling&&(this.nextElementSibling.style.display='flex')" alt="Admin">
+          <div class="admin-avatar-ph" style="display:none">AD</div>
+        </div>
+        <div class="admin-role">Admin</div>
+        <div class="admin-name">Placeholder</div>
+        <div class="admin-dc">@username</div>
+      </div>
+      <div class="admin-card">
+        <div class="admin-avatar-wrap">
+          <img src="assets/staff/admin3.jpg" class="admin-avatar-img" onerror="this.style.display='none';this.nextElementSibling&&(this.nextElementSibling.style.display='flex')" alt="Admin">
+          <div class="admin-avatar-ph" style="display:none">AD</div>
+        </div>
+        <div class="admin-role">Admin</div>
+        <div class="admin-name">Placeholder</div>
+        <div class="admin-dc">@username</div>
+      </div>
+      <div class="admin-card">
+        <div class="admin-avatar-wrap">
+          <img src="assets/staff/admin4.jpg" class="admin-avatar-img" onerror="this.style.display='none';this.nextElementSibling&&(this.nextElementSibling.style.display='flex')" alt="Admin">
+          <div class="admin-avatar-ph" style="display:none">AD</div>
+        </div>
+        <div class="admin-role">Admin</div>
+        <div class="admin-name">Placeholder</div>
+        <div class="admin-dc">@username</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- DISCORD WIDGET -->
+<section class="section" id="discord-section" style="background:var(--surface);padding-top:0">
+  <div class="section-inner reveal">
+    <div class="discord-widget">
+      <div class="discord-logo-box">
+        <svg viewBox="0 0 71 55" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M60.1 4.9A58.5 58.5 0 0045.7.6a.22.22 0 00-.23.11 40.8 40.8 0 00-1.8 3.7 54 54 0 00-16.2 0 37.4 37.4 0 00-1.83-3.7.23.23 0 00-.23-.11 58.3 58.3 0 00-14.4 4.3.21.21 0 00-.09.08C1.58 18.7-.96 32.1.3 45.3a.24.24 0 00.09.17 58.8 58.8 0 0017.7 8.9.23.23 0 00.25-.08 42 42 0 003.6-5.9.22.22 0 00-.12-.31 38.7 38.7 0 01-5.5-2.6.23.23 0 01-.02-.37c.37-.28.74-.57 1.1-.86a.22.22 0 01.23-.03c11.55 5.27 24.06 5.27 35.47 0a.22.22 0 01.23.03l1.1.86a.23.23 0 01-.02.37 36.2 36.2 0 01-5.52 2.6.23.23 0 00-.12.32 47.1 47.1 0 003.6 5.88.22.22 0 00.25.09 58.6 58.6 0 0017.73-8.9.23.23 0 00.09-.16c1.5-15.45-2.5-28.88-10.58-40.78a.18.18 0 00-.09-.09zM23.7 37.3c-3.5 0-6.38-3.22-6.38-7.17s2.82-7.17 6.38-7.17c3.59 0 6.44 3.25 6.38 7.17 0 3.95-2.82 7.17-6.38 7.17zm23.6 0c-3.5 0-6.38-3.22-6.38-7.17s2.82-7.17 6.38-7.17c3.59 0 6.44 3.25 6.38 7.17 0 3.95-2.79 7.17-6.38 7.17z" fill="#5865F2"/>
+        </svg>
+      </div>
+      <div class="discord-info">
+        <div class="discord-name">Saltoria Community</div>
+        <div class="discord-stats">
+          <div class="discord-stat"><div class="dc-dot online"></div><span id="dc-online">— online</span></div>
+          <div class="discord-stat"><div class="dc-dot total"></div><span id="dc-total">— members</span></div>
+        </div>
+      </div>
+      <a href="https://discord.gg/VRQFamarnW" target="_blank" class="discord-join">JOIN SERVER</a>
+    </div>
+  </div>
+</section>
+
+<!-- PARTNERS -->
+<section class="section" id="partners">
+  <div class="section-inner reveal">
+    <div class="section-header">
+      <span class="eyebrow">Kolaborasi</span>
+      <h2 class="section-title">Partner & <em>Aliansi</em></h2>
+      <div class="divider"></div>
+    </div>
+    <div class="partner-grid">
+      <!-- Saltoria Official -->
+      <div class="partner-card official">
+        <div class="partner-logo-wrap"><img src="assets/partners/saltoria-roblox.png" alt="Saltoria" onerror="this.parentElement.textContent='🟣'"></div>
+        <div class="partner-name" style="color:var(--accent2)">Saltoria Community</div>
+        <div class="partner-type">Official · Owner</div>
+        <div class="partner-btns">
+          <a href="https://www.roblox.com/share/g/209723897" target="_blank" class="partner-btn partner-btn-roblox">
+            <svg width="11" height="11" viewBox="0 0 512 512" fill="currentColor"><path d="M117.3 0L0 394.7 394.7 512 512 117.3zm166.1 311.9l-94.3-27.5 27.6-94.3 94.3 27.6z"/></svg>
+            Roblox
+          </a>
+          <a href="https://discord.gg/VRQFamarnW" target="_blank" class="partner-btn partner-btn-discord">
+            <svg width="11" height="11" viewBox="0 0 71 55" fill="currentColor"><path d="M60.1 4.9A58.5 58.5 0 0045.7.6a.22.22 0 00-.23.11 40.8 40.8 0 00-1.8 3.7 54 54 0 00-16.2 0 37.4 37.4 0 00-1.83-3.7.23.23 0 00-.23-.11 58.3 58.3 0 00-14.4 4.3.21.21 0 00-.09.08C1.58 18.7-.96 32.1.3 45.3a.24.24 0 00.09.17 58.8 58.8 0 0017.7 8.9.23.23 0 00.25-.08 42 42 0 003.6-5.9.22.22 0 00-.12-.31 38.7 38.7 0 01-5.5-2.6.23.23 0 01-.02-.37c.37-.28.74-.57 1.1-.86a.22.22 0 01.23-.03c11.55 5.27 24.06 5.27 35.47 0a.22.22 0 01.23.03l1.1.86a.23.23 0 01-.02.37 36.2 36.2 0 01-5.52 2.6.23.23 0 00-.12.32 47.1 47.1 0 003.6 5.88.22.22 0 00.25.09 58.6 58.6 0 0017.73-8.9.23.23 0 00.09-.16c1.5-15.45-2.5-28.88-10.58-40.78a.18.18 0 00-.09-.09zM23.7 37.3c-3.5 0-6.38-3.22-6.38-7.17s2.82-7.17 6.38-7.17c3.59 0 6.44 3.25 6.38 7.17 0 3.95-2.82 7.17-6.38 7.17zm23.6 0c-3.5 0-6.38-3.22-6.38-7.17s2.82-7.17 6.38-7.17c3.59 0 6.44 3.25 6.38 7.17 0 3.95-2.79 7.17-6.38 7.17z"/></svg>
+            Discord
+          </a>
+        </div>
+      </div>
+      <!-- Inston -->
+      <div class="partner-card">
+        <div class="partner-logo-wrap"><img src="assets/partners/inston.png" alt="Inston" onerror="this.parentElement.textContent='🤝'"></div>
+        <div class="partner-name">Inston Community</div>
+        <div class="partner-type">Roblox Community</div>
+        <div class="partner-btns">
+          <a href="https://www.roblox.com/share/g/1053471973" target="_blank" class="partner-btn partner-btn-roblox">
+            <svg width="11" height="11" viewBox="0 0 512 512" fill="currentColor"><path d="M117.3 0L0 394.7 394.7 512 512 117.3zm166.1 311.9l-94.3-27.5 27.6-94.3 94.3 27.6z"/></svg>
+            Roblox
+          </a>
+          <a href="https://discord.gg/66ssCZDQCK" target="_blank" class="partner-btn partner-btn-discord">
+            <svg width="11" height="11" viewBox="0 0 71 55" fill="currentColor"><path d="M60.1 4.9A58.5 58.5 0 0045.7.6a.22.22 0 00-.23.11 40.8 40.8 0 00-1.8 3.7 54 54 0 00-16.2 0 37.4 37.4 0 00-1.83-3.7.23.23 0 00-.23-.11 58.3 58.3 0 00-14.4 4.3.21.21 0 00-.09.08C1.58 18.7-.96 32.1.3 45.3a.24.24 0 00.09.17 58.8 58.8 0 0017.7 8.9.23.23 0 00.25-.08 42 42 0 003.6-5.9.22.22 0 00-.12-.31 38.7 38.7 0 01-5.5-2.6.23.23 0 01-.02-.37c.37-.28.74-.57 1.1-.86a.22.22 0 01.23-.03c11.55 5.27 24.06 5.27 35.47 0a.22.22 0 01.23.03l1.1.86a.23.23 0 01-.02.37 36.2 36.2 0 01-5.52 2.6.23.23 0 00-.12.32 47.1 47.1 0 003.6 5.88.22.22 0 00.25.09 58.6 58.6 0 0017.73-8.9.23.23 0 00.09-.16c1.5-15.45-2.5-28.88-10.58-40.78a.18.18 0 00-.09-.09zM23.7 37.3c-3.5 0-6.38-3.22-6.38-7.17s2.82-7.17 6.38-7.17c3.59 0 6.44 3.25 6.38 7.17 0 3.95-2.82 7.17-6.38 7.17zm23.6 0c-3.5 0-6.38-3.22-6.38-7.17s2.82-7.17 6.38-7.17c3.59 0 6.44 3.25 6.38 7.17 0 3.95-2.79 7.17-6.38 7.17z"/></svg>
+            Discord
+          </a>
+        </div>
+      </div>
+      <!-- Lumira -->
+      <div class="partner-card">
+        <div class="partner-logo-wrap"><img src="assets/partners/lumira.png" alt="Lumira" onerror="this.parentElement.textContent='🤝'"></div>
+        <div class="partner-name">Lumira Community</div>
+        <div class="partner-type">Roblox Community</div>
+        <div class="partner-btns">
+          <a href="https://www.roblox.com/share/g/791904484" target="_blank" class="partner-btn partner-btn-roblox">
+            <svg width="11" height="11" viewBox="0 0 512 512" fill="currentColor"><path d="M117.3 0L0 394.7 394.7 512 512 117.3zm166.1 311.9l-94.3-27.5 27.6-94.3 94.3 27.6z"/></svg>
+            Roblox
+          </a>
+          <a href="https://discord.gg/nCtg3JvJFZ" target="_blank" class="partner-btn partner-btn-discord">
+            <svg width="11" height="11" viewBox="0 0 71 55" fill="currentColor"><path d="M60.1 4.9A58.5 58.5 0 0045.7.6a.22.22 0 00-.23.11 40.8 40.8 0 00-1.8 3.7 54 54 0 00-16.2 0 37.4 37.4 0 00-1.83-3.7.23.23 0 00-.23-.11 58.3 58.3 0 00-14.4 4.3.21.21 0 00-.09.08C1.58 18.7-.96 32.1.3 45.3a.24.24 0 00.09.17 58.8 58.8 0 0017.7 8.9.23.23 0 00.25-.08 42 42 0 003.6-5.9.22.22 0 00-.12-.31 38.7 38.7 0 01-5.5-2.6.23.23 0 01-.02-.37c.37-.28.74-.57 1.1-.86a.22.22 0 01.23-.03c11.55 5.27 24.06 5.27 35.47 0a.22.22 0 01.23.03l1.1.86a.23.23 0 01-.02.37 36.2 36.2 0 01-5.52 2.6.23.23 0 00-.12.32 47.1 47.1 0 003.6 5.88.22.22 0 00.25.09 58.6 58.6 0 0017.73-8.9.23.23 0 00.09-.16c1.5-15.45-2.5-28.88-10.58-40.78a.18.18 0 00-.09-.09zM23.7 37.3c-3.5 0-6.38-3.22-6.38-7.17s2.82-7.17 6.38-7.17c3.59 0 6.44 3.25 6.38 7.17 0 3.95-2.82 7.17-6.38 7.17zm23.6 0c-3.5 0-6.38-3.22-6.38-7.17s2.82-7.17 6.38-7.17c3.59 0 6.44 3.25 6.38 7.17 0 3.95-2.79 7.17-6.38 7.17z"/></svg>
+            Discord
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CHANGELOG -->
+<section class="section" id="changelog" style="background:var(--surface)">
+  <div class="section-inner reveal">
+    <div class="section-header">
+      <span class="eyebrow">Update Log</span>
+      <h2 class="section-title">Change<em>log</em></h2>
+      <div class="divider"></div>
+    </div>
+    <div class="changelog-list">
+      <div class="cl-item">
+        <div class="cl-ver">v1.3.0</div>
+        <div class="cl-bar"></div>
+        <div class="cl-body">
+          <div class="cl-title">4 Tools Baru + Fitur Website</div>
+          <div class="cl-items">+ Script Header Gen · Font Preview · Instance Tree Gen · Loot Table Calc<br>+ Announcement banner · Tool rating · Discord widget</div>
+        </div>
+      </div>
+      <div class="cl-item">
+        <div class="cl-ver">v1.2.0</div>
+        <div class="cl-bar"></div>
+        <div class="cl-body">
+          <div class="cl-title">5 Tools Baru + Partner Section</div>
+          <div class="cl-items">+ Color Converter · Tween Calc · Thumbnail Gen · Badge Checker · Script Header<br>+ Partner section · Foto staf · Dark/Light mode · Tool search</div>
+        </div>
+      </div>
+      <div class="cl-item">
+        <div class="cl-ver old">v1.1.0</div>
+        <div class="cl-bar old"></div>
+        <div class="cl-body">
+          <div class="cl-title">4 Tools Tambahan</div>
+          <div class="cl-items">+ Robux Tax Calc · Roblox Info Lookup · DS Key Gen · Server Status</div>
+        </div>
+      </div>
+      <div class="cl-item">
+        <div class="cl-ver old">v1.0.0</div>
+        <div class="cl-bar old"></div>
+        <div class="cl-body">
+          <div class="cl-title">Launch Awal</div>
+          <div class="cl-items">+ Landing page · Audio Optimizer · Skybox Converter · Anim Converter</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA -->
+<section class="cta">
+  <div class="cta-glow"></div>
+  <div class="cta-content">
+    <div class="cta-badge"><span class="ms" style="font-size:14px">groups</span> Open for Everyone</div>
+    <h2>Join The <em>Movement</em></h2>
+    <p class="cta-sub">Jadi bagian dari komunitas yang terus berkarya. Akses 16 tools gratis, asset, dan jaringan developer Roblox Indonesia.</p>
+    <a href="https://discord.gg/VRQFamarnW" target="_blank" class="btn-discord">
+      <span class="ms" style="font-size:18px">tag</span> Join Saltoria Community
+    </a>
+  </div>
+</section>
+
+<!-- FOOTER TICKER -->
+<div class="footer-ticker-wrap">
+  <div class="footer-ticker-track">
+    <div class="footer-ticker-item">Saltoria Community <span class="footer-ticker-dot">◆</span></div>
+    <div class="footer-ticker-item">Built Different <span class="footer-ticker-dot">◆</span></div>
+    <div class="footer-ticker-item">Roblox Dev Tools <span class="footer-ticker-dot">◆</span></div>
+    <div class="footer-ticker-item">16 Free Tools <span class="footer-ticker-dot">◆</span></div>
+    <div class="footer-ticker-item">Indonesia <span class="footer-ticker-dot">◆</span></div>
+    <div class="footer-ticker-item">Saltoria Community <span class="footer-ticker-dot">◆</span></div>
+    <div class="footer-ticker-item">Built Different <span class="footer-ticker-dot">◆</span></div>
+    <div class="footer-ticker-item">Roblox Dev Tools <span class="footer-ticker-dot">◆</span></div>
+    <div class="footer-ticker-item">16 Free Tools <span class="footer-ticker-dot">◆</span></div>
+    <div class="footer-ticker-item">Indonesia <span class="footer-ticker-dot">◆</span></div>
+  </div>
+</div>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-inner">
+    <div class="footer-top">
+      <div class="footer-brand">
+        <div class="footer-logo-text">SALT<span>ORIA</span></div>
+        <p>Komunitas Roblox yang solid dari builder, scripter, sampai pemain aktif yang bareng-bareng ngembangin server dan ngadain event.</p>
+      </div>
+      <div class="footer-col">
+        <h4>Community</h4>
+        <a href="#projects">Projects</a>
+        <a href="#maps">Maps</a>
+        <a href="#team">Team</a>
+        <a href="#partners">Partners</a>
+        <a href="#changelog">Changelog</a>
+      </div>
+      <div class="footer-col">
+        <h4>Products</h4>
+        <a href="#store">Store</a>
+        <a href="#tools">All Tools</a>
+        <a href="https://discord.gg/VRQFamarnW" target="_blank">Order Custom</a>
+      </div>
+      <div class="footer-col">
+        <h4>Links</h4>
+        <a href="https://discord.gg/VRQFamarnW" target="_blank">Discord Server</a>
+        <a href="https://www.roblox.com/share/g/209723897" target="_blank">Roblox Group</a>
+        <a href="https://discord.gg/66ssCZDQCK" target="_blank">Inston Community</a>
+        <a href="https://discord.gg/nCtg3JvJFZ" target="_blank">Lumira Community</a>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <div class="footer-copy">© 2026 Saltoria Community. Independent community site.</div>
+      <div class="footer-socials">
+        <a href="https://discord.gg/VRQFamarnW" target="_blank" class="footer-social" title="Discord">
+          <svg width="14" height="14" viewBox="0 0 71 55" fill="currentColor"><path d="M60.1 4.9A58.5 58.5 0 0045.7.6a.22.22 0 00-.23.11 40.8 40.8 0 00-1.8 3.7 54 54 0 00-16.2 0 37.4 37.4 0 00-1.83-3.7.23.23 0 00-.23-.11 58.3 58.3 0 00-14.4 4.3.21.21 0 00-.09.08C1.58 18.7-.96 32.1.3 45.3a.24.24 0 00.09.17 58.8 58.8 0 0017.7 8.9.23.23 0 00.25-.08 42 42 0 003.6-5.9.22.22 0 00-.12-.31 38.7 38.7 0 01-5.5-2.6.23.23 0 01-.02-.37c.37-.28.74-.57 1.1-.86a.22.22 0 01.23-.03c11.55 5.27 24.06 5.27 35.47 0a.22.22 0 01.23.03l1.1.86a.23.23 0 01-.02.37 36.2 36.2 0 01-5.52 2.6.23.23 0 00-.12.32 47.1 47.1 0 003.6 5.88.22.22 0 00.25.09 58.6 58.6 0 0017.73-8.9.23.23 0 00.09-.16c1.5-15.45-2.5-28.88-10.58-40.78a.18.18 0 00-.09-.09zM23.7 37.3c-3.5 0-6.38-3.22-6.38-7.17s2.82-7.17 6.38-7.17c3.59 0 6.44 3.25 6.38 7.17 0 3.95-2.82 7.17-6.38 7.17zm23.6 0c-3.5 0-6.38-3.22-6.38-7.17s2.82-7.17 6.38-7.17c3.59 0 6.44 3.25 6.38 7.17 0 3.95-2.79 7.17-6.38 7.17z"/></svg>
+        </a>
+        <a href="https://www.roblox.com/share/g/209723897" target="_blank" class="footer-social" title="Roblox">🎮</a>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<!-- AUDIO -->
+<audio id="backsound" src="assets/backsound.mp3" loop preload="auto" style="display:none"></audio>
+
+<script>
+// ── HAMBURGER ──
+function toggleMenu(){
+  document.getElementById('hamburger').classList.toggle('open');
+  document.getElementById('mobileMenu').classList.toggle('open');
+  document.body.style.overflow=document.getElementById('mobileMenu').classList.contains('open')?'hidden':'';
+}
+function closeMenu(){
+  document.getElementById('hamburger').classList.remove('open');
+  document.getElementById('mobileMenu').classList.remove('open');
+  document.body.style.overflow='';
+}
+document.addEventListener('click',e=>{
+  const menu=document.getElementById('mobileMenu');
+  const btn=document.getElementById('hamburger');
+  if(menu.classList.contains('open')&&!menu.contains(e.target)&&!btn.contains(e.target))closeMenu();
+});
+
+// ── NAV SCROLL ──
+window.addEventListener('scroll',()=>{
+  document.getElementById('main-nav').classList.toggle('scrolled',window.scrollY>30);
+},{passive:true});
+
+// ── NAV OFFSET (fixed nav) ──
+document.querySelectorAll('a[href^="#"]').forEach(a=>{
+  a.addEventListener('click',e=>{
+    const target=document.querySelector(a.getAttribute('href'));
+    if(!target)return;
+    e.preventDefault();
+    const offset=target.getBoundingClientRect().top+window.scrollY-80;
+    window.scrollTo({top:offset,behavior:'smooth'});
+    closeMenu();
+  });
+});
+
+// ── NAV ACTIVE ──
+(function(){
+  const sections=document.querySelectorAll('section[id]');
+  const links=document.querySelectorAll('.nav-links a');
+  const obs=new IntersectionObserver(entries=>{
+    entries.forEach(e=>{
+      if(e.isIntersecting) links.forEach(a=>a.classList.toggle('active',a.getAttribute('href')==='#'+e.target.id));
+    });
+  },{threshold:0.3,rootMargin:'-68px 0px -40% 0px'});
+  sections.forEach(s=>obs.observe(s));
+})();
+
+// ── SCROLL REVEAL ──
+(function(){
+  const obs=new IntersectionObserver(entries=>{
+    entries.forEach(e=>{if(e.isIntersecting){e.target.classList.add('visible');obs.unobserve(e.target);}});
+  },{threshold:0.06,rootMargin:'0px 0px -40px 0px'});
+  document.querySelectorAll('.reveal').forEach(el=>obs.observe(el));
+})();
+
+// ── COUNT-UP STATS ──
+(function(){
+  const obs=new IntersectionObserver(entries=>{
+    entries.forEach(e=>{
+      if(!e.isIntersecting)return;
+      e.target.querySelectorAll('.stat-num[data-count]').forEach(el=>{
+        const target=parseInt(el.dataset.count);
+        const suffix=el.dataset.suffix||'';
+        const dur=1200;
+        const step=target/60;
+        let cur=0;
+        const timer=setInterval(()=>{
+          cur=Math.min(cur+step,target);
+          el.textContent=Math.round(cur)+suffix;
+          if(cur>=target)clearInterval(timer);
+        },dur/60);
+      });
+      obs.unobserve(e.target);
+    });
+  },{threshold:0.4});
+  const statsEl=document.querySelector('.stats-inner');
+  if(statsEl)obs.observe(statsEl);
+})();
+
+// ── TOOL RATING ──
+(function(){
+  const votes=JSON.parse(localStorage.getItem('saltoria-votes')||'{}');
+  let idx=0;
+  document.querySelectorAll('.tool-card').forEach(card=>{
+    const href=card.getAttribute('href');
+    if(!href)return;
+    const key='tool_'+(idx++);
+    if(!votes[key])votes[key]={up:0,down:0,myVote:null};
+    const v=votes[key];
+    const uid='ru_'+idx;
+    const div=document.createElement('div');
+    div.className='tool-rating';
+    div.innerHTML=`<button class="rate-btn ${v.myVote==='up'?'voted':''}" data-key="${key}" data-uid="${uid}" data-dir="up">👍</button><span class="rate-count" id="${uid}">${v.up}</span><button class="rate-btn ${v.myVote==='down'?'voted':''}" data-key="${key}" data-uid="${uid}" data-dir="down">👎</button>`;
+    card.style.paddingBottom='2.5rem';
+    card.appendChild(div);
+    div.querySelectorAll('.rate-btn').forEach(btn=>{
+      btn.addEventListener('click',e=>{
+        e.preventDefault();e.stopPropagation();
+        const k=btn.dataset.key,d=btn.dataset.dir,u=btn.dataset.uid;
+        const vv=votes[k];
+        if(!vv||vv.myVote===d)return;
+        if(vv.myVote)vv[vv.myVote]--;
+        vv[d]++;vv.myVote=d;
+        localStorage.setItem('saltoria-votes',JSON.stringify(votes));
+        const el=document.getElementById(u);
+        if(el)el.textContent=vv.up;
+        div.querySelectorAll('.rate-btn').forEach(b=>b.classList.toggle('voted',b.dataset.dir===d));
+      });
+    });
+  });
+})();
+
+// ── ANNOUNCE ──
+(function(){
+  if(localStorage.getItem('saltoria-announce-v2')==='dismissed'){
+    const bar=document.getElementById('announce-bar');
+    if(bar)bar.classList.add('hidden');
+  }
+})();
+window.dismissAnnounce=function(){
+  const bar=document.getElementById('announce-bar');
+  if(bar)bar.classList.add('hidden');
+  localStorage.setItem('saltoria-announce-v2','dismissed');
+};
+
+// ── BACKSOUND ──
+(function(){
+  const audio=document.getElementById('backsound');
+  const btn=document.getElementById('mute-btn');
+  if(!audio||!btn)return;
+  audio.volume=0.3;
+  let started=false,muted=false;
+  function tryPlay(){
+    if(started)return;
+    audio.play().then(()=>{started=true;btn.textContent='🔊';['click','scroll','keydown','touchstart'].forEach(ev=>document.removeEventListener(ev,tryPlay));}).catch(()=>{});
+  }
+  ['click','scroll','keydown','touchstart'].forEach(ev=>document.addEventListener(ev,tryPlay,{passive:true}));
+  window.toggleMute=function(){
+    if(!started){audio.play().then(()=>{started=true;btn.textContent='🔊';}).catch(()=>{});return;}
+    muted=!muted;audio.muted=muted;btn.textContent=muted?'🔇':'🔊';
+  };
+})();
+
+// ── THEME ──
+(function(){
+  const btn=document.getElementById('theme-btn');
+  if(!btn)return;
+  const saved=localStorage.getItem('saltoria-theme');
+  if(saved==='light'){document.body.classList.add('light-mode');btn.textContent='☀️';}
+  window.toggleTheme=function(){
+    const isLight=document.body.classList.toggle('light-mode');
+    btn.textContent=isLight?'☀️':'🌙';
+    localStorage.setItem('saltoria-theme',isLight?'light':'dark');
+  };
+})();
+
+// ── DISCORD WIDGET ──
+(function(){
+  fetch('https://discord.com/api/guilds/1432123561849655527/widget.json')
+    .then(r=>r.json())
+    .then(d=>{
+      const onEl=document.getElementById('dc-online');
+      if(onEl&&d.presence_count)onEl.textContent=d.presence_count.toLocaleString('id-ID')+' online';
+    }).catch(()=>{});
+})();
+
+// ── MAP BUILDER SLIDESHOW ──
+(function(){
+  const slides=document.querySelectorAll('.mapbuilder-slide');
+  const dotsWrap=document.getElementById('mapbuilder-dots');
+  if(!slides.length)return;
+  let cur=0,timer;
+  slides.forEach((_,i)=>{
+    const d=document.createElement('button');
+    d.className='mapbuilder-dot'+(i===0?' active':'');
+    d.addEventListener('click',()=>{goTo(i);resetTimer();});
+    dotsWrap.appendChild(d);
+  });
+  function goTo(n){
+    slides[cur].classList.remove('active');
+    dotsWrap.children[cur].classList.remove('active');
+    cur=(n+slides.length)%slides.length;
+    slides[cur].classList.add('active');
+    dotsWrap.children[cur].classList.add('active');
+  }
+  function next(){goTo(cur+1)}
+  function resetTimer(){clearInterval(timer);timer=setInterval(next,3500)}
+  resetTimer();
+})();
+
+// ── TOOL SEARCH ──
+function filterTools(){
+  const q=document.getElementById('tool-search').value.toLowerCase().trim();
+  let visible=0;
+  document.querySelectorAll('#tools-grid .tool-card').forEach(card=>{
+    const name=card.dataset.name||'';
+    const show=!q||name.includes(q);
+    card.style.display=show?'':'none';
+    if(show)visible++;
+  });
+  const noResult=document.getElementById('tool-no-result');
+  if(noResult)noResult.style.display=visible===0?'block':'none';
+}
+</script>
+</body>
+</html>
