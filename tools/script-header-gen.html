@@ -1,0 +1,518 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Script Header Generator — Saltoria Tools</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+/* ── RESET & BASE ── */
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:#07070F;
+  --surface:#0D0D18;
+  --surface2:#12121E;
+  --accent:#8B5CF6;
+  --accent2:#C4B5FD;
+  --text:#F0EEFF;
+  --muted:#6B7280;
+  --border:rgba(255,255,255,0.06);
+  --glass:rgba(255,255,255,0.03);
+  --glass2:rgba(255,255,255,0.06);
+  --glow:rgba(139,92,246,0.2);
+  --green:#6EE7B7;--red:#F87171;--yellow:#FCD34D;
+  --radius:14px;
+}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;font-size:15px;line-height:1.7;overflow-x:hidden;-webkit-font-smoothing:antialiased;min-height:100vh}
+img{max-width:100%;display:block}
+a{text-decoration:none;color:inherit}
+
+/* ── NAV ── */
+nav{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:0 2rem;height:64px;
+  background:rgba(7,7,15,0.92);
+  backdrop-filter:blur(20px) saturate(1.4);
+  -webkit-backdrop-filter:blur(20px) saturate(1.4);
+  border-bottom:1px solid var(--border);
+  position:sticky;top:0;z-index:200;
+}
+.nav-brand{display:flex;align-items:center;gap:10px}
+.nav-logo-text{font-family:'Inter',sans-serif;font-size:14px;font-weight:800;letter-spacing:.5px;color:#fff}
+.nav-logo-text span{color:var(--accent2)}
+.nav-tool-label{
+  font-family:'Space Mono',monospace;font-size:10px;color:var(--muted);
+  letter-spacing:1.5px;padding:3px 10px;border-radius:6px;
+  background:var(--glass2);border:1px solid var(--border);
+}
+.nav-back{
+  display:inline-flex;align-items:center;gap:6px;
+  font-family:'Space Mono',monospace;font-size:10px;
+  color:var(--muted);letter-spacing:1px;
+  padding:7px 14px;border:1px solid var(--border);border-radius:8px;
+  transition:all .2s;
+}
+.nav-back:hover{color:var(--accent2);border-color:rgba(196,181,253,.3)}
+.nav-back svg{transition:transform .2s}
+.nav-back:hover svg{transform:translateX(-2px)}
+
+/* ── HERO ── */
+.tool-hero{
+  text-align:center;padding:4rem 1.5rem 3rem;
+  position:relative;overflow:hidden;
+  border-bottom:1px solid var(--border);
+}
+.tool-hero::before{
+  content:'';position:absolute;top:0;left:50%;transform:translateX(-50%);
+  width:600px;height:350px;
+  background:radial-gradient(ellipse,rgba(139,92,246,.12) 0%,transparent 70%);
+  pointer-events:none;
+}
+.tool-hero-badge{
+  display:inline-flex;align-items:center;gap:8px;
+  background:rgba(139,92,246,.1);border:1px solid rgba(196,181,253,.2);
+  color:var(--accent2);font-size:10px;font-weight:600;letter-spacing:2px;
+  padding:5px 16px;border-radius:100px;margin-bottom:1.5rem;
+  text-transform:uppercase;font-family:'Space Mono',monospace;
+}
+.tool-hero h1{
+  font-size:clamp(26px,5vw,46px);font-weight:900;
+  color:#fff;line-height:1.05;letter-spacing:-1.5px;margin-bottom:1rem;
+}
+.tool-hero h1 em{
+  font-style:normal;
+  background:linear-gradient(135deg,var(--accent2),#fff,var(--accent));
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+}
+.tool-hero p{color:var(--muted);font-size:14px;max-width:520px;margin:0 auto;line-height:1.85}
+.tool-hero p code{background:rgba(139,92,246,.18);color:var(--accent2);padding:1px 6px;border-radius:4px;font-size:12px;font-family:'Space Mono',monospace}
+
+/* ── MAIN LAYOUT ── */
+.main{max-width:900px;margin:0 auto;padding:2rem 1.5rem}
+
+/* ── CARD ── */
+.card{background:var(--surface);border:1px solid var(--border);border-radius:16px;overflow:hidden;margin-bottom:1.25rem}
+.card-header{padding:1rem 1.25rem;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:10px}
+.card-icon{width:34px;height:34px;border-radius:10px;background:rgba(139,92,246,.12);border:1px solid rgba(139,92,246,.2);display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0}
+.card-title{font-size:13px;font-weight:700;color:#fff;letter-spacing:.2px}
+.card-sub{font-family:'Space Mono',monospace;font-size:9px;color:var(--muted);margin-top:3px;letter-spacing:1px;text-transform:uppercase}
+.card-body{padding:1.25rem}
+
+/* ── FORM ELEMENTS ── */
+.field{margin-bottom:1rem}
+.field:last-child{margin-bottom:0}
+label{display:block;font-family:'Space Mono',monospace;font-size:10px;color:var(--muted);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:6px}
+input[type=text],input[type=url],input[type=number],select,textarea{
+  width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:10px;
+  padding:10px 14px;color:var(--text);font-family:'Space Mono',monospace;font-size:12px;
+  outline:none;transition:border-color .2s;
+}
+input[type=text]:focus,input[type=url]:focus,input[type=number]:focus,select:focus,textarea:focus{
+  border-color:rgba(139,92,246,.5);box-shadow:0 0 0 3px rgba(139,92,246,.08);
+}
+select option{background:var(--surface2)}
+textarea{resize:vertical;min-height:80px;line-height:1.6;font-family:'Space Mono',monospace;font-size:11px}
+.field-hint{font-size:11px;color:var(--muted);margin-top:5px;line-height:1.6}
+input[type=range]{width:100%;accent-color:var(--accent);cursor:pointer}
+input[type=color]{width:100%;height:40px;border-radius:10px;border:1px solid var(--border);background:var(--surface2);cursor:pointer;padding:3px}
+input[type=checkbox]{accent-color:var(--accent);width:15px;height:15px;cursor:pointer}
+
+/* ── BUTTONS ── */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:10px 20px;border-radius:10px;font-family:'Space Mono',monospace;font-size:11px;cursor:pointer;letter-spacing:1px;border:none;transition:all .2s;text-transform:uppercase;font-weight:700}
+.btn-primary{background:linear-gradient(135deg,var(--accent),#7C3AED);color:#fff;box-shadow:0 4px 16px rgba(139,92,246,.3)}
+.btn-primary:hover:not(:disabled){transform:translateY(-1px);box-shadow:0 6px 24px rgba(139,92,246,.5)}
+.btn-primary:disabled{opacity:.4;cursor:not-allowed;transform:none;box-shadow:none}
+.btn-outline{background:transparent;border:1px solid var(--border);color:var(--muted)}
+.btn-outline:hover{border-color:rgba(196,181,253,.3);color:var(--accent2)}
+.btn-green{background:rgba(110,231,183,.1);border:1px solid rgba(110,231,183,.25);color:var(--green)}
+.btn-green:hover{background:rgba(110,231,183,.18)}
+.btn-red{background:rgba(248,113,113,.1);border:1px solid rgba(248,113,113,.25);color:var(--red)}
+.btn-red:hover{background:rgba(248,113,113,.18)}
+.btn-full{width:100%}
+.btn-row{display:flex;gap:.75rem;flex-wrap:wrap}
+.btn-sm{padding:6px 14px;font-size:9px}
+
+/* ── GRID HELPERS ── */
+.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:1rem}
+.grid-3{display:grid;grid-template-columns:repeat(3,1fr);gap:1rem}
+
+/* ── OUTPUT BOX / CODE ── */
+.output-box{position:relative;background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:.875rem 1rem;font-family:'Space Mono',monospace;font-size:12px;color:var(--accent2);cursor:pointer;transition:all .2s;word-break:break-all}
+.output-box:hover{border-color:rgba(196,181,253,.3);background:rgba(139,92,246,.06)}
+.copy-hint{position:absolute;top:8px;right:10px;font-size:9px;color:var(--muted);letter-spacing:1px;text-transform:uppercase;transition:color .2s}
+.output-box:hover .copy-hint{color:var(--accent2)}
+.output-box.copied{border-color:rgba(110,231,183,.4);background:rgba(110,231,183,.05)}
+.code-block{background:var(--surface2);border:1px solid var(--border);border-radius:12px;padding:1.25rem;font-family:'Space Mono',monospace;font-size:11px;color:var(--accent2);line-height:1.9;overflow-x:auto;white-space:pre;position:relative}
+.code-copy-btn{position:absolute;top:10px;right:10px;background:rgba(139,92,246,.15);border:1px solid rgba(139,92,246,.25);color:var(--accent2);border-radius:7px;padding:5px 12px;font-family:'Space Mono',monospace;font-size:9px;cursor:pointer;letter-spacing:.5px;transition:all .2s;font-weight:700}
+.code-copy-btn:hover{background:rgba(139,92,246,.3)}
+.code-copy-btn.copied{background:rgba(110,231,183,.15);border-color:rgba(110,231,183,.3);color:var(--green)}
+
+/* ── RESULT CARD ── */
+.result-card{background:rgba(110,231,183,.06);border:1px solid rgba(110,231,183,.2);border-radius:12px;padding:1.25rem;display:none}
+.result-card.show{display:block}
+.result-title{font-size:11px;font-weight:700;color:var(--green);margin-bottom:.75rem;font-family:'Space Mono',monospace;letter-spacing:1px;text-transform:uppercase}
+.result-row{display:flex;justify-content:space-between;align-items:center;padding:.5rem 0;border-bottom:1px solid rgba(255,255,255,.04)}
+.result-row:last-child{border-bottom:none}
+.result-key{font-family:'Space Mono',monospace;font-size:10px;color:var(--muted);letter-spacing:1px}
+.result-val{font-family:'Space Mono',monospace;font-size:12px;color:var(--text);font-weight:700}
+.result-val.green{color:var(--green)}
+.result-val.red{color:var(--red)}
+.result-val.yellow{color:var(--yellow)}
+
+/* ── STATUS / LOG ── */
+.status-bar{background:var(--surface2);border-radius:10px;border:1px solid var(--border);padding:.875rem 1rem;font-family:'Space Mono',monospace;font-size:10px;line-height:1.9;min-height:48px;max-height:140px;overflow-y:auto;color:var(--muted)}
+.log-ok{color:var(--green)}
+.log-err{color:var(--red)}
+.log-info{color:var(--accent2)}
+.log-warn{color:var(--yellow)}
+
+/* ── LOADING BAR ── */
+.loading-bar{height:3px;background:linear-gradient(90deg,var(--accent),var(--accent2),var(--accent));background-size:200%;animation:shimmer 1.2s infinite;border-radius:3px;display:none;margin-bottom:1rem}
+.loading-bar.show{display:block}
+@keyframes shimmer{0%{background-position:200% 0}100%{background-position:-200% 0}}
+
+/* ── PROGRESS ── */
+.progress-wrap{margin:.75rem 0}
+.progress-label{font-family:'Space Mono',monospace;font-size:10px;color:var(--muted);margin-bottom:6px;display:flex;justify-content:space-between}
+.progress-track{height:6px;background:var(--border);border-radius:3px;overflow:hidden}
+.progress-thumb{height:100%;background:linear-gradient(90deg,var(--accent),var(--accent2));border-radius:3px;width:0%;transition:width .3s}
+
+/* ── TOGGLE ── */
+.toggle-row{display:flex;align-items:center;justify-content:space-between;padding:.625rem 0;border-bottom:1px solid var(--border)}
+.toggle-row:last-child{border-bottom:none}
+.toggle-info-title{font-size:13px;color:var(--text);font-weight:500}
+.toggle-info-sub{font-size:11px;color:var(--muted);margin-top:2px}
+.toggle{position:relative;width:40px;height:22px;flex-shrink:0}
+.toggle input{opacity:0;width:0;height:0;position:absolute}
+.toggle-slider{position:absolute;cursor:pointer;inset:0;background:var(--border);border-radius:11px;transition:.2s}
+.toggle-slider::before{content:'';position:absolute;height:16px;width:16px;left:3px;bottom:3px;background:#fff;border-radius:50%;transition:.2s}
+.toggle input:checked+.toggle-slider{background:var(--accent)}
+.toggle input:checked+.toggle-slider::before{transform:translateX(18px)}
+
+/* ── TABS ── */
+.tabs{display:flex;gap:0;border-bottom:1px solid var(--border);overflow-x:auto}
+.tab{flex-shrink:0;padding:.75rem 1rem;font-family:'Space Mono',monospace;font-size:10px;letter-spacing:1.5px;color:var(--muted);cursor:pointer;border-bottom:2px solid transparent;transition:all .2s;background:none;border-top:none;border-left:none;border-right:none;text-transform:uppercase;white-space:nowrap}
+.tab.active{color:var(--accent2);border-bottom-color:var(--accent2)}
+.tab:hover:not(.active){color:var(--text)}
+.tab-panel{display:none;padding:1.25rem}
+.tab-panel.active{display:block}
+
+/* ── DROP ZONE ── */
+.drop-zone{border:2px dashed var(--border);border-radius:12px;padding:2.5rem;text-align:center;cursor:pointer;transition:all .2s;position:relative}
+.drop-zone:hover,.drop-zone.dragover{border-color:var(--accent);background:rgba(139,92,246,.05)}
+.drop-zone input[type=file]{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%}
+.drop-icon{font-size:28px;margin-bottom:.75rem}
+.drop-text{font-family:'Space Mono',monospace;font-size:11px;color:var(--muted);letter-spacing:1px}
+.drop-hint{font-size:10px;color:var(--muted);opacity:.5;margin-top:4px}
+.file-selected{background:rgba(110,231,183,.05);border-color:rgba(110,231,183,.4)!important}
+
+/* ── STATUS CHECKER SPECIFIC ── */
+.service-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:.75rem}
+.service-card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:1rem;display:flex;align-items:center;gap:.875rem;transition:border-color .2s}
+.service-card.ok{border-color:rgba(110,231,183,.2);background:rgba(110,231,183,.04)}
+.service-card.degraded{border-color:rgba(252,211,77,.2);background:rgba(252,211,77,.04)}
+.service-card.down{border-color:rgba(248,113,113,.2);background:rgba(248,113,113,.04)}
+.service-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0}
+.service-dot.ok{background:var(--green);box-shadow:0 0 8px rgba(110,231,183,.6)}
+.service-dot.degraded{background:var(--yellow);box-shadow:0 0 8px rgba(252,211,77,.6)}
+.service-dot.down{background:var(--red);box-shadow:0 0 8px rgba(248,113,113,.6)}
+.service-dot.loading{background:var(--muted);animation:pulse-dot 1s infinite}
+@keyframes pulse-dot{0%,100%{opacity:.3}50%{opacity:1}}
+.service-name{font-size:12px;font-weight:600;color:var(--text)}
+.service-status{font-family:'Space Mono',monospace;font-size:9px;color:var(--muted);margin-top:2px;letter-spacing:.5px}
+.overall-status{display:flex;align-items:center;gap:1rem;padding:1.25rem;border-radius:14px;margin-bottom:1.25rem;border:1px solid var(--border);background:var(--surface)}
+.overall-dot{width:14px;height:14px;border-radius:50%;flex-shrink:0}
+.overall-title{font-size:15px;font-weight:700;color:#fff}
+.overall-sub{font-family:'Space Mono',monospace;font-size:10px;color:var(--muted);margin-top:3px;letter-spacing:.5px}
+.refresh-info{font-family:'Space Mono',monospace;font-size:10px;color:var(--muted);margin-left:auto;text-align:right;flex-shrink:0}
+
+/* ── SKYBOX ── */
+.skybox-faces{display:grid;grid-template-columns:repeat(3,1fr);gap:.5rem;margin-top:.75rem}
+.skybox-face{border:1px solid var(--border);border-radius:10px;overflow:hidden;aspect-ratio:1;position:relative;background:var(--surface2);display:flex;align-items:center;justify-content:center}
+.face-label{position:absolute;top:6px;left:8px;font-family:'Space Mono',monospace;font-size:9px;color:rgba(255,255,255,.6);letter-spacing:1px;text-shadow:0 1px 3px rgba(0,0,0,.8);font-weight:700}
+.skybox-face canvas{width:100%;height:100%;object-fit:cover}
+.skybox-face-ph{font-family:'Space Mono',monospace;font-size:9px;color:var(--muted);letter-spacing:1px}
+
+/* ── THUMBNAIL GENERATOR ── */
+.canvas-wrap{border-radius:14px;overflow:hidden;border:1px solid var(--border);margin-bottom:1.25rem;background:var(--surface2);aspect-ratio:16/9;display:flex;align-items:center;justify-content:center;position:relative}
+.canvas-wrap canvas{width:100%;height:100%;display:block}
+.preset-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(100px,1fr));gap:.625rem;margin-bottom:1rem}
+.preset-btn{background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:.625rem .5rem;cursor:pointer;text-align:center;transition:all .2s;font-family:'Space Mono',monospace;font-size:9px;color:var(--muted);letter-spacing:.5px}
+.preset-btn:hover,.preset-btn.active{border-color:rgba(196,181,253,.3);color:var(--accent2);background:rgba(139,92,246,.08)}
+.preset-swatch{width:100%;height:28px;border-radius:6px;margin-bottom:5px}
+.layer-row{display:flex;align-items:center;gap:8px;padding:.5rem .75rem;background:var(--surface2);border:1px solid var(--border);border-radius:10px;margin-bottom:.5rem;cursor:grab}
+.layer-drag{color:var(--muted);font-size:14px;flex-shrink:0}
+.layer-name{flex:1;font-size:12px;color:var(--text)}
+.layer-vis{background:none;border:none;cursor:pointer;color:var(--muted);font-size:14px;transition:color .2s}
+.layer-vis:hover{color:var(--accent2)}
+
+/* ── TWEEN CALC ── */
+.easing-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:.5rem;margin-bottom:1rem}
+.easing-btn{background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:.625rem;cursor:pointer;font-family:'Space Mono',monospace;font-size:9px;color:var(--muted);letter-spacing:.5px;transition:all .2s;text-align:center}
+.easing-btn:hover,.easing-btn.active{border-color:rgba(196,181,253,.3);color:var(--accent2);background:rgba(139,92,246,.08)}
+.tween-preview-wrap{height:80px;background:var(--surface2);border:1px solid var(--border);border-radius:10px;position:relative;overflow:hidden;margin-bottom:1rem}
+.tween-preview-ball{width:20px;height:20px;border-radius:50%;background:linear-gradient(135deg,var(--accent),var(--accent2));position:absolute;top:50%;transform:translateY(-50%);left:5%;box-shadow:0 0 12px var(--glow)}
+.tween-timeline{height:3px;background:var(--border);border-radius:2px;margin-bottom:1rem;position:relative}
+.tween-progress{height:100%;background:linear-gradient(90deg,var(--accent),var(--accent2));border-radius:2px;width:0%;transition:none}
+.prop-row{display:flex;gap:8px;margin-bottom:.5rem;align-items:center}
+.prop-name{width:120px;flex-shrink:0;background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:8px 10px;color:var(--text);font-family:'Space Mono',monospace;font-size:11px;outline:none;transition:border-color .2s}
+.prop-name:focus{border-color:rgba(196,181,253,.4)}
+.prop-val{flex:1;background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:8px 10px;color:var(--accent2);font-family:'Space Mono',monospace;font-size:11px;outline:none;transition:border-color .2s}
+.prop-val:focus{border-color:rgba(196,181,253,.4)}
+.prop-del{background:none;border:none;color:var(--muted);cursor:pointer;font-size:16px;padding:4px;transition:color .2s}
+.prop-del:hover{color:var(--red)}
+
+/* ── SCRIPT HEADER ── */
+.header-field-grid{display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:1rem}
+.license-btn{flex:1;padding:.625rem;border:1px solid var(--border);border-radius:8px;background:var(--surface2);color:var(--muted);font-family:'Space Mono',monospace;font-size:9px;cursor:pointer;text-align:center;transition:all .2s;letter-spacing:.5px}
+.license-btn.active{border-color:rgba(196,181,253,.3);color:var(--accent2);background:rgba(139,92,246,.1)}
+
+/* ── MISC ── */
+.hidden{display:none!important}
+.tag{display:inline-flex;align-items:center;font-family:'Space Mono',monospace;font-size:9px;letter-spacing:1px;padding:3px 10px;border-radius:100px;border:1px solid var(--border);color:var(--muted)}
+.tag.green{border-color:rgba(110,231,183,.3);color:var(--green);background:rgba(110,231,183,.06)}
+.tag.red{border-color:rgba(248,113,113,.3);color:var(--red);background:rgba(248,113,113,.06)}
+.tag.yellow{border-color:rgba(252,211,77,.3);color:var(--yellow);background:rgba(252,211,77,.06)}
+.divider{height:1px;background:var(--border);margin:1.25rem 0}
+.api-warning{background:rgba(252,211,77,.07);border:1px solid rgba(252,211,77,.2);border-radius:10px;padding:.875rem;margin-bottom:1rem;display:flex;gap:10px;align-items:flex-start}
+.api-warning-icon{font-size:14px;flex-shrink:0;margin-top:1px}
+.api-warning-text{font-size:11px;color:var(--yellow);line-height:1.7}
+
+/* ── RESPONSIVE ── */
+@media(max-width:640px){
+  .main{padding:1rem}
+  nav{padding:0 1rem}
+  .grid-2,.grid-3{grid-template-columns:1fr}
+  .service-grid{grid-template-columns:1fr 1fr}
+  .skybox-faces{grid-template-columns:repeat(3,1fr)}
+  .easing-grid{grid-template-columns:repeat(3,1fr)}
+  .header-field-grid{grid-template-columns:1fr}
+  .prop-row{flex-wrap:wrap}
+  .prop-name{width:100%}
+  .canvas-wrap{aspect-ratio:4/3}
+}
+@media(max-width:400px){
+  .service-grid{grid-template-columns:1fr}
+  .easing-grid{grid-template-columns:1fr 1fr}
+}
+</style>
+</head>
+<body>
+<nav>
+  <a href="../index.html" class="nav-brand">
+    <span class="nav-logo-text">SALT<span>ORIA</span></span>
+    <span class="nav-tool-label">SCRIPT HEADER GEN</span>
+  </a>
+  <a href="../index.html#tools" class="nav-back">
+    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>
+    Tools
+  </a>
+</nav>
+<div class="hero">
+  <div class="hero-badge">📄 DEV TOOL</div>
+  <h1>Script <span>Header</span> Generator</h1>
+  <p>Buat comment header profesional untuk script Luau — nama, author, versi, license, deskripsi. Langsung copy paste ke Roblox Studio.</p>
+</div>
+<div class="layout">
+  <!-- LEFT: FORM -->
+  <div>
+    <div class="card">
+      <div class="card-header"><div class="card-icon">🎨</div><div><div class="card-title">Style Header</div><div class="card-sub">PILIH DESAIN</div></div></div>
+      <div class="card-body">
+        <div class="style-chips">
+          <div class="style-chip active" onclick="setStyle('box')">📦 Box</div>
+          <div class="style-chip" onclick="setStyle('banner')">🎌 Banner</div>
+          <div class="style-chip" onclick="setStyle('minimal')">➖ Minimal</div>
+          <div class="style-chip" onclick="setStyle('ascii')">🔠 ASCII Art</div>
+          <div class="style-chip" onclick="setStyle('divider')">〰 Divider</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header"><div class="card-icon">✏️</div><div><div class="card-title">Info Script</div><div class="card-sub">ISIAN HEADER</div></div></div>
+      <div class="card-body">
+        <div class="field"><label>Nama Script</label><input type="text" id="f-name" value="MyScript" oninput="gen()"></div>
+        <div class="field"><label>Author / Creator</label><input type="text" id="f-author" value="AhmadSaltoria" oninput="gen()"></div>
+        <div class="field"><label>Versi</label><input type="text" id="f-ver" value="1.0.0" oninput="gen()"></div>
+        <div class="field"><label>Deskripsi singkat</label><textarea id="f-desc" rows="2" oninput="gen()">Deskripsi singkat tentang apa yang dilakukan script ini.</textarea></div>
+        <div class="grid-2">
+          <div class="field"><label>Game / Project</label><input type="text" id="f-game" value="Saltoria Game" oninput="gen()"></div>
+          <div class="field"><label>License</label>
+            <select id="f-license" onchange="gen()">
+              <option>MIT</option><option>Apache 2.0</option><option selected>All Rights Reserved</option>
+              <option>CC BY 4.0</option><option>Custom</option><option>None</option>
+            </select>
+          </div>
+        </div>
+        <div class="field"><label>Custom License Text (jika "Custom")</label><input type="text" id="f-custom-lic" placeholder="Tulis lisensi custom..." oninput="gen()"></div>
+        <div class="field"><label>Discord / Contact</label><input type="text" id="f-contact" value="discord.gg/saltoria" oninput="gen()"></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header"><div class="card-icon">⚙️</div><div><div class="card-title">Opsi Tambahan</div><div class="card-sub">TOGGLE ON/OFF</div></div></div>
+      <div class="card-body">
+        <div class="toggle-row"><span class="toggle-label">Tanggal otomatis</span><label class="toggle"><input type="checkbox" id="opt-date" checked onchange="gen()"><span class="toggle-slider"></span></label></div>
+        <div class="toggle-row"><span class="toggle-label">Tampilkan Roblox Studio comment</span><label class="toggle"><input type="checkbox" id="opt-studio" checked onchange="gen()"><span class="toggle-slider"></span></label></div>
+        <div class="toggle-row"><span class="toggle-label">Tambah variabel metadata di bawah header</span><label class="toggle"><input type="checkbox" id="opt-meta" onchange="gen()"><span class="toggle-slider"></span></label></div>
+        <div class="toggle-row"><span class="toggle-label">Tambah separator di akhir</span><label class="toggle"><input type="checkbox" id="opt-sep" checked onchange="gen()"><span class="toggle-slider"></span></label></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- RIGHT: PREVIEW -->
+  <div class="code-wrap">
+    <div class="card">
+      <div class="card-header"><div class="card-icon">📋</div><div><div class="card-title">Generated Header</div><div class="card-sub">KLIK COPY UNTUK SALIN</div></div></div>
+      <div class="card-body" style="padding:0">
+        <div class="code-block" id="code-out">
+          <button class="copy-btn" id="copy-btn" onclick="copyHeader()">📋 COPY</button>
+          <span id="code-inner"></span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+let currentStyle = 'box';
+function setStyle(s){
+  currentStyle=s;
+  document.querySelectorAll('.style-chip').forEach((c,i)=>{
+    const styles=['box','banner','minimal','ascii','divider'];
+    c.classList.toggle('active',styles[i]===s);
+  });
+  gen();
+}
+
+function esc(s){ return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+function gen(){
+  const name    = document.getElementById('f-name').value||'MyScript';
+  const author  = document.getElementById('f-author').value||'Unknown';
+  const ver     = document.getElementById('f-ver').value||'1.0.0';
+  const desc    = document.getElementById('f-desc').value||'—';
+  const game    = document.getElementById('f-game').value||'—';
+  const lic     = document.getElementById('f-license').value;
+  const cusLic  = document.getElementById('f-custom-lic').value;
+  const contact = document.getElementById('f-contact').value||'—';
+  const showDate= document.getElementById('opt-date').checked;
+  const showStu = document.getElementById('opt-studio').checked;
+  const showMeta= document.getElementById('opt-meta').checked;
+  const showSep = document.getElementById('opt-sep').checked;
+  const license = lic==='Custom'?(cusLic||'Custom License'):lic;
+  const today   = new Date().toLocaleDateString('id-ID',{year:'numeric',month:'long',day:'numeric'});
+
+  let raw='', html='';
+
+  if(currentStyle==='box'){
+    const W=60;
+    const line = '─'.repeat(W);
+    const row=(label,val)=>{
+      const s=`  ${label}: ${val}`;
+      return `--${s.padEnd(W)}--`;
+    };
+    raw +=`--${line}--\n`;
+    raw +=`--${(' '+name).padEnd(W)}--\n`;
+    raw +=`--${line}--\n`;
+    raw += row('Author',author)+'\n';
+    raw += row('Version',ver)+'\n';
+    if(showDate) raw+=row('Date',today)+'\n';
+    raw += row('Game',game)+'\n';
+    raw += row('License',license)+'\n';
+    raw += row('Contact',contact)+'\n';
+    raw +=`--${line}--\n`;
+    raw +=`--  ${desc.substring(0,W-4).padEnd(W-4)}  --\n`;
+    raw +=`--${line}--`;
+
+    html = `<span class="cm">${esc(raw)}</span>`;
+
+  } else if(currentStyle==='banner'){
+    raw  =`-- ██████████████████████████████████████\n`;
+    raw +=`--   ${name}\n`;
+    raw +=`-- ██████████████████████████████████████\n`;
+    raw +=`-- Author   : ${author}\n`;
+    raw +=`-- Version  : ${ver}\n`;
+    if(showDate) raw+=`-- Date     : ${today}\n`;
+    raw +=`-- Game     : ${game}\n`;
+    raw +=`-- License  : ${license}\n`;
+    raw +=`-- Contact  : ${contact}\n`;
+    raw +=`-- ██████████████████████████████████████\n`;
+    raw +=`-- ${desc}`;
+    html = raw.split('\n').map(l=>`<span class="cm">${esc(l)}</span>`).join('\n');
+
+  } else if(currentStyle==='minimal'){
+    raw  =`-- ${name} v${ver}\n`;
+    raw +=`-- by ${author} | ${game}\n`;
+    if(showDate) raw+=`-- ${today}\n`;
+    raw +=`-- ${license} | ${contact}\n`;
+    raw +=`-- ${desc}`;
+    html = raw.split('\n').map(l=>`<span class="cm">${esc(l)}</span>`).join('\n');
+
+  } else if(currentStyle==='ascii'){
+    const letters={S:'░██████╗',A:'░█████╗ ',L:'██╗     ',T:'████████',O:'░██████╗',R:'██████╗ ',I:'██╗',A2:'░█████╗ '};
+    raw  =`--[[\n`;
+    raw +=`   _____ __  __ __  __ __  __ _____ _   _ _  __  __\n`;
+    raw +=`  / ____|  \\/  |  \\/  |  \\/  |  ___| \\ | | |/ / \\ \\\n`;
+    raw +=`  \\ \`--.| |\\/| | |\\/| | |\\/| | |__ |  \\| | ' /   \\ \\\n`;
+    raw +=`   \`--. \\ |  | | |  | | |  | |  __|| .\\  |  <     > >\n`;
+    raw +=`  /\\__/ / |  | | |  | | |  | | |___| |\\  | . \\   / /\n`;
+    raw +=`  \\____/|_|  |_|_|  |_|_|  |_|_____|_| \\_|_|\\_\\ /_/\n`;
+    raw +=`\n  ${name} — v${ver}\n`;
+    raw +=`  Author  : ${author}\n`;
+    raw +=`  Game    : ${game}\n`;
+    if(showDate) raw+=`  Date    : ${today}\n`;
+    raw +=`  License : ${license}\n`;
+    raw +=`  Contact : ${contact}\n`;
+    raw +=`\n  ${desc}\n]]`;
+    html = `<span class="hi">${esc(raw)}</span>`;
+
+  } else if(currentStyle==='divider'){
+    raw  =`------------------------------------------------------------------------\n`;
+    raw +=`-- SCRIPT  : ${name}\n`;
+    raw +=`-- AUTHOR  : ${author}\n`;
+    raw +=`-- VERSION : ${ver}\n`;
+    if(showDate) raw+=`-- DATE    : ${today}\n`;
+    raw +=`-- GAME    : ${game}\n`;
+    raw +=`-- LICENSE : ${license}\n`;
+    raw +=`-- CONTACT : ${contact}\n`;
+    raw +=`------------------------------------------------------------------------\n`;
+    raw +=`-- ${desc}\n`;
+    raw +=`------------------------------------------------------------------------`;
+    html = raw.split('\n').map((l,i)=>i===0||i===raw.split('\n').length-1?`<span class="cm">${esc(l)}</span>`:`<span class="cm">${esc(l)}</span>`).join('\n');
+  }
+
+  if(showStu){
+    raw +=`\n\n-- @roblox-studio-version 4.x\n-- @script-type LocalScript / Script / ModuleScript`;
+    html+=`\n\n<span class="cm">-- @roblox-studio-version 4.x</span>\n<span class="cm">-- @script-type LocalScript / Script / ModuleScript</span>`;
+  }
+
+  if(showMeta){
+    const meta=`\n\nlocal SCRIPT_NAME    = "${name}"\nlocal SCRIPT_VERSION = "${ver}"\nlocal SCRIPT_AUTHOR  = "${author}"`;
+    raw += meta;
+    html+=`\n\n<span class="yl">local</span> SCRIPT_NAME    = <span class="gr">"${esc(name)}"</span>\n<span class="yl">local</span> SCRIPT_VERSION = <span class="gr">"${esc(ver)}"</span>\n<span class="yl">local</span> SCRIPT_AUTHOR  = <span class="gr">"${esc(author)}"</span>`;
+  }
+
+  if(showSep){
+    raw +=`\n\n-- ──────────────────────────────────────────────────────────────────────`;
+    html+=`\n\n<span class="cm">-- ──────────────────────────────────────────────────────────────────────</span>`;
+  }
+
+  document.getElementById('code-inner').innerHTML = html;
+  window._rawHeader = raw;
+}
+
+function copyHeader(){
+  navigator.clipboard.writeText(window._rawHeader||'').then(()=>{
+    const btn=document.getElementById('copy-btn');
+    btn.textContent='✓ COPIED!'; btn.classList.add('copied');
+    setTimeout(()=>{btn.textContent='📋 COPY';btn.classList.remove('copied');},1800);
+  });
+}
+
+gen();
+</script>
+</body>
+</html>

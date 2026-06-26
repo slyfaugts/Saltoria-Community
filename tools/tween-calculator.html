@@ -1,0 +1,592 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Tween Calculator — Saltoria Tools</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+/* ── RESET & BASE ── */
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:#07070F;
+  --surface:#0D0D18;
+  --surface2:#12121E;
+  --accent:#8B5CF6;
+  --accent2:#C4B5FD;
+  --text:#F0EEFF;
+  --muted:#6B7280;
+  --border:rgba(255,255,255,0.06);
+  --glass:rgba(255,255,255,0.03);
+  --glass2:rgba(255,255,255,0.06);
+  --glow:rgba(139,92,246,0.2);
+  --green:#6EE7B7;--red:#F87171;--yellow:#FCD34D;
+  --radius:14px;
+}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;font-size:15px;line-height:1.7;overflow-x:hidden;-webkit-font-smoothing:antialiased;min-height:100vh}
+img{max-width:100%;display:block}
+a{text-decoration:none;color:inherit}
+
+/* ── NAV ── */
+nav{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:0 2rem;height:64px;
+  background:rgba(7,7,15,0.92);
+  backdrop-filter:blur(20px) saturate(1.4);
+  -webkit-backdrop-filter:blur(20px) saturate(1.4);
+  border-bottom:1px solid var(--border);
+  position:sticky;top:0;z-index:200;
+}
+.nav-brand{display:flex;align-items:center;gap:10px}
+.nav-logo-text{font-family:'Inter',sans-serif;font-size:14px;font-weight:800;letter-spacing:.5px;color:#fff}
+.nav-logo-text span{color:var(--accent2)}
+.nav-tool-label{
+  font-family:'Space Mono',monospace;font-size:10px;color:var(--muted);
+  letter-spacing:1.5px;padding:3px 10px;border-radius:6px;
+  background:var(--glass2);border:1px solid var(--border);
+}
+.nav-back{
+  display:inline-flex;align-items:center;gap:6px;
+  font-family:'Space Mono',monospace;font-size:10px;
+  color:var(--muted);letter-spacing:1px;
+  padding:7px 14px;border:1px solid var(--border);border-radius:8px;
+  transition:all .2s;
+}
+.nav-back:hover{color:var(--accent2);border-color:rgba(196,181,253,.3)}
+.nav-back svg{transition:transform .2s}
+.nav-back:hover svg{transform:translateX(-2px)}
+
+/* ── HERO ── */
+.tool-hero{
+  text-align:center;padding:4rem 1.5rem 3rem;
+  position:relative;overflow:hidden;
+  border-bottom:1px solid var(--border);
+}
+.tool-hero::before{
+  content:'';position:absolute;top:0;left:50%;transform:translateX(-50%);
+  width:600px;height:350px;
+  background:radial-gradient(ellipse,rgba(139,92,246,.12) 0%,transparent 70%);
+  pointer-events:none;
+}
+.tool-hero-badge{
+  display:inline-flex;align-items:center;gap:8px;
+  background:rgba(139,92,246,.1);border:1px solid rgba(196,181,253,.2);
+  color:var(--accent2);font-size:10px;font-weight:600;letter-spacing:2px;
+  padding:5px 16px;border-radius:100px;margin-bottom:1.5rem;
+  text-transform:uppercase;font-family:'Space Mono',monospace;
+}
+.tool-hero h1{
+  font-size:clamp(26px,5vw,46px);font-weight:900;
+  color:#fff;line-height:1.05;letter-spacing:-1.5px;margin-bottom:1rem;
+}
+.tool-hero h1 em{
+  font-style:normal;
+  background:linear-gradient(135deg,var(--accent2),#fff,var(--accent));
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+}
+.tool-hero p{color:var(--muted);font-size:14px;max-width:520px;margin:0 auto;line-height:1.85}
+.tool-hero p code{background:rgba(139,92,246,.18);color:var(--accent2);padding:1px 6px;border-radius:4px;font-size:12px;font-family:'Space Mono',monospace}
+
+/* ── MAIN LAYOUT ── */
+.main{max-width:900px;margin:0 auto;padding:2rem 1.5rem}
+
+/* ── CARD ── */
+.card{background:var(--surface);border:1px solid var(--border);border-radius:16px;overflow:hidden;margin-bottom:1.25rem}
+.card-header{padding:1rem 1.25rem;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:10px}
+.card-icon{width:34px;height:34px;border-radius:10px;background:rgba(139,92,246,.12);border:1px solid rgba(139,92,246,.2);display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0}
+.card-title{font-size:13px;font-weight:700;color:#fff;letter-spacing:.2px}
+.card-sub{font-family:'Space Mono',monospace;font-size:9px;color:var(--muted);margin-top:3px;letter-spacing:1px;text-transform:uppercase}
+.card-body{padding:1.25rem}
+
+/* ── FORM ELEMENTS ── */
+.field{margin-bottom:1rem}
+.field:last-child{margin-bottom:0}
+label{display:block;font-family:'Space Mono',monospace;font-size:10px;color:var(--muted);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:6px}
+input[type=text],input[type=url],input[type=number],select,textarea{
+  width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:10px;
+  padding:10px 14px;color:var(--text);font-family:'Space Mono',monospace;font-size:12px;
+  outline:none;transition:border-color .2s;
+}
+input[type=text]:focus,input[type=url]:focus,input[type=number]:focus,select:focus,textarea:focus{
+  border-color:rgba(139,92,246,.5);box-shadow:0 0 0 3px rgba(139,92,246,.08);
+}
+select option{background:var(--surface2)}
+textarea{resize:vertical;min-height:80px;line-height:1.6;font-family:'Space Mono',monospace;font-size:11px}
+.field-hint{font-size:11px;color:var(--muted);margin-top:5px;line-height:1.6}
+input[type=range]{width:100%;accent-color:var(--accent);cursor:pointer}
+input[type=color]{width:100%;height:40px;border-radius:10px;border:1px solid var(--border);background:var(--surface2);cursor:pointer;padding:3px}
+input[type=checkbox]{accent-color:var(--accent);width:15px;height:15px;cursor:pointer}
+
+/* ── BUTTONS ── */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:10px 20px;border-radius:10px;font-family:'Space Mono',monospace;font-size:11px;cursor:pointer;letter-spacing:1px;border:none;transition:all .2s;text-transform:uppercase;font-weight:700}
+.btn-primary{background:linear-gradient(135deg,var(--accent),#7C3AED);color:#fff;box-shadow:0 4px 16px rgba(139,92,246,.3)}
+.btn-primary:hover:not(:disabled){transform:translateY(-1px);box-shadow:0 6px 24px rgba(139,92,246,.5)}
+.btn-primary:disabled{opacity:.4;cursor:not-allowed;transform:none;box-shadow:none}
+.btn-outline{background:transparent;border:1px solid var(--border);color:var(--muted)}
+.btn-outline:hover{border-color:rgba(196,181,253,.3);color:var(--accent2)}
+.btn-green{background:rgba(110,231,183,.1);border:1px solid rgba(110,231,183,.25);color:var(--green)}
+.btn-green:hover{background:rgba(110,231,183,.18)}
+.btn-red{background:rgba(248,113,113,.1);border:1px solid rgba(248,113,113,.25);color:var(--red)}
+.btn-red:hover{background:rgba(248,113,113,.18)}
+.btn-full{width:100%}
+.btn-row{display:flex;gap:.75rem;flex-wrap:wrap}
+.btn-sm{padding:6px 14px;font-size:9px}
+
+/* ── GRID HELPERS ── */
+.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:1rem}
+.grid-3{display:grid;grid-template-columns:repeat(3,1fr);gap:1rem}
+
+/* ── OUTPUT BOX / CODE ── */
+.output-box{position:relative;background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:.875rem 1rem;font-family:'Space Mono',monospace;font-size:12px;color:var(--accent2);cursor:pointer;transition:all .2s;word-break:break-all}
+.output-box:hover{border-color:rgba(196,181,253,.3);background:rgba(139,92,246,.06)}
+.copy-hint{position:absolute;top:8px;right:10px;font-size:9px;color:var(--muted);letter-spacing:1px;text-transform:uppercase;transition:color .2s}
+.output-box:hover .copy-hint{color:var(--accent2)}
+.output-box.copied{border-color:rgba(110,231,183,.4);background:rgba(110,231,183,.05)}
+.code-block{background:var(--surface2);border:1px solid var(--border);border-radius:12px;padding:1.25rem;font-family:'Space Mono',monospace;font-size:11px;color:var(--accent2);line-height:1.9;overflow-x:auto;white-space:pre;position:relative}
+.code-copy-btn{position:absolute;top:10px;right:10px;background:rgba(139,92,246,.15);border:1px solid rgba(139,92,246,.25);color:var(--accent2);border-radius:7px;padding:5px 12px;font-family:'Space Mono',monospace;font-size:9px;cursor:pointer;letter-spacing:.5px;transition:all .2s;font-weight:700}
+.code-copy-btn:hover{background:rgba(139,92,246,.3)}
+.code-copy-btn.copied{background:rgba(110,231,183,.15);border-color:rgba(110,231,183,.3);color:var(--green)}
+
+/* ── RESULT CARD ── */
+.result-card{background:rgba(110,231,183,.06);border:1px solid rgba(110,231,183,.2);border-radius:12px;padding:1.25rem;display:none}
+.result-card.show{display:block}
+.result-title{font-size:11px;font-weight:700;color:var(--green);margin-bottom:.75rem;font-family:'Space Mono',monospace;letter-spacing:1px;text-transform:uppercase}
+.result-row{display:flex;justify-content:space-between;align-items:center;padding:.5rem 0;border-bottom:1px solid rgba(255,255,255,.04)}
+.result-row:last-child{border-bottom:none}
+.result-key{font-family:'Space Mono',monospace;font-size:10px;color:var(--muted);letter-spacing:1px}
+.result-val{font-family:'Space Mono',monospace;font-size:12px;color:var(--text);font-weight:700}
+.result-val.green{color:var(--green)}
+.result-val.red{color:var(--red)}
+.result-val.yellow{color:var(--yellow)}
+
+/* ── STATUS / LOG ── */
+.status-bar{background:var(--surface2);border-radius:10px;border:1px solid var(--border);padding:.875rem 1rem;font-family:'Space Mono',monospace;font-size:10px;line-height:1.9;min-height:48px;max-height:140px;overflow-y:auto;color:var(--muted)}
+.log-ok{color:var(--green)}
+.log-err{color:var(--red)}
+.log-info{color:var(--accent2)}
+.log-warn{color:var(--yellow)}
+
+/* ── LOADING BAR ── */
+.loading-bar{height:3px;background:linear-gradient(90deg,var(--accent),var(--accent2),var(--accent));background-size:200%;animation:shimmer 1.2s infinite;border-radius:3px;display:none;margin-bottom:1rem}
+.loading-bar.show{display:block}
+@keyframes shimmer{0%{background-position:200% 0}100%{background-position:-200% 0}}
+
+/* ── PROGRESS ── */
+.progress-wrap{margin:.75rem 0}
+.progress-label{font-family:'Space Mono',monospace;font-size:10px;color:var(--muted);margin-bottom:6px;display:flex;justify-content:space-between}
+.progress-track{height:6px;background:var(--border);border-radius:3px;overflow:hidden}
+.progress-thumb{height:100%;background:linear-gradient(90deg,var(--accent),var(--accent2));border-radius:3px;width:0%;transition:width .3s}
+
+/* ── TOGGLE ── */
+.toggle-row{display:flex;align-items:center;justify-content:space-between;padding:.625rem 0;border-bottom:1px solid var(--border)}
+.toggle-row:last-child{border-bottom:none}
+.toggle-info-title{font-size:13px;color:var(--text);font-weight:500}
+.toggle-info-sub{font-size:11px;color:var(--muted);margin-top:2px}
+.toggle{position:relative;width:40px;height:22px;flex-shrink:0}
+.toggle input{opacity:0;width:0;height:0;position:absolute}
+.toggle-slider{position:absolute;cursor:pointer;inset:0;background:var(--border);border-radius:11px;transition:.2s}
+.toggle-slider::before{content:'';position:absolute;height:16px;width:16px;left:3px;bottom:3px;background:#fff;border-radius:50%;transition:.2s}
+.toggle input:checked+.toggle-slider{background:var(--accent)}
+.toggle input:checked+.toggle-slider::before{transform:translateX(18px)}
+
+/* ── TABS ── */
+.tabs{display:flex;gap:0;border-bottom:1px solid var(--border);overflow-x:auto}
+.tab{flex-shrink:0;padding:.75rem 1rem;font-family:'Space Mono',monospace;font-size:10px;letter-spacing:1.5px;color:var(--muted);cursor:pointer;border-bottom:2px solid transparent;transition:all .2s;background:none;border-top:none;border-left:none;border-right:none;text-transform:uppercase;white-space:nowrap}
+.tab.active{color:var(--accent2);border-bottom-color:var(--accent2)}
+.tab:hover:not(.active){color:var(--text)}
+.tab-panel{display:none;padding:1.25rem}
+.tab-panel.active{display:block}
+
+/* ── DROP ZONE ── */
+.drop-zone{border:2px dashed var(--border);border-radius:12px;padding:2.5rem;text-align:center;cursor:pointer;transition:all .2s;position:relative}
+.drop-zone:hover,.drop-zone.dragover{border-color:var(--accent);background:rgba(139,92,246,.05)}
+.drop-zone input[type=file]{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%}
+.drop-icon{font-size:28px;margin-bottom:.75rem}
+.drop-text{font-family:'Space Mono',monospace;font-size:11px;color:var(--muted);letter-spacing:1px}
+.drop-hint{font-size:10px;color:var(--muted);opacity:.5;margin-top:4px}
+.file-selected{background:rgba(110,231,183,.05);border-color:rgba(110,231,183,.4)!important}
+
+/* ── STATUS CHECKER SPECIFIC ── */
+.service-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:.75rem}
+.service-card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:1rem;display:flex;align-items:center;gap:.875rem;transition:border-color .2s}
+.service-card.ok{border-color:rgba(110,231,183,.2);background:rgba(110,231,183,.04)}
+.service-card.degraded{border-color:rgba(252,211,77,.2);background:rgba(252,211,77,.04)}
+.service-card.down{border-color:rgba(248,113,113,.2);background:rgba(248,113,113,.04)}
+.service-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0}
+.service-dot.ok{background:var(--green);box-shadow:0 0 8px rgba(110,231,183,.6)}
+.service-dot.degraded{background:var(--yellow);box-shadow:0 0 8px rgba(252,211,77,.6)}
+.service-dot.down{background:var(--red);box-shadow:0 0 8px rgba(248,113,113,.6)}
+.service-dot.loading{background:var(--muted);animation:pulse-dot 1s infinite}
+@keyframes pulse-dot{0%,100%{opacity:.3}50%{opacity:1}}
+.service-name{font-size:12px;font-weight:600;color:var(--text)}
+.service-status{font-family:'Space Mono',monospace;font-size:9px;color:var(--muted);margin-top:2px;letter-spacing:.5px}
+.overall-status{display:flex;align-items:center;gap:1rem;padding:1.25rem;border-radius:14px;margin-bottom:1.25rem;border:1px solid var(--border);background:var(--surface)}
+.overall-dot{width:14px;height:14px;border-radius:50%;flex-shrink:0}
+.overall-title{font-size:15px;font-weight:700;color:#fff}
+.overall-sub{font-family:'Space Mono',monospace;font-size:10px;color:var(--muted);margin-top:3px;letter-spacing:.5px}
+.refresh-info{font-family:'Space Mono',monospace;font-size:10px;color:var(--muted);margin-left:auto;text-align:right;flex-shrink:0}
+
+/* ── SKYBOX ── */
+.skybox-faces{display:grid;grid-template-columns:repeat(3,1fr);gap:.5rem;margin-top:.75rem}
+.skybox-face{border:1px solid var(--border);border-radius:10px;overflow:hidden;aspect-ratio:1;position:relative;background:var(--surface2);display:flex;align-items:center;justify-content:center}
+.face-label{position:absolute;top:6px;left:8px;font-family:'Space Mono',monospace;font-size:9px;color:rgba(255,255,255,.6);letter-spacing:1px;text-shadow:0 1px 3px rgba(0,0,0,.8);font-weight:700}
+.skybox-face canvas{width:100%;height:100%;object-fit:cover}
+.skybox-face-ph{font-family:'Space Mono',monospace;font-size:9px;color:var(--muted);letter-spacing:1px}
+
+/* ── THUMBNAIL GENERATOR ── */
+.canvas-wrap{border-radius:14px;overflow:hidden;border:1px solid var(--border);margin-bottom:1.25rem;background:var(--surface2);aspect-ratio:16/9;display:flex;align-items:center;justify-content:center;position:relative}
+.canvas-wrap canvas{width:100%;height:100%;display:block}
+.preset-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(100px,1fr));gap:.625rem;margin-bottom:1rem}
+.preset-btn{background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:.625rem .5rem;cursor:pointer;text-align:center;transition:all .2s;font-family:'Space Mono',monospace;font-size:9px;color:var(--muted);letter-spacing:.5px}
+.preset-btn:hover,.preset-btn.active{border-color:rgba(196,181,253,.3);color:var(--accent2);background:rgba(139,92,246,.08)}
+.preset-swatch{width:100%;height:28px;border-radius:6px;margin-bottom:5px}
+.layer-row{display:flex;align-items:center;gap:8px;padding:.5rem .75rem;background:var(--surface2);border:1px solid var(--border);border-radius:10px;margin-bottom:.5rem;cursor:grab}
+.layer-drag{color:var(--muted);font-size:14px;flex-shrink:0}
+.layer-name{flex:1;font-size:12px;color:var(--text)}
+.layer-vis{background:none;border:none;cursor:pointer;color:var(--muted);font-size:14px;transition:color .2s}
+.layer-vis:hover{color:var(--accent2)}
+
+/* ── TWEEN CALC ── */
+.easing-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:.5rem;margin-bottom:1rem}
+.easing-btn{background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:.625rem;cursor:pointer;font-family:'Space Mono',monospace;font-size:9px;color:var(--muted);letter-spacing:.5px;transition:all .2s;text-align:center}
+.easing-btn:hover,.easing-btn.active{border-color:rgba(196,181,253,.3);color:var(--accent2);background:rgba(139,92,246,.08)}
+.tween-preview-wrap{height:80px;background:var(--surface2);border:1px solid var(--border);border-radius:10px;position:relative;overflow:hidden;margin-bottom:1rem}
+.tween-preview-ball{width:20px;height:20px;border-radius:50%;background:linear-gradient(135deg,var(--accent),var(--accent2));position:absolute;top:50%;transform:translateY(-50%);left:5%;box-shadow:0 0 12px var(--glow)}
+.tween-timeline{height:3px;background:var(--border);border-radius:2px;margin-bottom:1rem;position:relative}
+.tween-progress{height:100%;background:linear-gradient(90deg,var(--accent),var(--accent2));border-radius:2px;width:0%;transition:none}
+.prop-row{display:flex;gap:8px;margin-bottom:.5rem;align-items:center}
+.prop-name{width:120px;flex-shrink:0;background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:8px 10px;color:var(--text);font-family:'Space Mono',monospace;font-size:11px;outline:none;transition:border-color .2s}
+.prop-name:focus{border-color:rgba(196,181,253,.4)}
+.prop-val{flex:1;background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:8px 10px;color:var(--accent2);font-family:'Space Mono',monospace;font-size:11px;outline:none;transition:border-color .2s}
+.prop-val:focus{border-color:rgba(196,181,253,.4)}
+.prop-del{background:none;border:none;color:var(--muted);cursor:pointer;font-size:16px;padding:4px;transition:color .2s}
+.prop-del:hover{color:var(--red)}
+
+/* ── SCRIPT HEADER ── */
+.header-field-grid{display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:1rem}
+.license-btn{flex:1;padding:.625rem;border:1px solid var(--border);border-radius:8px;background:var(--surface2);color:var(--muted);font-family:'Space Mono',monospace;font-size:9px;cursor:pointer;text-align:center;transition:all .2s;letter-spacing:.5px}
+.license-btn.active{border-color:rgba(196,181,253,.3);color:var(--accent2);background:rgba(139,92,246,.1)}
+
+/* ── MISC ── */
+.hidden{display:none!important}
+.tag{display:inline-flex;align-items:center;font-family:'Space Mono',monospace;font-size:9px;letter-spacing:1px;padding:3px 10px;border-radius:100px;border:1px solid var(--border);color:var(--muted)}
+.tag.green{border-color:rgba(110,231,183,.3);color:var(--green);background:rgba(110,231,183,.06)}
+.tag.red{border-color:rgba(248,113,113,.3);color:var(--red);background:rgba(248,113,113,.06)}
+.tag.yellow{border-color:rgba(252,211,77,.3);color:var(--yellow);background:rgba(252,211,77,.06)}
+.divider{height:1px;background:var(--border);margin:1.25rem 0}
+.api-warning{background:rgba(252,211,77,.07);border:1px solid rgba(252,211,77,.2);border-radius:10px;padding:.875rem;margin-bottom:1rem;display:flex;gap:10px;align-items:flex-start}
+.api-warning-icon{font-size:14px;flex-shrink:0;margin-top:1px}
+.api-warning-text{font-size:11px;color:var(--yellow);line-height:1.7}
+
+/* ── RESPONSIVE ── */
+@media(max-width:640px){
+  .main{padding:1rem}
+  nav{padding:0 1rem}
+  .grid-2,.grid-3{grid-template-columns:1fr}
+  .service-grid{grid-template-columns:1fr 1fr}
+  .skybox-faces{grid-template-columns:repeat(3,1fr)}
+  .easing-grid{grid-template-columns:repeat(3,1fr)}
+  .header-field-grid{grid-template-columns:1fr}
+  .prop-row{flex-wrap:wrap}
+  .prop-name{width:100%}
+  .canvas-wrap{aspect-ratio:4/3}
+}
+@media(max-width:400px){
+  .service-grid{grid-template-columns:1fr}
+  .easing-grid{grid-template-columns:1fr 1fr}
+}
+</style>
+</head>
+<body>
+<nav>
+  <a href="../index.html" class="nav-brand">
+    <span class="nav-logo-text">SALT<span>ORIA</span></span>
+    <span class="nav-tool-label">TWEEN CALC</span>
+  </a>
+  <a href="../index.html#tools" class="nav-back">
+    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>
+    Tools
+  </a>
+</nav>
+<div class="tool-hero">
+  <div class="tool-hero-badge">✨ SALTORIA TOOLS</div>
+  <h1>Tween <em>Calculator</em></h1>
+  <p>Generate kode TweenService Luau siap pakai. Pilih easing, durasi, dan properti — langsung copy paste ke Roblox Studio.</p>
+</div>
+<div class="main">
+
+  <!-- EASING STYLE -->
+  <div class="card">
+    <div class="card-header">
+      <div class="card-icon">📈</div>
+      <div><div class="card-title">Easing Style & Direction</div><div class="card-sub">PILIH KURVA ANIMASI</div></div>
+    </div>
+    <div class="card-body">
+      <div class="grid-2" style="margin-bottom:1.25rem">
+        <div class="field">
+          <label>Easing Style</label>
+          <select id="ease-style" onchange="generate()">
+            <option>Linear</option><option selected>Quad</option><option>Cubic</option>
+            <option>Quart</option><option>Quint</option><option>Sine</option>
+            <option>Bounce</option><option>Elastic</option><option>Back</option>
+            <option>Exponential</option><option>Circular</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>Easing Direction</label>
+          <select id="ease-dir" onchange="generate()">
+            <option>In</option><option selected>Out</option><option>InOut</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- PREVIEW ANIMATION -->
+      <div class="preview-wrap">
+        <div class="preview-track"></div>
+        <div class="preview-ball" id="preview-ball"></div>
+      </div>
+      <div class="btn-row">
+        <button class="btn btn-outline" onclick="playPreview()" style="flex:1">▶ PREVIEW ANIMASI</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- SETTINGS -->
+  <div class="card">
+    <div class="card-header">
+      <div class="card-icon">⚙️</div>
+      <div><div class="card-title">Tween Settings</div><div class="card-sub">DURASI · REPEAT · DELAY</div></div>
+    </div>
+    <div class="card-body">
+      <div class="grid-3">
+        <div class="field">
+          <label>Durasi (detik)</label>
+          <input type="number" id="duration" value="0.5" min="0.01" step="0.1" oninput="generate()">
+        </div>
+        <div class="field">
+          <label>Repeat Count (-1 = loop)</label>
+          <input type="number" id="repeat" value="0" min="-1" step="1" oninput="generate()">
+        </div>
+        <div class="field">
+          <label>Delay (detik)</label>
+          <input type="number" id="delay" value="0" min="0" step="0.1" oninput="generate()">
+        </div>
+      </div>
+      <div class="field">
+        <label>Reverses</label>
+        <select id="reverses" onchange="generate()">
+          <option value="false">false — tidak balik</option>
+          <option value="true">true — balik ke posisi awal</option>
+        </select>
+      </div>
+    </div>
+  </div>
+
+  <!-- PROPERTIES -->
+  <div class="card">
+    <div class="card-header">
+      <div class="card-icon">🎯</div>
+      <div><div class="card-title">Properties yang Di-tween</div><div class="card-sub">PILIH SATU ATAU LEBIH</div></div>
+    </div>
+    <div class="card-body">
+      <div style="margin-bottom:1rem">
+        <div id="prop-chips">
+          <span class="prop-chip selected" data-val="Position = UDim2.new(1, 0, 0.5, 0)" onclick="toggleProp(this)">📍 Position</span>
+          <span class="prop-chip" data-val="Size = UDim2.new(0.5, 0, 0.5, 0)" onclick="toggleProp(this)">📐 Size</span>
+          <span class="prop-chip" data-val="Rotation = 45" onclick="toggleProp(this)">🔄 Rotation</span>
+          <span class="prop-chip" data-val="BackgroundTransparency = 1" onclick="toggleProp(this)">👁️ BG Transparency</span>
+          <span class="prop-chip" data-val="TextTransparency = 1" onclick="toggleProp(this)">📝 Text Transparency</span>
+          <span class="prop-chip" data-val="ImageTransparency = 1" onclick="toggleProp(this)">🖼️ Image Transparency</span>
+          <span class="prop-chip" data-val="BackgroundColor3 = Color3.fromRGB(255, 0, 0)" onclick="toggleProp(this)">🎨 BG Color3</span>
+          <span class="prop-chip" data-val="TextColor3 = Color3.fromRGB(255, 255, 255)" onclick="toggleProp(this)">🔤 Text Color3</span>
+          <span class="prop-chip" data-val="CFrame = CFrame.new(0, 10, 0)" onclick="toggleProp(this)">🧭 CFrame</span>
+          <span class="prop-chip" data-val="Position = Vector3.new(0, 10, 0)" onclick="toggleProp(this)">📦 Position (Part)</span>
+          <span class="prop-chip" data-val="Size = Vector3.new(4, 4, 4)" onclick="toggleProp(this)">📏 Size (Part)</span>
+          <span class="prop-chip" data-val="Transparency = 1" onclick="toggleProp(this)">💨 Transparency (Part)</span>
+          <span class="prop-chip" data-val="Volume = 0" onclick="toggleProp(this)">🔊 Volume (Sound)</span>
+          <span class="prop-chip" data-val="PlaybackSpeed = 2" onclick="toggleProp(this)">⏩ PlaybackSpeed</span>
+        </div>
+      </div>
+      <div class="field">
+        <label>Custom Property (opsional, format: NamaProp = value)</label>
+        <input type="text" id="custom-prop" placeholder="cth: FieldOfView = 70" oninput="generate()">
+      </div>
+    </div>
+  </div>
+
+  <!-- OBJECT -->
+  <div class="card">
+    <div class="card-header">
+      <div class="card-icon">🧩</div>
+      <div><div class="card-title">Nama Variabel</div><div class="card-sub">NAMA OBJECT DAN TWEEN</div></div>
+    </div>
+    <div class="card-body">
+      <div class="grid-2">
+        <div class="field">
+          <label>Nama Object</label>
+          <input type="text" id="obj-name" value="frame" oninput="generate()">
+        </div>
+        <div class="field">
+          <label>Nama Variabel Tween</label>
+          <input type="text" id="tween-name" value="tween" oninput="generate()">
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- OUTPUT -->
+  <div class="card">
+    <div class="card-header">
+      <div class="card-icon">📋</div>
+      <div><div class="card-title">Generated Luau Code</div><div class="card-sub">SIAP PASTE KE ROBLOX STUDIO</div></div>
+    </div>
+    <div class="card-body">
+      <div class="code-block" id="code-out"><button class="copy-btn" id="copy-btn" onclick="copyCode()">📋 COPY</button><span id="code-inner"></span></div>
+      <div class="info-box">
+        Paste kode ini di <b>LocalScript</b> (untuk UI) atau <b>Script</b> (untuk Part). Pastikan variabel <b>object</b> sudah benar-benar mengarah ke instance yang ingin di-tween. Gunakan <code>tween:Play()</code>, <code>tween:Pause()</code>, atau <code>tween:Cancel()</code> untuk kontrol.
+      </div>
+    </div>
+  </div>
+
+</div>
+<script>
+function toggleProp(el){
+  el.classList.toggle('selected');
+  generate();
+}
+
+function generate(){
+  const style = document.getElementById('ease-style').value;
+  const dir   = document.getElementById('ease-dir').value;
+  const dur   = parseFloat(document.getElementById('duration').value)||0.5;
+  const rep   = parseInt(document.getElementById('repeat').value)||0;
+  const delay = parseFloat(document.getElementById('delay').value)||0;
+  const rev   = document.getElementById('reverses').value;
+  const obj   = document.getElementById('obj-name').value||'frame';
+  const tname = document.getElementById('tween-name').value||'tween';
+  const custom= document.getElementById('custom-prop').value.trim();
+
+  const selectedProps = Array.from(document.querySelectorAll('.prop-chip.selected')).map(c=>'\t'+c.dataset.val+',');
+  if(custom) selectedProps.push('\t'+custom+',');
+  const propsStr = selectedProps.length ? selectedProps.join('\n') : '\t-- tambahkan properti di sini';
+
+  const code =
+`<span class="cm">-- Generated by Saltoria Tween Calculator</span>
+<span class="kw">local</span> TweenService <span class="kw">=</span> game:<span class="fn">GetService</span>(<span class="str">"TweenService"</span>)
+
+<span class="cm">-- TweenInfo setup</span>
+<span class="kw">local</span> tweenInfo <span class="kw">=</span> <span class="fn">TweenInfo</span>.new(
+\t<span class="num">${dur}</span>,                              <span class="cm">-- Duration</span>
+\tEnum.EasingStyle.<span class="str">${style}</span>,        <span class="cm">-- EasingStyle</span>
+\tEnum.EasingDirection.<span class="str">${dir}</span>,     <span class="cm">-- EasingDirection</span>
+\t<span class="num">${rep}</span>,                              <span class="cm">-- RepeatCount</span>
+\t<span class="num">${rev}</span>,                           <span class="cm">-- Reverses</span>
+\t<span class="num">${delay}</span>                             <span class="cm">-- DelayTime</span>
+)
+
+<span class="cm">-- Properties target</span>
+<span class="kw">local</span> goals <span class="kw">=</span> {
+${propsStr}
+}
+
+<span class="cm">-- Create & play tween</span>
+<span class="kw">local</span> ${tname} <span class="kw">=</span> TweenService:<span class="fn">Create</span>(${obj}, tweenInfo, goals)
+${tname}:<span class="fn">Play</span>()
+
+<span class="cm">-- Optional: wait until finished</span>
+<span class="cm">-- ${tname}.Completed:Wait()</span>`;
+
+  document.getElementById('code-inner').innerHTML = code;
+}
+
+function copyCode(){
+  const style = document.getElementById('ease-style').value;
+  const dir   = document.getElementById('ease-dir').value;
+  const dur   = parseFloat(document.getElementById('duration').value)||0.5;
+  const rep   = parseInt(document.getElementById('repeat').value)||0;
+  const delay = parseFloat(document.getElementById('delay').value)||0;
+  const rev   = document.getElementById('reverses').value;
+  const obj   = document.getElementById('obj-name').value||'frame';
+  const tname = document.getElementById('tween-name').value||'tween';
+  const custom= document.getElementById('custom-prop').value.trim();
+  const selectedProps = Array.from(document.querySelectorAll('.prop-chip.selected')).map(c=>'\t'+c.dataset.val+',');
+  if(custom) selectedProps.push('\t'+custom+',');
+  const propsStr = selectedProps.length ? selectedProps.join('\n') : '\t-- tambahkan properti di sini';
+
+  const plain =
+`-- Generated by Saltoria Tween Calculator
+local TweenService = game:GetService("TweenService")
+
+local tweenInfo = TweenInfo.new(
+\t${dur},
+\tEnum.EasingStyle.${style},
+\tEnum.EasingDirection.${dir},
+\t${rep},
+\t${rev},
+\t${delay}
+)
+
+local goals = {
+${propsStr}
+}
+
+local ${tname} = TweenService:Create(${obj}, tweenInfo, goals)
+${tname}:Play()`;
+
+  navigator.clipboard.writeText(plain).then(()=>{
+    const btn=document.getElementById('copy-btn');
+    btn.textContent='✓ COPIED!';
+    btn.classList.add('copied');
+    setTimeout(()=>{btn.textContent='📋 COPY';btn.classList.remove('copied');},1800);
+  });
+}
+
+// Preview animation
+function getEasingFn(style, dir){
+  const easings = {
+    Linear: t=>t,
+    Quad:   t=>t*t,
+    Cubic:  t=>t*t*t,
+    Quart:  t=>t*t*t*t,
+    Quint:  t=>t*t*t*t*t,
+    Sine:   t=>1-Math.cos(t*Math.PI/2),
+    Bounce: t=>{ let n=1-t; if(n<1/2.75)return 1-(7.5625*n*n); if(n<2/2.75){n-=1.5/2.75;return 1-(7.5625*n*n+0.75);} if(n<2.5/2.75){n-=2.25/2.75;return 1-(7.5625*n*n+0.9375);}n-=2.625/2.75;return 1-(7.5625*n*n+0.984375);},
+    Elastic:t=>t===0?0:t===1?1:Math.pow(2,-10*t)*Math.sin((t*10-0.75)*(2*Math.PI/3))+1,
+    Back:   t=>{const c=1.70158; return (c+1)*t*t*t - c*t*t;},
+    Exponential: t=>t===0?0:Math.pow(2,10*t-10),
+    Circular: t=>1-Math.sqrt(1-Math.pow(t,2)),
+  };
+  const fn = easings[style]||easings.Quad;
+  return t=>{
+    if(dir==='In') return fn(t);
+    if(dir==='Out') return 1-fn(1-t);
+    if(t<0.5) return fn(2*t)/2;
+    return 1-fn(2*(1-t))/2;
+  };
+}
+
+let animFrame=null;
+function playPreview(){
+  if(animFrame) cancelAnimationFrame(animFrame);
+  const ball = document.getElementById('preview-ball');
+  const wrap  = ball.parentElement;
+  const trackW = wrap.clientWidth - 48 - 28;
+  const style  = document.getElementById('ease-style').value;
+  const dir    = document.getElementById('ease-dir').value;
+  const dur    = (parseFloat(document.getElementById('duration').value)||0.5)*1000;
+  const fn     = getEasingFn(style,dir);
+  const start  = performance.now();
+  function frame(now){
+    const t=Math.min((now-start)/dur,1);
+    ball.style.left=(24 + fn(t)*trackW)+'px';
+    if(t<1)animFrame=requestAnimationFrame(frame);
+    else setTimeout(()=>{ball.style.left='24px';},300);
+  }
+  animFrame=requestAnimationFrame(frame);
+}
+
+generate();
+</script>
+</body>
+</html>
