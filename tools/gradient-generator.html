@@ -1,0 +1,969 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>UIGradient Generator — Saltoria Tools</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:#07070F;--surface:#0D0D18;--surface2:#12121E;
+  --accent:#8B5CF6;--accent2:#C4B5FD;--text:#F0EEFF;
+  --muted:#6B7280;--border:rgba(255,255,255,0.06);
+  --glass2:rgba(255,255,255,0.06);
+  --green:#6EE7B7;--red:#F87171;--yellow:#FCD34D;
+}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;font-size:15px;line-height:1.7;overflow-x:hidden;-webkit-font-smoothing:antialiased;min-height:100vh}
+a{text-decoration:none;color:inherit}
+
+/* NAV */
+nav{display:flex;align-items:center;justify-content:space-between;padding:0 2rem;height:64px;background:rgba(7,7,15,.92);backdrop-filter:blur(20px);border-bottom:1px solid var(--border);position:sticky;top:0;z-index:200}
+.nav-brand{display:flex;align-items:center;gap:10px}
+.nav-logo-text{font-size:14px;font-weight:800;letter-spacing:.5px;color:#fff}
+.nav-logo-text span{color:var(--accent2)}
+.nav-tool-label{font-family:'Space Mono',monospace;font-size:10px;color:var(--muted);letter-spacing:1.5px;padding:3px 10px;border-radius:6px;background:var(--glass2);border:1px solid var(--border)}
+.nav-back{display:inline-flex;align-items:center;gap:6px;font-family:'Space Mono',monospace;font-size:10px;color:var(--muted);letter-spacing:1px;padding:7px 14px;border:1px solid var(--border);border-radius:8px;transition:all .2s}
+.nav-back:hover{color:var(--accent2);border-color:rgba(196,181,253,.3)}
+.nav-back:hover svg{transform:translateX(-2px)}
+.nav-back svg{transition:transform .2s}
+
+/* HERO */
+.tool-hero{text-align:center;padding:4rem 1.5rem 3rem;position:relative;overflow:hidden;border-bottom:1px solid var(--border)}
+.tool-hero::before{content:'';position:absolute;top:0;left:50%;transform:translateX(-50%);width:600px;height:350px;background:radial-gradient(ellipse,rgba(139,92,246,.14) 0%,transparent 70%);pointer-events:none}
+.tool-hero-badge{display:inline-flex;align-items:center;gap:8px;background:rgba(139,92,246,.1);border:1px solid rgba(196,181,253,.2);color:var(--accent2);font-size:10px;font-weight:600;letter-spacing:2px;padding:5px 16px;border-radius:100px;margin-bottom:1.5rem;text-transform:uppercase;font-family:'Space Mono',monospace}
+.tool-hero h1{font-size:clamp(26px,5vw,46px);font-weight:900;color:#fff;line-height:1.05;letter-spacing:-1.5px;margin-bottom:1rem}
+.tool-hero h1 em{font-style:normal;background:linear-gradient(135deg,var(--accent2),#fff,var(--accent));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.tool-hero p{color:var(--muted);font-size:14px;max-width:520px;margin:0 auto;line-height:1.85}
+
+/* LAYOUT */
+.main{max-width:1060px;margin:0 auto;padding:2rem 1.5rem}
+.layout{display:grid;grid-template-columns:1fr 380px;gap:1.25rem;align-items:start}
+
+/* CARD */
+.card{background:var(--surface);border:1px solid var(--border);border-radius:16px;overflow:hidden;margin-bottom:1.25rem}
+.card-header{padding:1rem 1.25rem;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:10px}
+.card-icon{width:34px;height:34px;border-radius:10px;background:rgba(139,92,246,.12);border:1px solid rgba(139,92,246,.2);display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0}
+.card-title{font-size:13px;font-weight:700;color:#fff}
+.card-sub{font-family:'Space Mono',monospace;font-size:9px;color:var(--muted);margin-top:3px;letter-spacing:1px;text-transform:uppercase}
+.card-body{padding:1.25rem}
+
+/* FORM */
+.field{margin-bottom:1rem}
+.field:last-child{margin-bottom:0}
+label{display:block;font-family:'Space Mono',monospace;font-size:10px;color:var(--muted);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:6px}
+input[type=text],input[type=number],select{width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:10px 14px;color:var(--text);font-family:'Space Mono',monospace;font-size:12px;outline:none;transition:border-color .2s}
+input[type=text]:focus,input[type=number]:focus,select:focus{border-color:rgba(139,92,246,.5);box-shadow:0 0 0 3px rgba(139,92,246,.08)}
+select option{background:var(--surface2)}
+input[type=range]{width:100%;accent-color:var(--accent);cursor:pointer;margin-top:4px}
+.range-row{display:flex;align-items:center;gap:10px}
+.range-row input[type=range]{flex:1}
+.range-val{font-family:'Space Mono',monospace;font-size:11px;color:var(--accent2);min-width:38px;text-align:right;font-weight:700}
+
+/* BUTTONS */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:10px 20px;border-radius:10px;font-family:'Space Mono',monospace;font-size:11px;cursor:pointer;letter-spacing:1px;border:none;transition:all .2s;text-transform:uppercase;font-weight:700}
+.btn-primary{background:linear-gradient(135deg,var(--accent),#7C3AED);color:#fff;box-shadow:0 4px 16px rgba(139,92,246,.3)}
+.btn-primary:hover{transform:translateY(-1px);box-shadow:0 6px 24px rgba(139,92,246,.5)}
+.btn-outline{background:transparent;border:1px solid var(--border);color:var(--muted)}
+.btn-outline:hover{border-color:rgba(196,181,253,.3);color:var(--accent2)}
+.btn-green{background:rgba(110,231,183,.1);border:1px solid rgba(110,231,183,.25);color:var(--green)}
+.btn-green:hover{background:rgba(110,231,183,.18)}
+.btn-sm{padding:6px 14px;font-size:9px}
+.btn-full{width:100%}
+.btn-row{display:flex;gap:.75rem;flex-wrap:wrap}
+
+/* GRADIENT PREVIEW */
+.preview-wrap{border-radius:14px;overflow:hidden;border:1px solid var(--border);margin-bottom:1rem;position:relative}
+.preview-box{width:100%;height:140px;transition:background .3s;position:relative;display:flex;align-items:center;justify-content:center}
+.preview-label{font-size:18px;font-weight:900;color:rgba(255,255,255,.9);letter-spacing:-0.5px;text-shadow:0 2px 12px rgba(0,0,0,.4);pointer-events:none;user-select:none}
+.preview-rotation-badge{position:absolute;top:10px;right:12px;font-family:'Space Mono',monospace;font-size:9px;color:rgba(255,255,255,.55);letter-spacing:1px;background:rgba(0,0,0,.3);padding:3px 8px;border-radius:5px}
+
+/* MINI PREVIEWS */
+.mini-previews{display:grid;grid-template-columns:repeat(3,1fr);gap:.5rem;margin-bottom:1rem}
+.mini-box{border-radius:10px;height:52px;border:1px solid var(--border);cursor:pointer;transition:all .2s;position:relative;overflow:hidden}
+.mini-box:hover{transform:translateY(-2px);border-color:rgba(196,181,253,.35)}
+.mini-box.selected{border-color:var(--accent2);box-shadow:0 0 0 2px rgba(196,181,253,.25)}
+.mini-label{position:absolute;bottom:0;left:0;right:0;font-family:'Space Mono',monospace;font-size:8px;color:rgba(255,255,255,.7);text-align:center;padding:3px;background:rgba(0,0,0,.35);backdrop-filter:blur(4px);letter-spacing:.5px}
+
+/* COLOR STOPS */
+.stops-wrap{margin-bottom:1rem}
+.stop-row{display:flex;align-items:center;gap:8px;margin-bottom:.5rem;padding:.625rem .875rem;background:var(--surface2);border:1px solid var(--border);border-radius:10px;transition:border-color .2s}
+.stop-row:hover{border-color:rgba(139,92,246,.2)}
+.stop-swatch{width:32px;height:32px;border-radius:8px;border:2px solid rgba(255,255,255,.15);cursor:pointer;flex-shrink:0;position:relative;overflow:hidden}
+.stop-swatch input[type=color]{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%}
+.stop-hex{flex:1;background:transparent;border:none;color:var(--accent2);font-family:'Space Mono',monospace;font-size:12px;outline:none;padding:0 4px;cursor:pointer}
+.stop-hex:focus{color:#fff}
+.stop-offset{width:52px;background:transparent;border:none;border-left:1px solid var(--border);color:var(--muted);font-family:'Space Mono',monospace;font-size:11px;outline:none;text-align:right;padding:0 8px;flex-shrink:0}
+.stop-offset:focus{color:var(--accent2)}
+.stop-del{background:none;border:none;color:var(--muted);cursor:pointer;font-size:16px;padding:4px;transition:color .2s;flex-shrink:0;line-height:1}
+.stop-del:hover{color:var(--red)}
+.add-stop-btn{display:flex;align-items:center;justify-content:center;gap:6px;width:100%;padding:.6rem;border:1px dashed var(--border);border-radius:10px;font-family:'Space Mono',monospace;font-size:10px;color:var(--muted);background:none;cursor:pointer;transition:all .2s;letter-spacing:.5px}
+.add-stop-btn:hover{border-color:rgba(139,92,246,.4);color:var(--accent2)}
+
+/* ANIMATION PRESETS */
+.anim-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:.5rem;margin-bottom:1rem}
+.anim-btn{background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:.75rem .625rem;cursor:pointer;text-align:center;transition:all .2s;font-family:'Space Mono',monospace;font-size:9px;color:var(--muted);letter-spacing:.5px;line-height:1.6}
+.anim-btn:hover,.anim-btn.active{border-color:rgba(196,181,253,.3);color:var(--accent2);background:rgba(139,92,246,.08)}
+.anim-btn .anim-icon{font-size:16px;display:block;margin-bottom:4px}
+.anim-btn .anim-name{font-weight:700;letter-spacing:.5px;font-size:9px}
+.anim-btn .anim-desc{font-size:8px;color:var(--muted);margin-top:2px;font-family:'Inter',sans-serif;letter-spacing:0}
+
+/* SAVED */
+.saved-list{display:flex;flex-direction:column;gap:.5rem;max-height:220px;overflow-y:auto}
+.saved-item{display:flex;align-items:center;gap:10px;padding:.625rem .875rem;background:var(--surface2);border:1px solid var(--border);border-radius:10px;cursor:pointer;transition:all .2s}
+.saved-item:hover{border-color:rgba(196,181,253,.3)}
+.saved-swatch{width:40px;height:26px;border-radius:6px;flex-shrink:0;border:1px solid rgba(255,255,255,.1)}
+.saved-name{flex:1;font-size:12px;font-weight:600;color:var(--text)}
+.saved-anim{font-family:'Space Mono',monospace;font-size:9px;color:var(--muted)}
+.saved-del{background:none;border:none;color:var(--muted);cursor:pointer;font-size:14px;padding:3px;transition:color .2s}
+.saved-del:hover{color:var(--red)}
+.empty-saved{font-family:'Space Mono',monospace;font-size:10px;color:var(--muted);text-align:center;padding:1.5rem;letter-spacing:1px;opacity:.6}
+
+/* CODE OUTPUT */
+.code-block{background:var(--surface2);border:1px solid var(--border);border-radius:12px;padding:1.25rem 1rem;font-family:'Space Mono',monospace;font-size:10px;color:var(--accent2);line-height:1.9;overflow-x:auto;white-space:pre;position:relative;max-height:340px;overflow-y:auto}
+.code-copy-btn{position:absolute;top:10px;right:10px;background:rgba(139,92,246,.15);border:1px solid rgba(139,92,246,.25);color:var(--accent2);border-radius:7px;padding:5px 12px;font-family:'Space Mono',monospace;font-size:9px;cursor:pointer;letter-spacing:.5px;transition:all .2s;font-weight:700}
+.code-copy-btn:hover{background:rgba(139,92,246,.3)}
+.code-copy-btn.copied{background:rgba(110,231,183,.15);border-color:rgba(110,231,183,.3);color:var(--green)}
+
+/* TAB */
+.tabs{display:flex;border-bottom:1px solid var(--border);overflow-x:auto}
+.tab{flex-shrink:0;padding:.75rem 1rem;font-family:'Space Mono',monospace;font-size:10px;letter-spacing:1.5px;color:var(--muted);cursor:pointer;border-bottom:2px solid transparent;transition:all .2s;background:none;border-top:none;border-left:none;border-right:none;text-transform:uppercase}
+.tab.active{color:var(--accent2);border-bottom-color:var(--accent2)}
+.tab:hover:not(.active){color:var(--text)}
+.tab-panel{display:none;padding:1.25rem}
+.tab-panel.active{display:block}
+
+/* MISC */
+.section-label{font-family:'Space Mono',monospace;font-size:10px;color:var(--muted);letter-spacing:2px;text-transform:uppercase;margin-bottom:.75rem}
+.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:.75rem}
+.divider{height:1px;background:var(--border);margin:1rem 0}
+.anim-live-badge{display:inline-flex;align-items:center;gap:5px;font-family:'Space Mono',monospace;font-size:9px;color:var(--green);letter-spacing:1px}
+.anim-live-dot{width:6px;height:6px;border-radius:50%;background:var(--green);animation:blink 1s infinite}
+@keyframes blink{0%,100%{opacity:.3}50%{opacity:1}}
+
+@media(max-width:820px){
+  .layout{grid-template-columns:1fr}
+  nav{padding:0 1rem}
+  .main{padding:1rem}
+  .mini-previews{grid-template-columns:repeat(3,1fr)}
+  .anim-grid{grid-template-columns:repeat(4,1fr)}
+}
+@media(max-width:480px){
+  .anim-grid{grid-template-columns:repeat(2,1fr)}
+}
+</style>
+</head>
+<body>
+
+<nav>
+  <a href="../index.html" class="nav-brand">
+    <span class="nav-logo-text">SALT<span>ORIA</span></span>
+    <span class="nav-tool-label">GRADIENT GEN</span>
+  </a>
+  <a href="../index.html#tools" class="nav-back">
+    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>
+    Tools
+  </a>
+</nav>
+
+<div class="tool-hero">
+  <div class="tool-hero-badge">🎨 SALTORIA TOOLS</div>
+  <h1>UIGradient <em>Generator</em></h1>
+  <p>Custom gradient untuk Roblox UI — pilih warna, rotasi, dan animasi. Generate kode Luau UIGradient + TweenService siap paste ke Studio.</p>
+</div>
+
+<div class="main">
+  <div class="layout">
+
+    <!-- LEFT: EDITOR -->
+    <div>
+
+      <!-- PREVIEW -->
+      <div class="card">
+        <div class="card-header">
+          <div class="card-icon">👁️</div>
+          <div>
+            <div class="card-title">Preview</div>
+            <div class="card-sub" id="anim-status">Static</div>
+          </div>
+          <div style="margin-left:auto;display:flex;align-items:center;gap:8px">
+            <span class="anim-live-badge" id="live-badge" style="display:none">
+              <span class="anim-live-dot"></span>ANIMATING
+            </span>
+          </div>
+        </div>
+        <div class="card-body" style="padding:1rem">
+          <div class="preview-wrap">
+            <div class="preview-box" id="preview-box">
+              <span class="preview-label" id="preview-label">Saltoria Community</span>
+              <span class="preview-rotation-badge" id="rot-badge">0°</span>
+            </div>
+          </div>
+          <!-- Mini shape previews -->
+          <div class="mini-previews">
+            <div class="mini-box selected" id="shape-rect" onclick="setShape('rect',this)" title="Frame/Label">
+              <div style="height:100%;border-radius:9px" id="mini-rect"></div>
+              <div class="mini-label">FRAME</div>
+            </div>
+            <div class="mini-box" id="shape-pill" onclick="setShape('pill',this)" title="Pill Button">
+              <div style="height:100%;border-radius:26px" id="mini-pill"></div>
+              <div class="mini-label">BUTTON</div>
+            </div>
+            <div class="mini-box" id="shape-circle" onclick="setShape('circle',this)" title="Circle">
+              <div style="height:100%;border-radius:50%" id="mini-circle"></div>
+              <div class="mini-label">CIRCLE</div>
+            </div>
+          </div>
+          <!-- Preview text -->
+          <div class="field" style="margin-bottom:0">
+            <label>Preview Text</label>
+            <input type="text" id="prev-text" value="Saltoria Community" oninput="document.getElementById('preview-label').textContent=this.value||'—'">
+          </div>
+        </div>
+      </div>
+
+      <!-- COLOR STOPS -->
+      <div class="card">
+        <div class="card-header">
+          <div class="card-icon">🎨</div>
+          <div>
+            <div class="card-title">Color Stops</div>
+            <div class="card-sub">2–5 stops</div>
+          </div>
+        </div>
+        <div class="card-body">
+          <div class="stops-wrap" id="stops-wrap"></div>
+          <button class="add-stop-btn" onclick="addStop()">＋ Tambah Stop</button>
+        </div>
+      </div>
+
+      <!-- TRANSFORM -->
+      <div class="card">
+        <div class="card-header">
+          <div class="card-icon">🔄</div>
+          <div><div class="card-title">Transform</div></div>
+        </div>
+        <div class="card-body">
+          <div class="field">
+            <label>Rotation (°)</label>
+            <div class="range-row">
+              <input type="range" id="rotation" min="0" max="360" value="0" oninput="onRotate(this.value)">
+              <span class="range-val" id="rot-val">0°</span>
+            </div>
+          </div>
+          <div class="grid-2">
+            <div class="field">
+              <label>Transparency (dari)</label>
+              <div class="range-row">
+                <input type="range" id="trans-from" min="0" max="100" value="0" oninput="onTransparency()">
+                <span class="range-val" id="trans-from-val">0%</span>
+              </div>
+            </div>
+            <div class="field">
+              <label>Transparency (ke)</label>
+              <div class="range-row">
+                <input type="range" id="trans-to" min="0" max="100" value="0" oninput="onTransparency()">
+                <span class="range-val" id="trans-to-val">0%</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- RIGHT: ANIMATION + OUTPUT -->
+    <div>
+
+      <!-- GRADIENT NAME -->
+      <div class="card">
+        <div class="card-header">
+          <div class="card-icon">✏️</div>
+          <div><div class="card-title">Gradient Name</div></div>
+        </div>
+        <div class="card-body">
+          <div class="field" style="margin-bottom:.75rem">
+            <input type="text" id="gradient-name" value="MyGradient" placeholder="nama gradient..." oninput="renderCode()">
+          </div>
+          <div class="btn-row">
+            <button class="btn btn-outline btn-sm" onclick="saveGradient()">💾 Simpan</button>
+            <button class="btn btn-outline btn-sm" onclick="randomize()">🎲 Random</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- ANIMATION -->
+      <div class="card">
+        <div class="card-header">
+          <div class="card-icon">✨</div>
+          <div>
+            <div class="card-title">Animasi</div>
+            <div class="card-sub">TweenService loop</div>
+          </div>
+        </div>
+        <div class="card-body">
+          <div class="anim-grid">
+            <button class="anim-btn active" onclick="setAnim('none',this)">
+              <span class="anim-icon">⏹️</span>
+              <div class="anim-name">NONE</div>
+              <div class="anim-desc">Static, no loop</div>
+            </button>
+            <button class="anim-btn" onclick="setAnim('slide',this)">
+              <span class="anim-icon">➡️</span>
+              <div class="anim-name">SLIDE</div>
+              <div class="anim-desc">Offset geser loop</div>
+            </button>
+            <button class="anim-btn" onclick="setAnim('pulse',this)">
+              <span class="anim-icon">💓</span>
+              <div class="anim-name">PULSE</div>
+              <div class="anim-desc">Transparansi naik turun</div>
+            </button>
+            <button class="anim-btn" onclick="setAnim('rotate',this)">
+              <span class="anim-icon">🌀</span>
+              <div class="anim-name">ROTATE</div>
+              <div class="anim-desc">Rotasi gradient loop</div>
+            </button>
+            <button class="anim-btn" onclick="setAnim('hueshift',this)">
+              <span class="anim-icon">🌈</span>
+              <div class="anim-name">HUE SHIFT</div>
+              <div class="anim-desc">Warna bergeser hue</div>
+            </button>
+            <button class="anim-btn" onclick="setAnim('breathe',this)">
+              <span class="anim-icon">🌬️</span>
+              <div class="anim-name">BREATHE</div>
+              <div class="anim-desc">Scale in-out halus</div>
+            </button>
+          </div>
+
+          <div id="anim-options" style="display:none">
+            <div class="divider"></div>
+            <div class="grid-2">
+              <div class="field">
+                <label>Durasi (detik)</label>
+                <input type="number" id="anim-duration" value="2" min="0.1" max="30" step="0.1" oninput="renderCode()">
+              </div>
+              <div class="field">
+                <label>Easing Style</label>
+                <select id="anim-easing" onchange="renderCode()">
+                  <option value="Linear">Linear</option>
+                  <option value="Sine">Sine</option>
+                  <option value="Quad">Quad</option>
+                  <option value="Cubic">Cubic</option>
+                  <option value="Quart">Quart</option>
+                  <option value="Bounce">Bounce</option>
+                  <option value="Elastic">Elastic</option>
+                </select>
+              </div>
+            </div>
+            <div class="field">
+              <label>Easing Direction</label>
+              <select id="anim-direction" onchange="renderCode()">
+                <option value="InOut">InOut</option>
+                <option value="In">In</option>
+                <option value="Out">Out</option>
+              </select>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- SAVED GRADIENTS -->
+      <div class="card">
+        <div class="card-header">
+          <div class="card-icon">📁</div>
+          <div>
+            <div class="card-title">Saved Gradients</div>
+            <div class="card-sub" id="saved-count">0 tersimpan</div>
+          </div>
+        </div>
+        <div class="card-body" style="padding:.75rem">
+          <div class="saved-list" id="saved-list">
+            <div class="empty-saved">Belum ada gradient tersimpan</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- CODE OUTPUT -->
+      <div class="card">
+        <div class="card-header">
+          <div class="card-icon">📋</div>
+          <div>
+            <div class="card-title">Luau Code</div>
+            <div class="card-sub">Siap paste ke Studio</div>
+          </div>
+        </div>
+        <!-- Tabs -->
+        <div class="tabs">
+          <button class="tab active" onclick="switchTab('static',this)">STATIC</button>
+          <button class="tab" onclick="switchTab('animated',this)">ANIMATED</button>
+          <button class="tab" onclick="switchTab('module',this)">MODULE</button>
+        </div>
+        <div class="tab-panel active" id="tab-static">
+          <div style="position:relative">
+            <div class="code-block" id="code-static"></div>
+            <button class="code-copy-btn" onclick="copyCode('static')">COPY</button>
+          </div>
+        </div>
+        <div class="tab-panel" id="tab-animated">
+          <div style="position:relative">
+            <div class="code-block" id="code-animated"></div>
+            <button class="code-copy-btn" onclick="copyCode('animated')">COPY</button>
+          </div>
+        </div>
+        <div class="tab-panel" id="tab-module">
+          <div style="position:relative">
+            <div class="code-block" id="code-module"></div>
+            <button class="code-copy-btn" onclick="copyCode('module')">COPY</button>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<script>
+// ── STATE ──
+let stops = [
+  { hex: '#8B5CF6', offset: 0 },
+  { hex: '#C4B5FD', offset: 0.5 },
+  { hex: '#EC4899', offset: 1 },
+];
+let rotation = 0;
+let transFrom = 0;
+let transTo = 0;
+let animType = 'none';
+let currentShape = 'rect';
+let savedGradients = JSON.parse(localStorage.getItem('sg_gradients') || '[]');
+let animFrame = null;
+let animStartTime = null;
+let activeTab = 'static';
+
+// ── INIT ──
+renderStops();
+renderAll();
+renderSaved();
+
+// ── STOPS ──
+function renderStops() {
+  const wrap = document.getElementById('stops-wrap');
+  wrap.innerHTML = '';
+  stops.forEach((s, i) => {
+    const row = document.createElement('div');
+    row.className = 'stop-row';
+    row.innerHTML = `
+      <div class="stop-swatch" style="background:${s.hex}">
+        <input type="color" value="${s.hex}" oninput="onStopColor(${i},this.value)" onchange="onStopColor(${i},this.value)">
+      </div>
+      <input class="stop-hex" type="text" value="${s.hex}" oninput="onStopHex(${i},this.value)" maxlength="7">
+      <input class="stop-offset" type="number" value="${Math.round(s.offset*100)}" min="0" max="100" oninput="onStopOffset(${i},this.value)" title="Offset %">
+      <span style="font-family:'Space Mono',monospace;font-size:9px;color:var(--muted)">%</span>
+      ${stops.length > 2 ? `<button class="stop-del" onclick="removeStop(${i})">✕</button>` : '<div style="width:24px"></div>'}
+    `;
+    wrap.appendChild(row);
+  });
+  document.querySelector('.add-stop-btn').style.display = stops.length >= 5 ? 'none' : 'flex';
+  renderAll();
+}
+
+function onStopColor(i, val) {
+  stops[i].hex = val;
+  const hexInput = document.querySelectorAll('.stop-hex')[i];
+  if (hexInput) hexInput.value = val;
+  const swatch = document.querySelectorAll('.stop-swatch')[i];
+  if (swatch) swatch.style.background = val;
+  renderAll();
+}
+
+function onStopHex(i, val) {
+  if (/^#[0-9A-Fa-f]{6}$/.test(val)) {
+    stops[i].hex = val;
+    const swatch = document.querySelectorAll('.stop-swatch')[i];
+    if (swatch) swatch.style.background = val;
+    const colorInput = document.querySelectorAll('.stop-swatch input[type=color]')[i];
+    if (colorInput) colorInput.value = val;
+    renderAll();
+  }
+}
+
+function onStopOffset(i, val) {
+  stops[i].offset = Math.min(1, Math.max(0, parseInt(val) / 100 || 0));
+  renderAll();
+}
+
+function addStop() {
+  if (stops.length >= 5) return;
+  const mid = stops.length > 1 ? (stops[0].offset + stops[stops.length-1].offset) / 2 : 0.5;
+  stops.push({ hex: '#' + Math.floor(Math.random()*0xFFFFFF).toString(16).padStart(6,'0'), offset: mid });
+  stops.sort((a,b) => a.offset - b.offset);
+  renderStops();
+}
+
+function removeStop(i) {
+  if (stops.length <= 2) return;
+  stops.splice(i, 1);
+  renderStops();
+}
+
+// ── TRANSFORM ──
+function onRotate(val) {
+  rotation = parseInt(val);
+  document.getElementById('rot-val').textContent = rotation + '°';
+  document.getElementById('rot-badge').textContent = rotation + '°';
+  renderAll();
+}
+
+function onTransparency() {
+  transFrom = parseInt(document.getElementById('trans-from').value) / 100;
+  transTo = parseInt(document.getElementById('trans-to').value) / 100;
+  document.getElementById('trans-from-val').textContent = Math.round(transFrom*100) + '%';
+  document.getElementById('trans-to-val').textContent = Math.round(transTo*100) + '%';
+  renderAll();
+}
+
+// ── PREVIEW ──
+function buildCSSGradient(rot, offsetShift = 0, hueShift = 0) {
+  const sorted = [...stops].sort((a, b) => a.offset - b.offset);
+  const parts = sorted.map(s => {
+    let hex = s.hex;
+    if (hueShift !== 0) hex = shiftHue(hex, hueShift);
+    const pct = Math.min(100, Math.max(0, ((s.offset + offsetShift) % 1.001) * 100));
+    return `${hex} ${pct.toFixed(1)}%`;
+  });
+  return `linear-gradient(${rot}deg, ${parts.join(', ')})`;
+}
+
+function shiftHue(hex, degrees) {
+  let r = parseInt(hex.slice(1,3),16)/255;
+  let g = parseInt(hex.slice(3,5),16)/255;
+  let b = parseInt(hex.slice(5,7),16)/255;
+  const max=Math.max(r,g,b),min=Math.min(r,g,b),l=(max+min)/2;
+  if(max===min) return hex;
+  const d=max-min,s=l>0.5?d/(2-max-min):d/(max+min);
+  let h=max===r?(g-b)/d+(g<b?6:0):max===g?(b-r)/d+2:(r-g)/d+4;
+  h=(h/6+degrees/360)%1; if(h<0)h+=1;
+  function hue2rgb(p,q,t){if(t<0)t+=1;if(t>1)t-=1;if(t<1/6)return p+(q-p)*6*t;if(t<1/2)return q;if(t<2/3)return p+(q-p)*(2/3-t)*6;return p}
+  const q=l<0.5?l*(1+s):l+s-l*s,p=2*l-q;
+  const nr=hue2rgb(p,q,h+1/3),ng=hue2rgb(p,q,h),nb=hue2rgb(p,q,h-1/3);
+  return '#'+[nr,ng,nb].map(x=>Math.round(x*255).toString(16).padStart(2,'0')).join('');
+}
+
+function applyPreviewGradient(gradient) {
+  const box = document.getElementById('preview-box');
+  box.style.background = gradient;
+  ['mini-rect','mini-pill','mini-circle'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.style.background = gradient;
+  });
+}
+
+// ── ANIMATION ENGINE ──
+function setAnim(type, btn) {
+  animType = type;
+  document.querySelectorAll('.anim-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById('anim-options').style.display = type === 'none' ? 'none' : 'block';
+  document.getElementById('anim-status').textContent = type === 'none' ? 'Static' : type.toUpperCase() + ' loop';
+  document.getElementById('live-badge').style.display = type === 'none' ? 'none' : 'inline-flex';
+  stopAnim();
+  if (type !== 'none') startAnim();
+  renderAll();
+}
+
+function startAnim() {
+  animStartTime = null;
+  function tick(ts) {
+    if (!animStartTime) animStartTime = ts;
+    const elapsed = (ts - animStartTime) / 1000;
+    const dur = parseFloat(document.getElementById('anim-duration').value) || 2;
+    const t = (elapsed % dur) / dur;
+
+    let grad;
+    if (animType === 'slide') {
+      grad = buildCSSGradient(rotation, t * 0.5);
+    } else if (animType === 'pulse') {
+      const alpha = 0.3 + 0.7 * Math.abs(Math.sin(t * Math.PI));
+      grad = buildCSSGradient(rotation);
+      const box = document.getElementById('preview-box');
+      box.style.opacity = alpha;
+      ['mini-rect','mini-pill','mini-circle'].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.style.opacity = alpha;
+      });
+    } else if (animType === 'rotate') {
+      const r = (rotation + t * 360) % 360;
+      grad = buildCSSGradient(r);
+      document.getElementById('rot-badge').textContent = Math.round(r) + '°';
+    } else if (animType === 'hueshift') {
+      grad = buildCSSGradient(rotation, 0, t * 360);
+    } else if (animType === 'breathe') {
+      const scale = 0.85 + 0.15 * Math.abs(Math.sin(t * Math.PI));
+      const box = document.getElementById('preview-box');
+      box.style.backgroundSize = `${Math.round(scale*100)}% ${Math.round(scale*100)}%`;
+      grad = buildCSSGradient(rotation);
+    }
+    if (grad) applyPreviewGradient(grad);
+    animFrame = requestAnimationFrame(tick);
+  }
+  animFrame = requestAnimationFrame(tick);
+}
+
+function stopAnim() {
+  if (animFrame) cancelAnimationFrame(animFrame);
+  animFrame = null;
+  animStartTime = null;
+  const box = document.getElementById('preview-box');
+  box.style.opacity = '';
+  box.style.backgroundSize = '';
+  ['mini-rect','mini-pill','mini-circle'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) { el.style.opacity = ''; el.style.backgroundSize = ''; }
+  });
+}
+
+// ── RENDER ALL ──
+function renderAll() {
+  const grad = buildCSSGradient(rotation);
+  if (animType === 'none') applyPreviewGradient(grad);
+  renderCode();
+}
+
+// ── SHAPE ──
+function setShape(shape, el) {
+  currentShape = shape;
+  document.querySelectorAll('.mini-box').forEach(b => b.classList.remove('selected'));
+  el.classList.add('selected');
+  const box = document.getElementById('preview-box');
+  box.style.borderRadius = shape === 'pill' ? '70px' : shape === 'circle' ? '50%' : '0';
+  box.style.aspectRatio = shape === 'circle' ? '1' : '';
+  box.style.height = shape === 'circle' ? '140px' : '140px';
+}
+
+// ── CODE GENERATION ──
+function hexToRGB(hex) {
+  const r = parseInt(hex.slice(1,3),16)/255;
+  const g = parseInt(hex.slice(3,5),16)/255;
+  const b = parseInt(hex.slice(5,7),16)/255;
+  return [r.toFixed(3),g.toFixed(3),b.toFixed(3)];
+}
+
+function renderCode() {
+  const name = document.getElementById('gradient-name').value.replace(/\s+/g,'') || 'MyGradient';
+  const dur = parseFloat(document.getElementById('anim-duration').value) || 2;
+  const easing = document.getElementById('anim-easing').value;
+  const dir = document.getElementById('anim-direction').value;
+  const sorted = [...stops].sort((a,b) => a.offset - b.offset);
+
+  // ── STATIC CODE ──
+  let seqLines = sorted.map((s,i) => {
+    const [r,g,b] = hexToRGB(s.hex);
+    return `  ColorSequence.new(Color3.new(${r}, ${g}, ${b}), ${s.offset.toFixed(3)})`
+  });
+  const staticCode =
+`-- ${name} UIGradient (Static)
+-- Generated by Saltoria Tools
+
+local gradient = Instance.new("UIGradient")
+gradient.Color = ColorSequence.new({
+${sorted.map(s => {
+  const [r,g,b] = hexToRGB(s.hex);
+  return `  ColorSequenceKeypoint.new(${s.offset.toFixed(3)}, Color3.new(${r}, ${g}, ${b}))`;
+}).join(',\n')}
+})
+gradient.Rotation = ${rotation}
+${transFrom !== 0 || transTo !== 0 ? `gradient.Transparency = NumberSequence.new({
+  NumberSequenceKeypoint.new(0, ${transFrom.toFixed(3)}),
+  NumberSequenceKeypoint.new(1, ${transTo.toFixed(3)}),
+})` : '-- gradient.Transparency = NumberSequence.new(0) -- ubah jika perlu'}
+gradient.Parent = script.Parent -- ganti dengan target Frame/Label`;
+
+  // ── ANIMATED CODE ──
+  let animCode = '';
+  if (animType === 'none') {
+    animCode = staticCode + '\n\n-- Pilih animasi di panel untuk generate kode TweenService';
+  } else if (animType === 'slide') {
+    animCode =
+`-- ${name} — Slide Animation
+local TweenService = game:GetService("TweenService")
+
+local gradient = Instance.new("UIGradient")
+gradient.Color = ColorSequence.new({
+${sorted.map(s => {
+  const [r,g,b] = hexToRGB(s.hex);
+  return `  ColorSequenceKeypoint.new(${s.offset.toFixed(3)}, Color3.new(${r}, ${g}, ${b}))`;
+}).join(',\n')}
+})
+gradient.Rotation = ${rotation}
+gradient.Parent = script.Parent
+
+local tweenInfo = TweenInfo.new(${dur}, Enum.EasingStyle.${easing}, Enum.EasingDirection.${dir}, -1, true, 0)
+local tween = TweenService:Create(gradient, tweenInfo, {
+  Offset = Vector2.new(0.5, 0)
+})
+tween:Play()`;
+  } else if (animType === 'pulse') {
+    animCode =
+`-- ${name} — Pulse Animation
+local TweenService = game:GetService("TweenService")
+
+local gradient = Instance.new("UIGradient")
+gradient.Color = ColorSequence.new({
+${sorted.map(s => {
+  const [r,g,b] = hexToRGB(s.hex);
+  return `  ColorSequenceKeypoint.new(${s.offset.toFixed(3)}, Color3.new(${r}, ${g}, ${b}))`;
+}).join(',\n')}
+})
+gradient.Rotation = ${rotation}
+gradient.Parent = script.Parent
+
+local tweenInfo = TweenInfo.new(${dur/2}, Enum.EasingStyle.${easing}, Enum.EasingDirection.${dir}, -1, true, 0)
+local tween = TweenService:Create(gradient, tweenInfo, {
+  Transparency = NumberSequence.new({
+    NumberSequenceKeypoint.new(0, 0),
+    NumberSequenceKeypoint.new(0.5, 0.7),
+    NumberSequenceKeypoint.new(1, 0),
+  })
+})
+tween:Play()`;
+  } else if (animType === 'rotate') {
+    animCode =
+`-- ${name} — Rotate Animation
+local TweenService = game:GetService("TweenService")
+
+local gradient = Instance.new("UIGradient")
+gradient.Color = ColorSequence.new({
+${sorted.map(s => {
+  const [r,g,b] = hexToRGB(s.hex);
+  return `  ColorSequenceKeypoint.new(${s.offset.toFixed(3)}, Color3.new(${r}, ${g}, ${b}))`;
+}).join(',\n')}
+})
+gradient.Rotation = 0
+gradient.Parent = script.Parent
+
+-- Loop rotation via RunService (TweenService tidak support loop modular)
+local RunService = game:GetService("RunService")
+local speed = 360 / ${dur}  -- derajat per detik
+
+RunService.Heartbeat:Connect(function(dt)
+  gradient.Rotation = (gradient.Rotation + speed * dt) % 360
+end)`;
+  } else if (animType === 'hueshift') {
+    animCode =
+`-- ${name} — Hue Shift Animation
+-- Catatan: UIGradient tidak support hue shift native.
+-- Gunakan script di bawah untuk update ColorSequence setiap frame.
+
+local RunService = game:GetService("RunService")
+
+local gradient = Instance.new("UIGradient")
+gradient.Parent = script.Parent
+
+local BASE_COLORS = {
+${sorted.map(s => {
+  const [r,g,b] = hexToRGB(s.hex);
+  return `  {offset=${s.offset.toFixed(3)}, r=${r}, g=${g}, b=${b}}`;
+}).join(',\n')}
+}
+
+local function shiftColor(r, g, b, hueShift)
+  -- HSV shift (simplified)
+  local max, min = math.max(r,g,b), math.min(r,g,b)
+  if max == min then return r, g, b end
+  local d = max - min
+  local h = max==r and (g-b)/d or (max==g and (b-r)/d+2 or (r-g)/d+4)
+  h = ((h/6 + hueShift) % 1) * 6
+  local q, p = math.floor(h), h - math.floor(h)
+  local vals = {1-d, 1-d*p, 1-d*(1-p), 1-d}
+  -- simplified: return approximate
+  return r, g, b  -- replace with full HSV for production
+end
+
+local elapsed = 0
+RunService.Heartbeat:Connect(function(dt)
+  elapsed = elapsed + dt
+  local shift = (elapsed / ${dur}) % 1
+  local keypoints = {}
+  for _, c in ipairs(BASE_COLORS) do
+    local nr, ng, nb = shiftColor(c.r, c.g, c.b, shift)
+    table.insert(keypoints, ColorSequenceKeypoint.new(c.offset, Color3.new(nr, ng, nb)))
+  end
+  gradient.Color = ColorSequence.new(keypoints)
+end)`;
+  } else if (animType === 'breathe') {
+    animCode =
+`-- ${name} — Breathe Animation
+local TweenService = game:GetService("TweenService")
+
+local frame = script.Parent  -- harus Frame/ImageLabel
+local gradient = Instance.new("UIGradient")
+gradient.Color = ColorSequence.new({
+${sorted.map(s => {
+  const [r,g,b] = hexToRGB(s.hex);
+  return `  ColorSequenceKeypoint.new(${s.offset.toFixed(3)}, Color3.new(${r}, ${g}, ${b}))`;
+}).join(',\n')}
+})
+gradient.Rotation = ${rotation}
+gradient.Parent = frame
+
+local tweenInfo = TweenInfo.new(${dur/2}, Enum.EasingStyle.${easing}, Enum.EasingDirection.${dir}, -1, true, 0)
+local tween = TweenService:Create(frame, tweenInfo, {
+  Size = UDim2.new(
+    frame.Size.X.Scale * 1.06, frame.Size.X.Offset,
+    frame.Size.Y.Scale * 1.06, frame.Size.Y.Offset
+  )
+})
+tween:Play()`;
+  }
+
+  // ── MODULE CODE ──
+  const moduleCode =
+`-- GradientModule.lua — ${name}
+-- Require dari LocalScript: local GM = require(path.GradientModule)
+-- GM.Apply(frame) — apply gradient ke frame
+-- GM.Animate(frame) — apply + jalankan animasi
+
+local GradientModule = {}
+
+local BASE_COLOR_SEQUENCE = ColorSequence.new({
+${sorted.map(s => {
+  const [r,g,b] = hexToRGB(s.hex);
+  return `  ColorSequenceKeypoint.new(${s.offset.toFixed(3)}, Color3.new(${r}, ${g}, ${b}))`;
+}).join(',\n')}
+})
+
+function GradientModule.Apply(parent: GuiObject): UIGradient
+  local g = Instance.new("UIGradient")
+  g.Color = BASE_COLOR_SEQUENCE
+  g.Rotation = ${rotation}
+  ${transFrom !== 0 || transTo !== 0 ? `g.Transparency = NumberSequence.new({
+    NumberSequenceKeypoint.new(0, ${transFrom.toFixed(3)}),
+    NumberSequenceKeypoint.new(1, ${transTo.toFixed(3)}),
+  })` : ''}
+  g.Parent = parent
+  return g
+end
+
+function GradientModule.Animate(parent: GuiObject)
+  local g = GradientModule.Apply(parent)
+  ${animType === 'none' ? '-- No animation selected\n  return g' :
+    animType === 'rotate' ? `local RunService = game:GetService("RunService")
+  local speed = 360 / ${dur}
+  RunService.Heartbeat:Connect(function(dt)
+    g.Rotation = (g.Rotation + speed * dt) % 360
+  end)
+  return g` :
+    `local TweenService = game:GetService("TweenService")
+  local ti = TweenInfo.new(${dur/2}, Enum.EasingStyle.${easing}, Enum.EasingDirection.${dir}, -1, true, 0)
+  TweenService:Create(g, ti, {}):Play()
+  return g`}
+end
+
+return GradientModule`;
+
+  document.getElementById('code-static').textContent = staticCode;
+  document.getElementById('code-animated').textContent = animCode;
+  document.getElementById('code-module').textContent = moduleCode;
+}
+
+// ── TABS ──
+function switchTab(tab, btn) {
+  activeTab = tab;
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById('tab-' + tab).classList.add('active');
+}
+
+// ── COPY ──
+function copyCode(tab) {
+  const el = document.getElementById('code-' + tab);
+  const btn = el.parentElement.querySelector('.code-copy-btn');
+  navigator.clipboard.writeText(el.textContent).then(() => {
+    btn.textContent = '✓ COPIED';
+    btn.classList.add('copied');
+    setTimeout(() => { btn.textContent = 'COPY'; btn.classList.remove('copied'); }, 1800);
+  });
+}
+
+// ── SAVE / LOAD ──
+function saveGradient() {
+  const name = document.getElementById('gradient-name').value || 'Gradient ' + Date.now();
+  const entry = { name, stops: JSON.parse(JSON.stringify(stops)), rotation, transFrom, transTo, animType, ts: Date.now() };
+  savedGradients.unshift(entry);
+  if (savedGradients.length > 12) savedGradients.pop();
+  localStorage.setItem('sg_gradients', JSON.stringify(savedGradients));
+  renderSaved();
+}
+
+function loadGradient(idx) {
+  const g = savedGradients[idx];
+  stops = JSON.parse(JSON.stringify(g.stops));
+  rotation = g.rotation || 0;
+  transFrom = g.transFrom || 0;
+  transTo = g.transTo || 0;
+  document.getElementById('rotation').value = rotation;
+  document.getElementById('rot-val').textContent = rotation + '°';
+  document.getElementById('rot-badge').textContent = rotation + '°';
+  document.getElementById('trans-from').value = Math.round(transFrom * 100);
+  document.getElementById('trans-to').value = Math.round(transTo * 100);
+  document.getElementById('trans-from-val').textContent = Math.round(transFrom*100) + '%';
+  document.getElementById('trans-to-val').textContent = Math.round(transTo*100) + '%';
+  document.getElementById('gradient-name').value = g.name;
+  stopAnim();
+  animType = g.animType || 'none';
+  document.querySelectorAll('.anim-btn').forEach((b,i) => {
+    const types = ['none','slide','pulse','rotate','hueshift','breathe'];
+    b.classList.toggle('active', types[i] === animType);
+  });
+  document.getElementById('anim-options').style.display = animType === 'none' ? 'none' : 'block';
+  document.getElementById('live-badge').style.display = animType === 'none' ? 'none' : 'inline-flex';
+  document.getElementById('anim-status').textContent = animType === 'none' ? 'Static' : animType.toUpperCase() + ' loop';
+  if (animType !== 'none') startAnim();
+  renderStops();
+}
+
+function deleteSaved(idx) {
+  savedGradients.splice(idx, 1);
+  localStorage.setItem('sg_gradients', JSON.stringify(savedGradients));
+  renderSaved();
+}
+
+function renderSaved() {
+  const list = document.getElementById('saved-list');
+  document.getElementById('saved-count').textContent = savedGradients.length + ' tersimpan';
+  if (!savedGradients.length) {
+    list.innerHTML = '<div class="empty-saved">Belum ada gradient tersimpan</div>';
+    return;
+  }
+  list.innerHTML = savedGradients.map((g,i) => {
+    const sorted = [...g.stops].sort((a,b) => a.offset-b.offset);
+    const cssParts = sorted.map(s => `${s.hex} ${Math.round(s.offset*100)}%`).join(',');
+    const grad = `linear-gradient(${g.rotation||0}deg,${cssParts})`;
+    return `<div class="saved-item" onclick="loadGradient(${i})">
+      <div class="saved-swatch" style="background:${grad}"></div>
+      <div>
+        <div class="saved-name">${g.name}</div>
+        <div class="saved-anim">${g.animType || 'none'} · ${g.stops.length} stops</div>
+      </div>
+      <button class="saved-del" onclick="event.stopPropagation();deleteSaved(${i})" title="Hapus">✕</button>
+    </div>`;
+  }).join('');
+}
+
+// ── RANDOMIZE ──
+function randomize() {
+  const count = 2 + Math.floor(Math.random() * 3);
+  stops = Array.from({length: count}, (_,i) => ({
+    hex: '#' + Math.floor(Math.random()*0xFFFFFF).toString(16).padStart(6,'0'),
+    offset: i / (count - 1)
+  }));
+  rotation = Math.floor(Math.random() * 360);
+  document.getElementById('rotation').value = rotation;
+  document.getElementById('rot-val').textContent = rotation + '°';
+  document.getElementById('rot-badge').textContent = rotation + '°';
+  renderStops();
+}
+</script>
+</body>
+</html>
