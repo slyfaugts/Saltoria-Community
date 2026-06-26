@@ -1,0 +1,684 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Instance Tree Generator — Saltoria Tools</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+/* ── RESET & BASE ── */
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:#07070F;
+  --surface:#0D0D18;
+  --surface2:#12121E;
+  --accent:#8B5CF6;
+  --accent2:#C4B5FD;
+  --text:#F0EEFF;
+  --muted:#6B7280;
+  --border:rgba(255,255,255,0.06);
+  --glass:rgba(255,255,255,0.03);
+  --glass2:rgba(255,255,255,0.06);
+  --glow:rgba(139,92,246,0.2);
+  --green:#6EE7B7;--red:#F87171;--yellow:#FCD34D;
+  --radius:14px;
+}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;font-size:15px;line-height:1.7;overflow-x:hidden;-webkit-font-smoothing:antialiased;min-height:100vh}
+img{max-width:100%;display:block}
+a{text-decoration:none;color:inherit}
+
+/* ── NAV ── */
+nav{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:0 2rem;height:64px;
+  background:rgba(7,7,15,0.92);
+  backdrop-filter:blur(20px) saturate(1.4);
+  -webkit-backdrop-filter:blur(20px) saturate(1.4);
+  border-bottom:1px solid var(--border);
+  position:sticky;top:0;z-index:200;
+}
+.nav-brand{display:flex;align-items:center;gap:10px}
+.nav-logo-text{font-family:'Inter',sans-serif;font-size:14px;font-weight:800;letter-spacing:.5px;color:#fff}
+.nav-logo-text span{color:var(--accent2)}
+.nav-tool-label{
+  font-family:'Space Mono',monospace;font-size:10px;color:var(--muted);
+  letter-spacing:1.5px;padding:3px 10px;border-radius:6px;
+  background:var(--glass2);border:1px solid var(--border);
+}
+.nav-back{
+  display:inline-flex;align-items:center;gap:6px;
+  font-family:'Space Mono',monospace;font-size:10px;
+  color:var(--muted);letter-spacing:1px;
+  padding:7px 14px;border:1px solid var(--border);border-radius:8px;
+  transition:all .2s;
+}
+.nav-back:hover{color:var(--accent2);border-color:rgba(196,181,253,.3)}
+.nav-back svg{transition:transform .2s}
+.nav-back:hover svg{transform:translateX(-2px)}
+
+/* ── HERO ── */
+.tool-hero{
+  text-align:center;padding:4rem 1.5rem 3rem;
+  position:relative;overflow:hidden;
+  border-bottom:1px solid var(--border);
+}
+.tool-hero::before{
+  content:'';position:absolute;top:0;left:50%;transform:translateX(-50%);
+  width:600px;height:350px;
+  background:radial-gradient(ellipse,rgba(139,92,246,.12) 0%,transparent 70%);
+  pointer-events:none;
+}
+.tool-hero-badge{
+  display:inline-flex;align-items:center;gap:8px;
+  background:rgba(139,92,246,.1);border:1px solid rgba(196,181,253,.2);
+  color:var(--accent2);font-size:10px;font-weight:600;letter-spacing:2px;
+  padding:5px 16px;border-radius:100px;margin-bottom:1.5rem;
+  text-transform:uppercase;font-family:'Space Mono',monospace;
+}
+.tool-hero h1{
+  font-size:clamp(26px,5vw,46px);font-weight:900;
+  color:#fff;line-height:1.05;letter-spacing:-1.5px;margin-bottom:1rem;
+}
+.tool-hero h1 em{
+  font-style:normal;
+  background:linear-gradient(135deg,var(--accent2),#fff,var(--accent));
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+}
+.tool-hero p{color:var(--muted);font-size:14px;max-width:520px;margin:0 auto;line-height:1.85}
+.tool-hero p code{background:rgba(139,92,246,.18);color:var(--accent2);padding:1px 6px;border-radius:4px;font-size:12px;font-family:'Space Mono',monospace}
+
+/* ── MAIN LAYOUT ── */
+.main{max-width:900px;margin:0 auto;padding:2rem 1.5rem}
+
+/* ── CARD ── */
+.card{background:var(--surface);border:1px solid var(--border);border-radius:16px;overflow:hidden;margin-bottom:1.25rem}
+.card-header{padding:1rem 1.25rem;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:10px}
+.card-icon{width:34px;height:34px;border-radius:10px;background:rgba(139,92,246,.12);border:1px solid rgba(139,92,246,.2);display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0}
+.card-title{font-size:13px;font-weight:700;color:#fff;letter-spacing:.2px}
+.card-sub{font-family:'Space Mono',monospace;font-size:9px;color:var(--muted);margin-top:3px;letter-spacing:1px;text-transform:uppercase}
+.card-body{padding:1.25rem}
+
+/* ── FORM ELEMENTS ── */
+.field{margin-bottom:1rem}
+.field:last-child{margin-bottom:0}
+label{display:block;font-family:'Space Mono',monospace;font-size:10px;color:var(--muted);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:6px}
+input[type=text],input[type=url],input[type=password],input[type=number],select,textarea{
+  width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:10px;
+  padding:10px 14px;color:var(--text);font-family:'Space Mono',monospace;font-size:12px;
+  outline:none;transition:border-color .2s;
+}
+input[type=text]:focus,input[type=url]:focus,input[type=password]:focus,input[type=number]:focus,select:focus,textarea:focus{
+  border-color:rgba(139,92,246,.5);box-shadow:0 0 0 3px rgba(139,92,246,.08);
+}
+select option{background:var(--surface2)}
+textarea{resize:vertical;min-height:80px;line-height:1.6}
+.field-hint{font-size:11px;color:var(--muted);margin-top:5px;line-height:1.6}
+input[type=range]{width:100%;accent-color:var(--accent);height:4px}
+input[type=color]{width:100%;height:40px;border-radius:10px;border:1px solid var(--border);background:var(--surface2);cursor:pointer;padding:3px}
+
+/* ── BUTTONS ── */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:10px 20px;border-radius:10px;font-family:'Space Mono',monospace;font-size:11px;cursor:pointer;letter-spacing:1px;border:none;transition:all .2s;text-transform:uppercase;font-weight:700}
+.btn-primary{background:linear-gradient(135deg,var(--accent),#7C3AED);color:#fff;box-shadow:0 4px 16px rgba(139,92,246,.3)}
+.btn-primary:hover:not(:disabled){transform:translateY(-1px);box-shadow:0 6px 24px rgba(139,92,246,.5)}
+.btn-primary:disabled{opacity:.4;cursor:not-allowed;transform:none;box-shadow:none}
+.btn-outline{background:transparent;border:1px solid var(--border);color:var(--muted)}
+.btn-outline:hover{border-color:rgba(196,181,253,.3);color:var(--accent2)}
+.btn-green{background:rgba(110,231,183,.1);border:1px solid rgba(110,231,183,.25);color:var(--green)}
+.btn-green:hover{background:rgba(110,231,183,.18)}
+.btn-red{background:rgba(248,113,113,.1);border:1px solid rgba(248,113,113,.25);color:var(--red)}
+.btn-red:hover{background:rgba(248,113,113,.18)}
+.btn-full{width:100%}
+.btn-row{display:flex;gap:.75rem;flex-wrap:wrap}
+.btn-sm{padding:6px 14px;font-size:10px}
+
+/* ── GRID HELPERS ── */
+.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:1rem}
+.grid-3{display:grid;grid-template-columns:repeat(3,1fr);gap:1rem}
+
+/* ── OUTPUT BOX ── */
+.output-box{position:relative;background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:.875rem 1rem;font-family:'Space Mono',monospace;font-size:12px;color:var(--accent2);cursor:pointer;transition:all .2s;word-break:break-all}
+.output-box:hover{border-color:rgba(196,181,253,.3);background:rgba(139,92,246,.06)}
+.copy-hint{position:absolute;top:8px;right:10px;font-size:9px;color:var(--muted);letter-spacing:1px;text-transform:uppercase;transition:color .2s}
+.output-box:hover .copy-hint{color:var(--accent2)}
+.output-box.copied{border-color:rgba(110,231,183,.4);background:rgba(110,231,183,.05)}
+
+/* ── RESULT CARD ── */
+.result-card{background:rgba(110,231,183,.06);border:1px solid rgba(110,231,183,.2);border-radius:12px;padding:1.25rem;display:none}
+.result-card.show{display:block}
+.result-title{font-size:11px;font-weight:700;color:var(--green);margin-bottom:.75rem;font-family:'Space Mono',monospace;letter-spacing:1px;text-transform:uppercase}
+.result-row{display:flex;justify-content:space-between;align-items:center;padding:.5rem 0;border-bottom:1px solid rgba(255,255,255,.04)}
+.result-row:last-child{border-bottom:none}
+.result-key{font-family:'Space Mono',monospace;font-size:10px;color:var(--muted);letter-spacing:1px}
+.result-val{font-family:'Space Mono',monospace;font-size:12px;color:var(--text);font-weight:700}
+.result-val.green{color:var(--green)}
+.result-val.red{color:var(--red)}
+.result-val.yellow{color:var(--yellow)}
+
+/* ── STATUS / LOG ── */
+.status-bar{background:var(--surface2);border-radius:10px;border:1px solid var(--border);padding:.875rem 1rem;font-family:'Space Mono',monospace;font-size:10px;line-height:1.9;min-height:48px;max-height:140px;overflow-y:auto;color:var(--muted)}
+.log-ok{color:var(--green)}
+.log-err{color:var(--red)}
+.log-info{color:var(--accent2)}
+.log-warn{color:var(--yellow)}
+
+/* ── LOADING BAR ── */
+.loading-bar{height:3px;background:linear-gradient(90deg,var(--accent),var(--accent2),var(--accent));background-size:200%;animation:shimmer 1.2s infinite;border-radius:3px;display:none;margin-bottom:1rem}
+.loading-bar.show{display:block}
+@keyframes shimmer{0%{background-position:200% 0}100%{background-position:-200% 0}}
+
+/* ── TABS ── */
+.tabs{display:flex;gap:0;border-bottom:1px solid var(--border);overflow-x:auto}
+.tab{flex-shrink:0;padding:.75rem 1rem;font-family:'Space Mono',monospace;font-size:10px;letter-spacing:1.5px;color:var(--muted);cursor:pointer;border-bottom:2px solid transparent;transition:all .2s;background:none;border-top:none;border-left:none;border-right:none;text-transform:uppercase;white-space:nowrap}
+.tab.active{color:var(--accent2);border-bottom-color:var(--accent2)}
+.tab:hover:not(.active){color:var(--text)}
+.tab-panel{display:none;padding:1.25rem}
+.tab-panel.active{display:block}
+
+/* ── TABLE ── */
+.data-table{width:100%;border-collapse:collapse;font-size:12px}
+.data-table th{font-family:'Space Mono',monospace;font-size:9px;color:var(--muted);letter-spacing:1.5px;text-transform:uppercase;padding:.625rem .875rem;border-bottom:1px solid var(--border);text-align:left}
+.data-table td{padding:.625rem .875rem;border-bottom:1px solid var(--border);color:var(--text);vertical-align:middle}
+.data-table tr:last-child td{border-bottom:none}
+.data-table tr:hover td{background:var(--surface2)}
+
+/* ── ROBUX-SPECIFIC ── */
+.calc-display{background:var(--surface2);border:1px solid var(--border);border-radius:14px;padding:1.5rem;text-align:center;margin-bottom:1rem}
+.calc-amount{font-size:42px;font-weight:900;color:var(--accent2);font-family:'Space Mono',monospace;letter-spacing:-1px;line-height:1}
+.calc-label{font-family:'Space Mono',monospace;font-size:10px;color:var(--muted);letter-spacing:2px;margin-top:.5rem;text-transform:uppercase}
+.calc-breakdown{display:grid;grid-template-columns:1fr 1fr;gap:.75rem;margin-top:1rem}
+.calc-item{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:.875rem;text-align:center}
+.calc-item-val{font-family:'Space Mono',monospace;font-size:16px;font-weight:700;color:var(--text)}
+.calc-item-val.red{color:var(--red)}
+.calc-item-val.green{color:var(--green)}
+.calc-item-label{font-family:'Space Mono',monospace;font-size:9px;color:var(--muted);letter-spacing:1px;margin-top:4px;text-transform:uppercase}
+
+/* ── LOOT TABLE ── */
+.loot-row{display:flex;align-items:center;gap:8px;margin-bottom:.5rem;padding:.625rem;background:var(--surface2);border:1px solid var(--border);border-radius:10px;transition:border-color .2s}
+.loot-row:hover{border-color:rgba(139,92,246,.2)}
+.loot-emoji{width:36px;height:36px;border-radius:8px;background:var(--surface);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0}
+.loot-name-inp{flex:1;background:transparent;border:none;color:var(--text);font-family:'Inter',sans-serif;font-size:13px;outline:none;padding:0 4px}
+.loot-weight-inp{width:60px;background:transparent;border:none;border-left:1px solid var(--border);color:var(--accent2);font-family:'Space Mono',monospace;font-size:12px;font-weight:700;outline:none;text-align:right;padding:0 8px;flex-shrink:0}
+.loot-pct{font-family:'Space Mono',monospace;font-size:10px;color:var(--muted);min-width:40px;text-align:right;flex-shrink:0}
+.loot-del{background:none;border:none;color:var(--muted);cursor:pointer;font-size:16px;line-height:1;padding:4px;flex-shrink:0;transition:color .2s}
+.loot-del:hover{color:var(--red)}
+.sim-result{display:flex;align-items:center;gap:10px;padding:.5rem .75rem;border-radius:8px;background:var(--surface2);border:1px solid var(--border);margin-bottom:.375rem}
+.sim-item-name{flex:1;font-size:13px;color:var(--text)}
+.sim-count{font-family:'Space Mono',monospace;font-size:12px;font-weight:700;color:var(--accent2)}
+.sim-bar-wrap{width:80px;height:4px;background:var(--border);border-radius:2px;overflow:hidden;flex-shrink:0}
+.sim-bar-fill{height:100%;background:linear-gradient(90deg,var(--accent),var(--accent2));border-radius:2px}
+
+/* ── INSTANCE TREE ── */
+.tree-node{display:flex;align-items:center;gap:6px;padding:.375rem .5rem;border-radius:8px;cursor:pointer;transition:background .15s;user-select:none;position:relative}
+.tree-node:hover{background:var(--surface2)}
+.tree-node.selected{background:rgba(139,92,246,.12);border:1px solid rgba(139,92,246,.2)}
+.tree-toggle{width:16px;height:16px;display:flex;align-items:center;justify-content:center;font-size:10px;color:var(--muted);flex-shrink:0}
+.tree-icon{font-size:14px;flex-shrink:0}
+.tree-label{font-size:13px;color:var(--text)}
+.tree-type{font-family:'Space Mono',monospace;font-size:9px;color:var(--muted);margin-left:4px}
+.tree-children{padding-left:20px;border-left:1px solid var(--border);margin-left:8px}
+.add-child-btn{display:inline-flex;align-items:center;gap:4px;font-family:'Space Mono',monospace;font-size:9px;color:var(--muted);background:none;border:1px dashed var(--border);border-radius:6px;padding:3px 8px;cursor:pointer;transition:all .2s;margin-left:8px;letter-spacing:.5px}
+.add-child-btn:hover{border-color:rgba(139,92,246,.4);color:var(--accent2)}
+.code-output{background:var(--surface2);border:1px solid var(--border);border-radius:12px;padding:1.25rem;font-family:'Space Mono',monospace;font-size:11px;color:var(--accent2);line-height:1.9;max-height:320px;overflow-y:auto;white-space:pre}
+
+/* ── FONT PREVIEW ── */
+.controls{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:1.25rem;margin-bottom:1.25rem;display:flex;flex-wrap:wrap;gap:1rem;align-items:flex-end}
+.ctrl-field{flex:1;min-width:160px}
+.size-display{font-family:'Space Mono',monospace;font-size:10px;color:var(--accent2);margin-top:4px}
+.filter-chips{display:flex;gap:.5rem;flex-wrap:wrap;margin-bottom:1.25rem}
+.filter-chip{background:var(--surface);border:1px solid var(--border);border-radius:100px;padding:5px 14px;font-family:'Space Mono',monospace;font-size:9px;color:var(--muted);cursor:pointer;transition:all .15s;letter-spacing:.5px}
+.filter-chip:hover{border-color:rgba(196,181,253,.3);color:var(--accent2)}
+.filter-chip.active{background:rgba(139,92,246,.15);border-color:rgba(196,181,253,.3);color:var(--accent2)}
+.font-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:1rem}
+.font-card{background:var(--surface);border:1px solid var(--border);border-radius:14px;overflow:hidden;transition:all .2s;cursor:pointer}
+.font-card:hover{border-color:rgba(196,181,253,.3);transform:translateY(-2px)}
+.font-card.selected{border-color:var(--accent2);background:rgba(139,92,246,.07)}
+.font-preview{padding:1.25rem 1.25rem .75rem;min-height:80px;display:flex;align-items:center}
+.font-preview-text{line-height:1.2;word-break:break-word;transition:all .3s}
+.font-meta{padding:.625rem 1.25rem .875rem;border-top:1px solid var(--border);display:flex;align-items:center;justify-content:space-between}
+.font-name-label{font-size:12px;font-weight:700;color:#fff}
+.font-roblox-name{font-family:'Space Mono',monospace;font-size:9px;color:var(--accent2);margin-top:2px;letter-spacing:.5px}
+.font-tags{display:flex;gap:.35rem;flex-wrap:wrap;margin-top:3px}
+.font-tag{font-family:'Space Mono',monospace;font-size:8px;background:rgba(139,92,246,.12);color:var(--muted);padding:2px 7px;border-radius:4px}
+.copy-icon{background:rgba(139,92,246,.12);border:1px solid rgba(139,92,246,.2);border-radius:8px;padding:5px 10px;font-size:12px;cursor:pointer;transition:all .2s;flex-shrink:0}
+.copy-icon:hover{background:rgba(139,92,246,.25)}
+.copy-icon.copied{background:rgba(110,231,183,.12);border-color:rgba(110,231,183,.3)}
+.selected-box{background:rgba(139,92,246,.07);border:1px solid rgba(196,181,253,.18);border-radius:12px;padding:.875rem 1rem;margin-bottom:1.25rem;display:flex;align-items:center;justify-content:space-between;gap:1rem;flex-wrap:wrap}
+.selected-box .code{font-family:'Space Mono',monospace;color:var(--accent2);font-size:12px;flex:1;word-break:break-all}
+.selected-box .copy-all{background:linear-gradient(135deg,var(--accent),#7C3AED);color:#fff;border:none;border-radius:8px;padding:7px 16px;font-family:'Space Mono',monospace;font-size:9px;cursor:pointer;letter-spacing:1px;transition:all .2s;flex-shrink:0;font-weight:700}
+.selected-box .copy-all:hover{transform:translateY(-1px);box-shadow:0 4px 12px rgba(139,92,246,.4)}
+.no-result{font-family:'Space Mono',monospace;font-size:11px;color:var(--muted);text-align:center;padding:3rem;letter-spacing:1px}
+
+/* ── INFO LOOKUP ── */
+.info-card{background:var(--surface2);border:1px solid var(--border);border-radius:12px;padding:1.25rem;margin-bottom:1rem}
+.info-avatar{width:80px;height:80px;border-radius:50%;border:3px solid rgba(139,92,246,.3);object-fit:cover;flex-shrink:0}
+.info-name{font-size:20px;font-weight:800;color:#fff;letter-spacing:-.5px}
+.info-handle{font-family:'Space Mono',monospace;font-size:11px;color:var(--muted);margin-top:2px}
+.info-badge{display:inline-flex;align-items:center;gap:5px;font-family:'Space Mono',monospace;font-size:9px;letter-spacing:1px;padding:3px 10px;border-radius:100px;border:1px solid var(--border);background:var(--surface);color:var(--muted)}
+.info-stat{text-align:center;padding:.75rem}
+.info-stat-val{font-size:22px;font-weight:800;color:var(--accent2);font-family:'Space Mono',monospace;letter-spacing:-1px}
+.info-stat-label{font-family:'Space Mono',monospace;font-size:9px;color:var(--muted);letter-spacing:1px;margin-top:3px;text-transform:uppercase}
+
+/* ── HIDDEN ── */
+.hidden{display:none!important}
+
+/* ── RESPONSIVE ── */
+@media(max-width:640px){
+  .main{padding:1rem}
+  nav{padding:0 1rem}
+  .grid-2,.grid-3{grid-template-columns:1fr}
+  .calc-breakdown{grid-template-columns:1fr 1fr}
+  .font-grid{grid-template-columns:1fr}
+  .controls{gap:.75rem}
+  .ctrl-field{min-width:140px}
+  .anim-row{flex-wrap:wrap}
+}
+</style>
+</head>
+<body>
+<nav>
+  <a href="../index.html" class="nav-brand">
+    <span class="nav-logo-text">SALT<span>ORIA</span></span>
+    <span class="nav-tool-label">INSTANCE TREE GEN</span>
+  </a>
+  <a href="../index.html#tools" class="nav-back">
+    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>
+    Tools
+  </a>
+</nav>
+<div class="hero">
+  <div class="hero-badge">🌳 SCRIPTING TOOL</div>
+  <h1>Instance <span>Tree</span> Generator</h1>
+  <p>Buat hierarki instance Roblox secara visual — drag, tambah, hapus node — langsung generate kode Luau <code style="background:rgba(124,58,237,.2);color:var(--accent2);padding:1px 6px;border-radius:4px;font-size:11px">Instance.new()</code> siap paste.</p>
+</div>
+
+<div class="layout">
+  <!-- LEFT: TREE BUILDER -->
+  <div>
+    <div class="card">
+      <div class="card-header"><div class="card-icon">🌳</div><div><div class="card-title">Tree Builder</div><div class="card-sub">BANGUN HIERARKI INSTANCE</div></div></div>
+      <div class="card-body">
+        <!-- QUICK TEMPLATES -->
+        <div class="field">
+          <label>Quick Template</label>
+          <div class="type-chips">
+            <div class="type-chip" onclick="loadTemplate('screengui')">🖥 ScreenGui</div>
+            <div class="type-chip" onclick="loadTemplate('frame')">📦 Frame+Label</div>
+            <div class="type-chip" onclick="loadTemplate('button')">🔘 Button+Label</div>
+            <div class="type-chip" onclick="loadTemplate('part')">🧱 Part+Script</div>
+            <div class="type-chip" onclick="loadTemplate('folder')">📁 Folder Setup</div>
+            <div class="type-chip" onclick="loadTemplate('billboard')">💬 BillboardGui</div>
+          </div>
+        </div>
+
+        <!-- TOOLBAR -->
+        <div class="toolbar">
+          <div class="tb-btn" onclick="addNode()">➕ Tambah Child</div>
+          <div class="tb-btn" onclick="addSibling()">↔ Tambah Sibling</div>
+          <div class="tb-btn danger" onclick="deleteNode()">🗑 Hapus</div>
+          <div class="tb-btn" onclick="clearAll()">🔄 Reset</div>
+        </div>
+
+        <!-- TREE VISUAL -->
+        <div id="tree-visual" style="min-height:120px;background:#050410;border:1px solid var(--border);border-radius:10px;padding:.875rem;overflow:auto;max-height:300px;font-size:12px;line-height:2"></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header"><div class="card-icon">✏️</div><div><div class="card-title">Edit Node Terpilih</div><div class="card-sub">UBAH NAMA & TIPE</div></div></div>
+      <div class="card-body">
+        <div class="field">
+          <label>Tipe Instance</label>
+          <select id="node-type" onchange="updateSelected()">
+            <optgroup label="GUI">
+              <option>ScreenGui</option><option>Frame</option><option>TextLabel</option>
+              <option>TextButton</option><option>TextBox</option><option>ImageLabel</option>
+              <option>ImageButton</option><option>ScrollingFrame</option><option>BillboardGui</option>
+              <option>SurfaceGui</option><option>ViewportFrame</option>
+            </optgroup>
+            <optgroup label="Core">
+              <option selected>Part</option><option>MeshPart</option><option>Model</option>
+              <option>Folder</option><option>Configuration</option><option>StringValue</option>
+              <option>IntValue</option><option>NumberValue</option><option>BoolValue</option>
+              <option>ObjectValue</option><option>RemoteEvent</option><option>RemoteFunction</option>
+              <option>BindableEvent</option><option>BindableFunction</option>
+            </optgroup>
+            <optgroup label="Script">
+              <option>Script</option><option>LocalScript</option><option>ModuleScript</option>
+            </optgroup>
+            <optgroup label="Effects">
+              <option>ParticleEmitter</option><option>PointLight</option><option>SpotLight</option>
+              <option>Sound</option><option>Decal</option><option>Texture</option>
+              <option>SpecialMesh</option><option>WeldConstraint</option>
+            </optgroup>
+          </select>
+        </div>
+        <div class="field">
+          <label>Nama Custom (Name property)</label>
+          <input type="text" id="node-name" placeholder="Kosongkan = pakai nama tipe" oninput="updateSelected()">
+        </div>
+        <div class="field">
+          <label>Properties (opsional, satu per baris)</label>
+          <textarea id="node-props" placeholder="BackgroundColor3 = Color3.fromRGB(255,0,0)&#10;Size = UDim2.new(1,0,1,0)&#10;Visible = true" oninput="updateSelected()" style="min-height:80px"></textarea>
+        </div>
+      </div>
+    </div>
+
+    <!-- OPTIONS -->
+    <div class="card">
+      <div class="card-header"><div class="card-icon">⚙️</div><div><div class="card-title">Opsi Generate</div><div class="card-sub">KUSTOMISASI OUTPUT</div></div></div>
+      <div class="card-body">
+        <div class="field">
+          <label>Nama Variabel Root</label>
+          <input type="text" id="root-var" value="root" oninput="generateCode()">
+        </div>
+        <div class="field">
+          <label>Parenting Style</label>
+          <select id="parent-style" onchange="generateCode()">
+            <option value="inline">Inline (.Parent = x saat create)</option>
+            <option value="after">Setelah semua dibuat</option>
+            <option value="none">Tanpa parenting (manual)</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>Target Parent Root</label>
+          <input type="text" id="root-parent" value="game.Players.LocalPlayer.PlayerGui" oninput="generateCode()">
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- RIGHT: CODE -->
+  <div class="code-wrap">
+    <div class="card">
+      <div class="card-header"><div class="card-icon">📋</div><div><div class="card-title">Generated Luau Code</div><div class="card-sub">SIAP PASTE KE STUDIO</div></div></div>
+      <div class="card-body" style="padding:0">
+        <div class="code-block" id="code-out">
+          <button class="copy-btn" onclick="copyCode()">📋 COPY</button>
+          <span id="code-inner"><span class="cm">-- Tambahkan node di tree builder untuk generate kode</span></span>
+        </div>
+      </div>
+    </div>
+    <div class="info-box">
+      <b>Cara pakai:</b><br>
+      1. Pilih template atau tambah node manual<br>
+      2. Klik node untuk select, edit tipe/nama di panel kiri<br>
+      3. Tambah <b>child</b> dari node terpilih atau <b>sibling</b> sejajar<br>
+      4. Kode Luau di-generate otomatis — klik <b>COPY</b> dan paste ke Studio
+    </div>
+  </div>
+</div>
+
+<!-- MODAL ADD NODE -->
+<div class="modal-overlay" id="modal-overlay" onclick="if(event.target===this)closeModal()">
+  <div class="modal">
+    <div class="modal-title" id="modal-title">Tambah Node</div>
+    <div class="field"><label>Tipe Instance</label>
+      <select id="modal-type">
+        <option>ScreenGui</option><option>Frame</option><option>TextLabel</option><option>TextButton</option>
+        <option>TextBox</option><option>ImageLabel</option><option selected>Part</option><option>Model</option>
+        <option>Folder</option><option>Script</option><option>LocalScript</option><option>ModuleScript</option>
+        <option>RemoteEvent</option><option>RemoteFunction</option><option>StringValue</option>
+        <option>IntValue</option><option>Sound</option><option>ParticleEmitter</option><option>BillboardGui</option>
+      </select>
+    </div>
+    <div class="field"><label>Nama (opsional)</label><input type="text" id="modal-name" placeholder="Kosong = pakai nama tipe"></div>
+    <div class="modal-row">
+      <button class="modal-btn cancel" onclick="closeModal()">Batal</button>
+      <button class="modal-btn primary" onclick="confirmAdd()">✅ Tambah</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ── DATA ──────────────────────────────────────────────────────
+let tree = [];    // flat array of nodes
+let selectedId = null;
+let addMode = 'child'; // 'child' | 'sibling'
+let nodeIdCounter = 1;
+
+const ICONS = {
+  ScreenGui:'🖥',Frame:'📦',TextLabel:'🔤',TextButton:'🔘',TextBox:'✏️',
+  ImageLabel:'🖼',ImageButton:'🖼',ScrollingFrame:'📜',BillboardGui:'💬',
+  SurfaceGui:'🪟',Part:'🧱',MeshPart:'🔷',Model:'🗂',Folder:'📁',
+  Script:'📜',LocalScript:'📜',ModuleScript:'📦',RemoteEvent:'📡',
+  RemoteFunction:'🔁',StringValue:'🔡',IntValue:'🔢',NumberValue:'🔢',
+  BoolValue:'☑',Sound:'🔊',ParticleEmitter:'✨',PointLight:'💡',
+  Configuration:'⚙️',WeldConstraint:'🔗',Decal:'🎨',Texture:'🎨',
+  ViewportFrame:'🎬',BindableEvent:'📣',BindableFunction:'🔄',
+};
+
+function mkNode(type, name, parentId){
+  return {id: nodeIdCounter++, type, name: name||'', parentId, props:[], collapsed:false};
+}
+
+function getChildren(parentId){ return tree.filter(n=>n.parentId===parentId); }
+function getNode(id){ return tree.find(n=>n.id===id); }
+
+// ── TEMPLATES ─────────────────────────────────────────────────
+const TEMPLATES = {
+  screengui:[
+    {type:'ScreenGui',name:'MainGui',parentId:null},
+    {type:'Frame',name:'Container',parentId:0},
+    {type:'TextLabel',name:'Title',parentId:1},
+    {type:'TextButton',name:'CloseBtn',parentId:1},
+  ],
+  frame:[
+    {type:'Frame',name:'Panel',parentId:null},
+    {type:'TextLabel',name:'HeaderLabel',parentId:0},
+    {type:'TextButton',name:'ActionBtn',parentId:0},
+  ],
+  button:[
+    {type:'TextButton',name:'MyButton',parentId:null},
+    {type:'TextLabel',name:'ButtonLabel',parentId:0},
+  ],
+  part:[
+    {type:'Model',name:'MyModel',parentId:null},
+    {type:'Part',name:'BasePart',parentId:0},
+    {type:'Script',name:'Controller',parentId:0},
+  ],
+  folder:[
+    {type:'Folder',name:'Assets',parentId:null},
+    {type:'Folder',name:'Sounds',parentId:0},
+    {type:'Folder',name:'Remotes',parentId:0},
+    {type:'RemoteEvent',name:'OnAction',parentId:2},
+  ],
+  billboard:[
+    {type:'Part',name:'Anchor',parentId:null},
+    {type:'BillboardGui',name:'Tag',parentId:0},
+    {type:'TextLabel',name:'NameLabel',parentId:1},
+    {type:'TextLabel',name:'HealthBar',parentId:1},
+  ],
+};
+
+function loadTemplate(name){
+  tree=[];nodeIdCounter=1;selectedId=null;
+  const tmpl=TEMPLATES[name];
+  // assign real IDs
+  const idMap={};
+  tmpl.forEach((t,i)=>{
+    const realParent = t.parentId===null?null:idMap[t.parentId];
+    const n=mkNode(t.type,t.name,realParent);
+    idMap[i]=n.id;
+    tree.push(n);
+  });
+  renderTree();generateCode();
+}
+
+// ── TREE RENDER ───────────────────────────────────────────────
+function renderTree(){
+  const container=document.getElementById('tree-visual');
+  if(!tree.length){container.innerHTML='<span style="color:var(--muted);font-family:\'Space Mono\',monospace;font-size:10px">Tambah node atau pilih template...</span>';return;}
+  container.innerHTML='';
+  function renderNode(node,depth){
+    const children=getChildren(node.id);
+    const icon=ICONS[node.type]||'📦';
+    const displayName=node.name||node.type;
+    const row=document.createElement('div');
+    row.style.cssText=`display:flex;align-items:center;gap:4px;padding:3px 6px;border-radius:6px;cursor:pointer;transition:background .15s;${selectedId===node.id?'background:rgba(124,58,237,.25)':''}`;
+    row.innerHTML=`${'<span style="display:inline-block;width:18px"></span>'.repeat(depth)}<span style="font-size:13px">${icon}</span><span style="font-family:\'Space Mono\',monospace;font-size:11px;color:${selectedId===node.id?'#fff':'var(--text)'}"> ${displayName}</span><span style="font-family:\'Space Mono\',monospace;font-size:9px;color:var(--accent2);margin-left:6px">${node.type!==displayName?node.type:''}</span>`;
+    row.onclick=()=>{selectedId=node.id;syncEditPanel();renderTree();};
+    container.appendChild(row);
+    children.forEach(c=>renderNode(c,depth+1));
+  }
+  tree.filter(n=>n.parentId===null).forEach(n=>renderNode(n,0));
+}
+
+function syncEditPanel(){
+  const n=getNode(selectedId);
+  if(!n)return;
+  document.getElementById('node-type').value=n.type;
+  document.getElementById('node-name').value=n.name;
+  document.getElementById('node-props').value=n.props.join('\n');
+}
+
+function updateSelected(){
+  const n=getNode(selectedId);
+  if(!n)return;
+  n.type=document.getElementById('node-type').value;
+  n.name=document.getElementById('node-name').value;
+  n.props=document.getElementById('node-props').value.split('\n').map(s=>s.trim()).filter(Boolean);
+  renderTree();generateCode();
+}
+
+// ── ADD / DELETE ───────────────────────────────────────────────
+function addNode(){addMode='child';showModal('Tambah Child Node');}
+function addSibling(){addMode='sibling';showModal('Tambah Sibling Node');}
+function showModal(title){document.getElementById('modal-title').textContent=title;document.getElementById('modal-overlay').classList.add('show');document.getElementById('modal-name').value='';}
+function closeModal(){document.getElementById('modal-overlay').classList.remove('show');}
+
+function confirmAdd(){
+  const type=document.getElementById('modal-type').value;
+  const name=document.getElementById('modal-name').value.trim();
+  let parentId=null;
+  if(addMode==='child'){
+    parentId=selectedId;
+  } else if(addMode==='sibling'){
+    const sel=getNode(selectedId);
+    parentId=sel?sel.parentId:null;
+  } else {
+    parentId=null;
+  }
+  const n=mkNode(type,name,parentId);
+  tree.push(n);
+  selectedId=n.id;
+  closeModal();syncEditPanel();renderTree();generateCode();
+}
+
+function deleteNode(){
+  if(!selectedId)return;
+  // delete node and all descendants
+  function collectIds(id){
+    const ids=[id];
+    getChildren(id).forEach(c=>ids.push(...collectIds(c.id)));
+    return ids;
+  }
+  const toDelete=collectIds(selectedId);
+  tree=tree.filter(n=>!toDelete.includes(n.id));
+  selectedId=null;
+  document.getElementById('node-type').value='Part';
+  document.getElementById('node-name').value='';
+  document.getElementById('node-props').value='';
+  renderTree();generateCode();
+}
+
+function clearAll(){tree=[];nodeIdCounter=1;selectedId=null;renderTree();generateCode();}
+
+// ── CODE GENERATOR ─────────────────────────────────────────────
+function generateCode(){
+  if(!tree.length){
+    document.getElementById('code-inner').innerHTML='<span class="cm">-- Tambahkan node di tree builder untuk generate kode</span>';
+    return;
+  }
+  const rootVar    = document.getElementById('root-var').value||'root';
+  const parentStyle= document.getElementById('parent-style').value;
+  const rootParent = document.getElementById('root-parent').value||'nil';
+  const roots=tree.filter(n=>n.parentId===null);
+
+  // Build var names
+  const varNames={};
+  const usedNames={};
+  tree.forEach(n=>{
+    let base=(n.name||n.type).replace(/[^a-zA-Z0-9]/g,'').replace(/^[0-9]/,'_$&');
+    base=base[0].toLowerCase()+base.slice(1);
+    if(n.parentId===null) base=rootVar;
+    let vn=base;
+    let cnt=2;
+    while(Object.values(varNames).includes(vn)&&varNames[n.id]!==vn){vn=base+cnt;cnt++;}
+    varNames[n.id]=vn;
+  });
+
+  let raw='', html='';
+  const addLine=(line,type='')=>{
+    raw+=line+'\n';
+    if(type==='kw') html+=`<span class="kw">${esc(line)}</span>\n`;
+    else if(type==='fn') html+=`<span class="fn">${esc(line)}</span>\n`;
+    else if(type==='cm') html+=`<span class="cm">${esc(line)}</span>\n`;
+    else if(type==='str') html+=`<span class="str">${esc(line)}</span>\n`;
+    else html+=`${esc(line)}\n`;
+  };
+
+  addLine('-- Generated by Saltoria Instance Tree Generator','cm');
+  addLine('');
+  
+  function processNode(node,depth){
+    const vn=varNames[node.id];
+    const displayName=node.name||node.type;
+    const indent='  '.repeat(depth);
+
+    raw+=`${indent}local ${vn} = Instance.new("${node.type}")\n`;
+    html+=`${indent}<span class="kw">local</span> ${vn} = <span class="fn">Instance.new</span>(<span class="str">"${esc(node.type)}"</span>)\n`;
+
+    if(node.name){
+      raw+=`${indent}${vn}.Name = "${displayName}"\n`;
+      html+=`${indent}${vn}.Name = <span class="str">"${esc(displayName)}"</span>\n`;
+    }
+    node.props.forEach(p=>{
+      raw+=`${indent}${vn}.${p}\n`;
+      html+=`${indent}${vn}.${esc(p)}\n`;
+    });
+
+    if(parentStyle==='inline'){
+      const parentNode=getNode(node.parentId);
+      const parentVarOrRoot=node.parentId===null?rootParent:varNames[node.parentId];
+      raw+=`${indent}${vn}.Parent = ${parentVarOrRoot}\n`;
+      html+=`${indent}${vn}.Parent = <span class="fn">${esc(parentVarOrRoot)}</span>\n`;
+    }
+    raw+='\n'; html+='\n';
+    getChildren(node.id).forEach(c=>processNode(c,depth));
+  }
+
+  roots.forEach(r=>processNode(r,0));
+
+  if(parentStyle==='after'){
+    addLine('-- Set parents','cm');
+    function setParents(node){
+      const vn=varNames[node.id];
+      const pv=node.parentId===null?rootParent:varNames[node.parentId];
+      raw+=`${vn}.Parent = ${pv}\n`;
+      html+=`${vn}.Parent = <span class="fn">${esc(pv)}</span>\n`;
+      getChildren(node.id).forEach(c=>setParents(c));
+    }
+    roots.forEach(r=>setParents(r));
+  }
+
+  document.getElementById('code-inner').innerHTML=html.trimEnd();
+  window._rawCode=raw.trimEnd();
+}
+
+function esc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+
+function copyCode(){
+  navigator.clipboard.writeText(window._rawCode||'').then(()=>{
+    const btn=document.querySelector('.copy-btn');
+    btn.textContent='✓ COPIED!';btn.classList.add('copied');
+    setTimeout(()=>{btn.textContent='📋 COPY';btn.classList.remove('copied');},1800);
+  });
+}
+
+// Init
+renderTree();generateCode();
+</script>
+</body>
+</html>

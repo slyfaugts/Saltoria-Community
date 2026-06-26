@@ -1,0 +1,577 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Loot Table Calculator — Saltoria Tools</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+/* ── RESET & BASE ── */
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:#07070F;
+  --surface:#0D0D18;
+  --surface2:#12121E;
+  --accent:#8B5CF6;
+  --accent2:#C4B5FD;
+  --text:#F0EEFF;
+  --muted:#6B7280;
+  --border:rgba(255,255,255,0.06);
+  --glass:rgba(255,255,255,0.03);
+  --glass2:rgba(255,255,255,0.06);
+  --glow:rgba(139,92,246,0.2);
+  --green:#6EE7B7;--red:#F87171;--yellow:#FCD34D;
+  --radius:14px;
+}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;font-size:15px;line-height:1.7;overflow-x:hidden;-webkit-font-smoothing:antialiased;min-height:100vh}
+img{max-width:100%;display:block}
+a{text-decoration:none;color:inherit}
+
+/* ── NAV ── */
+nav{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:0 2rem;height:64px;
+  background:rgba(7,7,15,0.92);
+  backdrop-filter:blur(20px) saturate(1.4);
+  -webkit-backdrop-filter:blur(20px) saturate(1.4);
+  border-bottom:1px solid var(--border);
+  position:sticky;top:0;z-index:200;
+}
+.nav-brand{display:flex;align-items:center;gap:10px}
+.nav-logo-text{font-family:'Inter',sans-serif;font-size:14px;font-weight:800;letter-spacing:.5px;color:#fff}
+.nav-logo-text span{color:var(--accent2)}
+.nav-tool-label{
+  font-family:'Space Mono',monospace;font-size:10px;color:var(--muted);
+  letter-spacing:1.5px;padding:3px 10px;border-radius:6px;
+  background:var(--glass2);border:1px solid var(--border);
+}
+.nav-back{
+  display:inline-flex;align-items:center;gap:6px;
+  font-family:'Space Mono',monospace;font-size:10px;
+  color:var(--muted);letter-spacing:1px;
+  padding:7px 14px;border:1px solid var(--border);border-radius:8px;
+  transition:all .2s;
+}
+.nav-back:hover{color:var(--accent2);border-color:rgba(196,181,253,.3)}
+.nav-back svg{transition:transform .2s}
+.nav-back:hover svg{transform:translateX(-2px)}
+
+/* ── HERO ── */
+.tool-hero{
+  text-align:center;padding:4rem 1.5rem 3rem;
+  position:relative;overflow:hidden;
+  border-bottom:1px solid var(--border);
+}
+.tool-hero::before{
+  content:'';position:absolute;top:0;left:50%;transform:translateX(-50%);
+  width:600px;height:350px;
+  background:radial-gradient(ellipse,rgba(139,92,246,.12) 0%,transparent 70%);
+  pointer-events:none;
+}
+.tool-hero-badge{
+  display:inline-flex;align-items:center;gap:8px;
+  background:rgba(139,92,246,.1);border:1px solid rgba(196,181,253,.2);
+  color:var(--accent2);font-size:10px;font-weight:600;letter-spacing:2px;
+  padding:5px 16px;border-radius:100px;margin-bottom:1.5rem;
+  text-transform:uppercase;font-family:'Space Mono',monospace;
+}
+.tool-hero h1{
+  font-size:clamp(26px,5vw,46px);font-weight:900;
+  color:#fff;line-height:1.05;letter-spacing:-1.5px;margin-bottom:1rem;
+}
+.tool-hero h1 em{
+  font-style:normal;
+  background:linear-gradient(135deg,var(--accent2),#fff,var(--accent));
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+}
+.tool-hero p{color:var(--muted);font-size:14px;max-width:520px;margin:0 auto;line-height:1.85}
+.tool-hero p code{background:rgba(139,92,246,.18);color:var(--accent2);padding:1px 6px;border-radius:4px;font-size:12px;font-family:'Space Mono',monospace}
+
+/* ── MAIN LAYOUT ── */
+.main{max-width:900px;margin:0 auto;padding:2rem 1.5rem}
+
+/* ── CARD ── */
+.card{background:var(--surface);border:1px solid var(--border);border-radius:16px;overflow:hidden;margin-bottom:1.25rem}
+.card-header{padding:1rem 1.25rem;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:10px}
+.card-icon{width:34px;height:34px;border-radius:10px;background:rgba(139,92,246,.12);border:1px solid rgba(139,92,246,.2);display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0}
+.card-title{font-size:13px;font-weight:700;color:#fff;letter-spacing:.2px}
+.card-sub{font-family:'Space Mono',monospace;font-size:9px;color:var(--muted);margin-top:3px;letter-spacing:1px;text-transform:uppercase}
+.card-body{padding:1.25rem}
+
+/* ── FORM ELEMENTS ── */
+.field{margin-bottom:1rem}
+.field:last-child{margin-bottom:0}
+label{display:block;font-family:'Space Mono',monospace;font-size:10px;color:var(--muted);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:6px}
+input[type=text],input[type=url],input[type=password],input[type=number],select,textarea{
+  width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:10px;
+  padding:10px 14px;color:var(--text);font-family:'Space Mono',monospace;font-size:12px;
+  outline:none;transition:border-color .2s;
+}
+input[type=text]:focus,input[type=url]:focus,input[type=password]:focus,input[type=number]:focus,select:focus,textarea:focus{
+  border-color:rgba(139,92,246,.5);box-shadow:0 0 0 3px rgba(139,92,246,.08);
+}
+select option{background:var(--surface2)}
+textarea{resize:vertical;min-height:80px;line-height:1.6}
+.field-hint{font-size:11px;color:var(--muted);margin-top:5px;line-height:1.6}
+input[type=range]{width:100%;accent-color:var(--accent);height:4px}
+input[type=color]{width:100%;height:40px;border-radius:10px;border:1px solid var(--border);background:var(--surface2);cursor:pointer;padding:3px}
+
+/* ── BUTTONS ── */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:10px 20px;border-radius:10px;font-family:'Space Mono',monospace;font-size:11px;cursor:pointer;letter-spacing:1px;border:none;transition:all .2s;text-transform:uppercase;font-weight:700}
+.btn-primary{background:linear-gradient(135deg,var(--accent),#7C3AED);color:#fff;box-shadow:0 4px 16px rgba(139,92,246,.3)}
+.btn-primary:hover:not(:disabled){transform:translateY(-1px);box-shadow:0 6px 24px rgba(139,92,246,.5)}
+.btn-primary:disabled{opacity:.4;cursor:not-allowed;transform:none;box-shadow:none}
+.btn-outline{background:transparent;border:1px solid var(--border);color:var(--muted)}
+.btn-outline:hover{border-color:rgba(196,181,253,.3);color:var(--accent2)}
+.btn-green{background:rgba(110,231,183,.1);border:1px solid rgba(110,231,183,.25);color:var(--green)}
+.btn-green:hover{background:rgba(110,231,183,.18)}
+.btn-red{background:rgba(248,113,113,.1);border:1px solid rgba(248,113,113,.25);color:var(--red)}
+.btn-red:hover{background:rgba(248,113,113,.18)}
+.btn-full{width:100%}
+.btn-row{display:flex;gap:.75rem;flex-wrap:wrap}
+.btn-sm{padding:6px 14px;font-size:10px}
+
+/* ── GRID HELPERS ── */
+.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:1rem}
+.grid-3{display:grid;grid-template-columns:repeat(3,1fr);gap:1rem}
+
+/* ── OUTPUT BOX ── */
+.output-box{position:relative;background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:.875rem 1rem;font-family:'Space Mono',monospace;font-size:12px;color:var(--accent2);cursor:pointer;transition:all .2s;word-break:break-all}
+.output-box:hover{border-color:rgba(196,181,253,.3);background:rgba(139,92,246,.06)}
+.copy-hint{position:absolute;top:8px;right:10px;font-size:9px;color:var(--muted);letter-spacing:1px;text-transform:uppercase;transition:color .2s}
+.output-box:hover .copy-hint{color:var(--accent2)}
+.output-box.copied{border-color:rgba(110,231,183,.4);background:rgba(110,231,183,.05)}
+
+/* ── RESULT CARD ── */
+.result-card{background:rgba(110,231,183,.06);border:1px solid rgba(110,231,183,.2);border-radius:12px;padding:1.25rem;display:none}
+.result-card.show{display:block}
+.result-title{font-size:11px;font-weight:700;color:var(--green);margin-bottom:.75rem;font-family:'Space Mono',monospace;letter-spacing:1px;text-transform:uppercase}
+.result-row{display:flex;justify-content:space-between;align-items:center;padding:.5rem 0;border-bottom:1px solid rgba(255,255,255,.04)}
+.result-row:last-child{border-bottom:none}
+.result-key{font-family:'Space Mono',monospace;font-size:10px;color:var(--muted);letter-spacing:1px}
+.result-val{font-family:'Space Mono',monospace;font-size:12px;color:var(--text);font-weight:700}
+.result-val.green{color:var(--green)}
+.result-val.red{color:var(--red)}
+.result-val.yellow{color:var(--yellow)}
+
+/* ── STATUS / LOG ── */
+.status-bar{background:var(--surface2);border-radius:10px;border:1px solid var(--border);padding:.875rem 1rem;font-family:'Space Mono',monospace;font-size:10px;line-height:1.9;min-height:48px;max-height:140px;overflow-y:auto;color:var(--muted)}
+.log-ok{color:var(--green)}
+.log-err{color:var(--red)}
+.log-info{color:var(--accent2)}
+.log-warn{color:var(--yellow)}
+
+/* ── LOADING BAR ── */
+.loading-bar{height:3px;background:linear-gradient(90deg,var(--accent),var(--accent2),var(--accent));background-size:200%;animation:shimmer 1.2s infinite;border-radius:3px;display:none;margin-bottom:1rem}
+.loading-bar.show{display:block}
+@keyframes shimmer{0%{background-position:200% 0}100%{background-position:-200% 0}}
+
+/* ── TABS ── */
+.tabs{display:flex;gap:0;border-bottom:1px solid var(--border);overflow-x:auto}
+.tab{flex-shrink:0;padding:.75rem 1rem;font-family:'Space Mono',monospace;font-size:10px;letter-spacing:1.5px;color:var(--muted);cursor:pointer;border-bottom:2px solid transparent;transition:all .2s;background:none;border-top:none;border-left:none;border-right:none;text-transform:uppercase;white-space:nowrap}
+.tab.active{color:var(--accent2);border-bottom-color:var(--accent2)}
+.tab:hover:not(.active){color:var(--text)}
+.tab-panel{display:none;padding:1.25rem}
+.tab-panel.active{display:block}
+
+/* ── TABLE ── */
+.data-table{width:100%;border-collapse:collapse;font-size:12px}
+.data-table th{font-family:'Space Mono',monospace;font-size:9px;color:var(--muted);letter-spacing:1.5px;text-transform:uppercase;padding:.625rem .875rem;border-bottom:1px solid var(--border);text-align:left}
+.data-table td{padding:.625rem .875rem;border-bottom:1px solid var(--border);color:var(--text);vertical-align:middle}
+.data-table tr:last-child td{border-bottom:none}
+.data-table tr:hover td{background:var(--surface2)}
+
+/* ── ROBUX-SPECIFIC ── */
+.calc-display{background:var(--surface2);border:1px solid var(--border);border-radius:14px;padding:1.5rem;text-align:center;margin-bottom:1rem}
+.calc-amount{font-size:42px;font-weight:900;color:var(--accent2);font-family:'Space Mono',monospace;letter-spacing:-1px;line-height:1}
+.calc-label{font-family:'Space Mono',monospace;font-size:10px;color:var(--muted);letter-spacing:2px;margin-top:.5rem;text-transform:uppercase}
+.calc-breakdown{display:grid;grid-template-columns:1fr 1fr;gap:.75rem;margin-top:1rem}
+.calc-item{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:.875rem;text-align:center}
+.calc-item-val{font-family:'Space Mono',monospace;font-size:16px;font-weight:700;color:var(--text)}
+.calc-item-val.red{color:var(--red)}
+.calc-item-val.green{color:var(--green)}
+.calc-item-label{font-family:'Space Mono',monospace;font-size:9px;color:var(--muted);letter-spacing:1px;margin-top:4px;text-transform:uppercase}
+
+/* ── LOOT TABLE ── */
+.loot-row{display:flex;align-items:center;gap:8px;margin-bottom:.5rem;padding:.625rem;background:var(--surface2);border:1px solid var(--border);border-radius:10px;transition:border-color .2s}
+.loot-row:hover{border-color:rgba(139,92,246,.2)}
+.loot-emoji{width:36px;height:36px;border-radius:8px;background:var(--surface);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0}
+.loot-name-inp{flex:1;background:transparent;border:none;color:var(--text);font-family:'Inter',sans-serif;font-size:13px;outline:none;padding:0 4px}
+.loot-weight-inp{width:60px;background:transparent;border:none;border-left:1px solid var(--border);color:var(--accent2);font-family:'Space Mono',monospace;font-size:12px;font-weight:700;outline:none;text-align:right;padding:0 8px;flex-shrink:0}
+.loot-pct{font-family:'Space Mono',monospace;font-size:10px;color:var(--muted);min-width:40px;text-align:right;flex-shrink:0}
+.loot-del{background:none;border:none;color:var(--muted);cursor:pointer;font-size:16px;line-height:1;padding:4px;flex-shrink:0;transition:color .2s}
+.loot-del:hover{color:var(--red)}
+.sim-result{display:flex;align-items:center;gap:10px;padding:.5rem .75rem;border-radius:8px;background:var(--surface2);border:1px solid var(--border);margin-bottom:.375rem}
+.sim-item-name{flex:1;font-size:13px;color:var(--text)}
+.sim-count{font-family:'Space Mono',monospace;font-size:12px;font-weight:700;color:var(--accent2)}
+.sim-bar-wrap{width:80px;height:4px;background:var(--border);border-radius:2px;overflow:hidden;flex-shrink:0}
+.sim-bar-fill{height:100%;background:linear-gradient(90deg,var(--accent),var(--accent2));border-radius:2px}
+
+/* ── INSTANCE TREE ── */
+.tree-node{display:flex;align-items:center;gap:6px;padding:.375rem .5rem;border-radius:8px;cursor:pointer;transition:background .15s;user-select:none;position:relative}
+.tree-node:hover{background:var(--surface2)}
+.tree-node.selected{background:rgba(139,92,246,.12);border:1px solid rgba(139,92,246,.2)}
+.tree-toggle{width:16px;height:16px;display:flex;align-items:center;justify-content:center;font-size:10px;color:var(--muted);flex-shrink:0}
+.tree-icon{font-size:14px;flex-shrink:0}
+.tree-label{font-size:13px;color:var(--text)}
+.tree-type{font-family:'Space Mono',monospace;font-size:9px;color:var(--muted);margin-left:4px}
+.tree-children{padding-left:20px;border-left:1px solid var(--border);margin-left:8px}
+.add-child-btn{display:inline-flex;align-items:center;gap:4px;font-family:'Space Mono',monospace;font-size:9px;color:var(--muted);background:none;border:1px dashed var(--border);border-radius:6px;padding:3px 8px;cursor:pointer;transition:all .2s;margin-left:8px;letter-spacing:.5px}
+.add-child-btn:hover{border-color:rgba(139,92,246,.4);color:var(--accent2)}
+.code-output{background:var(--surface2);border:1px solid var(--border);border-radius:12px;padding:1.25rem;font-family:'Space Mono',monospace;font-size:11px;color:var(--accent2);line-height:1.9;max-height:320px;overflow-y:auto;white-space:pre}
+
+/* ── FONT PREVIEW ── */
+.controls{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:1.25rem;margin-bottom:1.25rem;display:flex;flex-wrap:wrap;gap:1rem;align-items:flex-end}
+.ctrl-field{flex:1;min-width:160px}
+.size-display{font-family:'Space Mono',monospace;font-size:10px;color:var(--accent2);margin-top:4px}
+.filter-chips{display:flex;gap:.5rem;flex-wrap:wrap;margin-bottom:1.25rem}
+.filter-chip{background:var(--surface);border:1px solid var(--border);border-radius:100px;padding:5px 14px;font-family:'Space Mono',monospace;font-size:9px;color:var(--muted);cursor:pointer;transition:all .15s;letter-spacing:.5px}
+.filter-chip:hover{border-color:rgba(196,181,253,.3);color:var(--accent2)}
+.filter-chip.active{background:rgba(139,92,246,.15);border-color:rgba(196,181,253,.3);color:var(--accent2)}
+.font-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:1rem}
+.font-card{background:var(--surface);border:1px solid var(--border);border-radius:14px;overflow:hidden;transition:all .2s;cursor:pointer}
+.font-card:hover{border-color:rgba(196,181,253,.3);transform:translateY(-2px)}
+.font-card.selected{border-color:var(--accent2);background:rgba(139,92,246,.07)}
+.font-preview{padding:1.25rem 1.25rem .75rem;min-height:80px;display:flex;align-items:center}
+.font-preview-text{line-height:1.2;word-break:break-word;transition:all .3s}
+.font-meta{padding:.625rem 1.25rem .875rem;border-top:1px solid var(--border);display:flex;align-items:center;justify-content:space-between}
+.font-name-label{font-size:12px;font-weight:700;color:#fff}
+.font-roblox-name{font-family:'Space Mono',monospace;font-size:9px;color:var(--accent2);margin-top:2px;letter-spacing:.5px}
+.font-tags{display:flex;gap:.35rem;flex-wrap:wrap;margin-top:3px}
+.font-tag{font-family:'Space Mono',monospace;font-size:8px;background:rgba(139,92,246,.12);color:var(--muted);padding:2px 7px;border-radius:4px}
+.copy-icon{background:rgba(139,92,246,.12);border:1px solid rgba(139,92,246,.2);border-radius:8px;padding:5px 10px;font-size:12px;cursor:pointer;transition:all .2s;flex-shrink:0}
+.copy-icon:hover{background:rgba(139,92,246,.25)}
+.copy-icon.copied{background:rgba(110,231,183,.12);border-color:rgba(110,231,183,.3)}
+.selected-box{background:rgba(139,92,246,.07);border:1px solid rgba(196,181,253,.18);border-radius:12px;padding:.875rem 1rem;margin-bottom:1.25rem;display:flex;align-items:center;justify-content:space-between;gap:1rem;flex-wrap:wrap}
+.selected-box .code{font-family:'Space Mono',monospace;color:var(--accent2);font-size:12px;flex:1;word-break:break-all}
+.selected-box .copy-all{background:linear-gradient(135deg,var(--accent),#7C3AED);color:#fff;border:none;border-radius:8px;padding:7px 16px;font-family:'Space Mono',monospace;font-size:9px;cursor:pointer;letter-spacing:1px;transition:all .2s;flex-shrink:0;font-weight:700}
+.selected-box .copy-all:hover{transform:translateY(-1px);box-shadow:0 4px 12px rgba(139,92,246,.4)}
+.no-result{font-family:'Space Mono',monospace;font-size:11px;color:var(--muted);text-align:center;padding:3rem;letter-spacing:1px}
+
+/* ── INFO LOOKUP ── */
+.info-card{background:var(--surface2);border:1px solid var(--border);border-radius:12px;padding:1.25rem;margin-bottom:1rem}
+.info-avatar{width:80px;height:80px;border-radius:50%;border:3px solid rgba(139,92,246,.3);object-fit:cover;flex-shrink:0}
+.info-name{font-size:20px;font-weight:800;color:#fff;letter-spacing:-.5px}
+.info-handle{font-family:'Space Mono',monospace;font-size:11px;color:var(--muted);margin-top:2px}
+.info-badge{display:inline-flex;align-items:center;gap:5px;font-family:'Space Mono',monospace;font-size:9px;letter-spacing:1px;padding:3px 10px;border-radius:100px;border:1px solid var(--border);background:var(--surface);color:var(--muted)}
+.info-stat{text-align:center;padding:.75rem}
+.info-stat-val{font-size:22px;font-weight:800;color:var(--accent2);font-family:'Space Mono',monospace;letter-spacing:-1px}
+.info-stat-label{font-family:'Space Mono',monospace;font-size:9px;color:var(--muted);letter-spacing:1px;margin-top:3px;text-transform:uppercase}
+
+/* ── HIDDEN ── */
+.hidden{display:none!important}
+
+/* ── RESPONSIVE ── */
+@media(max-width:640px){
+  .main{padding:1rem}
+  nav{padding:0 1rem}
+  .grid-2,.grid-3{grid-template-columns:1fr}
+  .calc-breakdown{grid-template-columns:1fr 1fr}
+  .font-grid{grid-template-columns:1fr}
+  .controls{gap:.75rem}
+  .ctrl-field{min-width:140px}
+  .anim-row{flex-wrap:wrap}
+}
+</style>
+</head>
+<body>
+<nav>
+  <a href="../index.html" class="nav-brand">
+    <span class="nav-logo-text">SALT<span>ORIA</span></span>
+    <span class="nav-tool-label">LOOT TABLE CALC</span>
+  </a>
+  <a href="../index.html#tools" class="nav-back">
+    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>
+    Tools
+  </a>
+</nav>
+<div class="hero">
+  <div class="hero-badge">🎲 GAME DEV TOOL</div>
+  <h1>Loot Table <span>Calculator</span></h1>
+  <p>Buat loot table, hitung probabilitas setiap item, simulasi drop, dan generate kode Luau weighted random siap paste ke Roblox Studio.</p>
+</div>
+
+<div class="layout">
+  <!-- LEFT -->
+  <div>
+    <div class="card">
+      <div class="card-header"><div class="card-icon">🎲</div><div><div class="card-title">Loot Table Builder</div><div class="card-sub">TAMBAH ITEM & WEIGHT</div></div></div>
+      <div class="card-body">
+        <div class="field">
+          <label>Nama Loot Table</label>
+          <input type="text" id="table-name" value="ChestLoot" style="width:100%" oninput="generate()">
+        </div>
+        <div style="display:flex;gap:.5rem;margin-bottom:.625rem">
+          <span style="font-family:'Space Mono',monospace;font-size:9px;color:var(--muted);flex:2;letter-spacing:1px">NAMA ITEM</span>
+          <span style="font-family:'Space Mono',monospace;font-size:9px;color:var(--muted);width:70px;text-align:center;letter-spacing:1px">WEIGHT</span>
+          <span style="font-family:'Space Mono',monospace;font-size:9px;color:var(--muted);width:70px;text-align:center;letter-spacing:1px">RARITY</span>
+          <span style="font-family:'Space Mono',monospace;font-size:9px;color:var(--muted);min-width:52px;text-align:right;letter-spacing:1px">CHANCE</span>
+          <span style="width:22px"></span>
+        </div>
+        <div class="item-list" id="item-list"></div>
+        <div class="add-btn" onclick="addItem()">➕ Tambah Item</div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header"><div class="card-icon">🎮</div><div><div class="card-title">Simulasi Drop</div><div class="card-sub">TEST LOOT TABLE</div></div></div>
+      <div class="card-body">
+        <div class="field">
+          <label>Jumlah Simulasi</label>
+          <select id="sim-count" style="width:100%">
+            <option value="100">100x</option>
+            <option value="500">500x</option>
+            <option value="1000" selected>1.000x</option>
+            <option value="5000">5.000x</option>
+            <option value="10000">10.000x</option>
+          </select>
+        </div>
+        <button class="btn btn-outline" onclick="simulate()">🎲 JALANKAN SIMULASI</button>
+        <div class="sim-result" id="sim-result"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- RIGHT -->
+  <div>
+    <div class="card">
+      <div class="card-header"><div class="card-icon">📊</div><div><div class="card-title">Statistik</div><div class="card-sub">DISTRIBUSI PROBABILITAS</div></div></div>
+      <div class="card-body">
+        <div class="stats-grid">
+          <div class="stat-box"><div class="stat-num" id="stat-items">0</div><div class="stat-lbl">TOTAL ITEM</div></div>
+          <div class="stat-box"><div class="stat-num" id="stat-total-w">0</div><div class="stat-lbl">TOTAL WEIGHT</div></div>
+        </div>
+        <div class="chart-wrap"><canvas id="chart"></canvas></div>
+        <div id="legend" style="display:flex;flex-direction:column;gap:.375rem"></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header"><div class="card-icon">📋</div><div><div class="card-title">Generated Luau Code</div><div class="card-sub">SIAP PASTE KE STUDIO</div></div></div>
+      <div class="card-body" style="padding:0">
+        <div class="code-block" id="code-out">
+          <button class="copy-btn" onclick="copyCode()">📋 COPY</button>
+          <span id="code-inner"><span class="cm">-- Tambahkan item untuk generate kode</span></span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+const RARITIES = [
+  {val:'common',   label:'Common',    cls:'r-common',   dot:'dot-common',   color:'#aaaaaa'},
+  {val:'uncommon', label:'Uncommon',  cls:'r-uncommon', dot:'dot-uncommon', color:'#6EE7B7'},
+  {val:'rare',     label:'Rare',      cls:'r-rare',     dot:'dot-rare',     color:'#60A5FA'},
+  {val:'epic',     label:'Epic',      cls:'r-epic',     dot:'dot-epic',     color:'#A855F7'},
+  {val:'legendary',label:'Legendary', cls:'r-legendary',dot:'dot-legendary',color:'#FCD34D'},
+];
+function getRarity(v){ return RARITIES.find(r=>r.val===v)||RARITIES[0]; }
+
+let items = [
+  {name:'Common Coin',   weight:60, rarity:'common'},
+  {name:'Iron Sword',    weight:25, rarity:'uncommon'},
+  {name:'Magic Potion',  weight:10, rarity:'rare'},
+  {name:'Dragon Egg',    weight:4,  rarity:'epic'},
+  {name:'Ancient Relic', weight:1,  rarity:'legendary'},
+];
+let idCtr = 100;
+
+function totalWeight(){ return items.reduce((s,i)=>s+i.weight,0); }
+function pct(w){ const t=totalWeight(); return t?((w/t)*100):0; }
+
+function renderItems(){
+  const list = document.getElementById('item-list');
+  const total = totalWeight();
+  list.innerHTML = '';
+  items.forEach((item,idx)=>{
+    const r = getRarity(item.rarity);
+    const p = pct(item.weight);
+    const div = document.createElement('div');
+    div.className='item-row';
+    div.innerHTML=`
+      <div class="color-dot ${r.dot}"></div>
+      <input type="text" value="${item.name}" placeholder="Nama item..." oninput="items[${idx}].name=this.value;generate()" style="flex:2;background:transparent;border:none;padding:2px 0;color:var(--text);font-family:'Space Mono',monospace;font-size:11px;outline:none">
+      <input type="number" value="${item.weight}" min="1" max="99999" oninput="items[${idx}].weight=Math.max(1,parseInt(this.value)||1);renderItems();generate()" style="width:70px;flex-shrink:0;text-align:center">
+      <select onchange="items[${idx}].rarity=this.value;renderItems();generate()" style="background:transparent;border:none;font-family:'Space Mono',monospace;font-size:9px;color:${r.color};outline:none;cursor:pointer;width:80px">
+        ${RARITIES.map(r2=>`<option value="${r2.val}" ${r2.val===item.rarity?'selected':''}>${r2.label}</option>`).join('')}
+      </select>
+      <span class="item-row-pct">${p.toFixed(2)}%</span>
+      <button class="del-btn" onclick="items.splice(${idx},1);renderItems();generate()">✕</button>
+    `;
+    list.appendChild(div);
+  });
+  updateStats();drawChart();
+}
+
+function addItem(){
+  items.push({name:'New Item',weight:10,rarity:'common'});
+  renderItems();generate();
+}
+
+function updateStats(){
+  document.getElementById('stat-items').textContent=items.length;
+  document.getElementById('stat-total-w').textContent=totalWeight().toLocaleString('id-ID');
+}
+
+// ── CHART ─────────────────────────────────────────────────────
+function drawChart(){
+  const canvas=document.getElementById('chart');
+  const ctx=canvas.getContext('2d');
+  canvas.width=canvas.offsetWidth*2;
+  canvas.height=canvas.offsetHeight*2;
+  ctx.scale(2,2);
+  const W=canvas.offsetWidth/2, H=canvas.offsetHeight/2;
+  ctx.clearRect(0,0,W,H);
+  if(!items.length)return;
+
+  const total=totalWeight();
+  let angle=-Math.PI/2;
+  const cx=W/2, cy=H/2, r=Math.min(cx,cy)-20;
+
+  items.forEach(item=>{
+    const slice=(item.weight/total)*Math.PI*2;
+    const rc=getRarity(item.rarity);
+    ctx.beginPath();
+    ctx.moveTo(cx,cy);
+    ctx.arc(cx,cy,r,angle,angle+slice);
+    ctx.closePath();
+    ctx.fillStyle=rc.color+'cc';
+    ctx.fill();
+    ctx.strokeStyle='#0D0B14';
+    ctx.lineWidth=2;
+    ctx.stroke();
+    angle+=slice;
+  });
+
+  // center hole
+  ctx.beginPath();
+  ctx.arc(cx,cy,r*0.5,0,Math.PI*2);
+  ctx.fillStyle='#0D0B14';
+  ctx.fill();
+
+  // legend
+  const legend=document.getElementById('legend');
+  legend.innerHTML=items.map(item=>{
+    const rc=getRarity(item.rarity);
+    return `<div style="display:flex;align-items:center;gap:.5rem">
+      <div style="width:10px;height:10px;border-radius:50%;background:${rc.color};flex-shrink:0"></div>
+      <span style="font-family:'Space Mono',monospace;font-size:10px;color:var(--text);flex:1">${item.name}</span>
+      <span style="font-family:'Space Mono',monospace;font-size:10px;color:var(--muted)">${pct(item.weight).toFixed(2)}%</span>
+    </div>`;
+  }).join('');
+}
+
+// ── SIMULATE ──────────────────────────────────────────────────
+function simulate(){
+  if(!items.length)return;
+  const n=parseInt(document.getElementById('sim-count').value);
+  const total=totalWeight();
+  const counts={};
+  items.forEach(i=>counts[i.name]=0);
+
+  for(let t=0;t<n;t++){
+    let roll=Math.random()*total;
+    for(const item of items){
+      roll-=item.weight;
+      if(roll<=0){counts[item.name]=(counts[item.name]||0)+1;break;}
+    }
+  }
+
+  const box=document.getElementById('sim-result');
+  box.innerHTML=`<div style="font-family:'Space Mono',monospace;font-size:9px;color:var(--muted);letter-spacing:1px;margin-bottom:.5rem">${n.toLocaleString('id-ID')}x SIMULASI</div>`+
+    items.map(item=>`
+      <div class="sim-item-row">
+        <div class="color-dot ${getRarity(item.rarity).dot}" style="flex-shrink:0"></div>
+        <span class="sim-item-name">${item.name}</span>
+        <span class="sim-item-count">${(counts[item.name]||0).toLocaleString('id-ID')}x</span>
+        <span class="sim-item-pct">${(((counts[item.name]||0)/n)*100).toFixed(1)}%</span>
+      </div>
+    `).join('');
+  box.classList.add('show');
+}
+
+// ── CODE GENERATOR ────────────────────────────────────────────
+function generate(){
+  if(!items.length){
+    document.getElementById('code-inner').innerHTML='<span class="cm">-- Tambahkan item untuk generate kode</span>';
+    window._rawCode='';return;
+  }
+  const tname=document.getElementById('table-name').value||'LootTable';
+
+  let raw=`-- Generated by Saltoria Loot Table Calculator\n`;
+  raw+=`-- ${tname} | ${items.length} items | Total weight: ${totalWeight()}\n\n`;
+  raw+=`local ${tname} = {\n`;
+  items.forEach(item=>{
+    const p=pct(item.weight).toFixed(2);
+    raw+=`\t{ name = "${item.name}", weight = ${item.weight}, rarity = "${item.rarity}" }, -- ${p}%\n`;
+  });
+  raw+=`}\n\n`;
+  raw+=`-- Fungsi weighted random pick\n`;
+  raw+=`local function getRandom(lootTable)\n`;
+  raw+=`\tlocal totalWeight = 0\n`;
+  raw+=`\tfor _, item in ipairs(lootTable) do\n`;
+  raw+=`\t\ttotalWeight = totalWeight + item.weight\n`;
+  raw+=`\tend\n\n`;
+  raw+=`\tlocal roll = math.random() * totalWeight\n`;
+  raw+=`\tfor _, item in ipairs(lootTable) do\n`;
+  raw+=`\t\troll = roll - item.weight\n`;
+  raw+=`\t\tif roll <= 0 then\n`;
+  raw+=`\t\t\treturn item\n`;
+  raw+=`\t\tend\n`;
+  raw+=`\tend\n`;
+  raw+=`\treturn lootTable[#lootTable] -- fallback\n`;
+  raw+=`end\n\n`;
+  raw+=`-- Contoh penggunaan:\n`;
+  raw+=`-- local dropped = getRandom(${tname})\n`;
+  raw+=`-- print("Dropped:", dropped.name, "|", dropped.rarity)`;
+
+  window._rawCode=raw;
+
+  // HTML version
+  const esc=s=>String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  let html=`<span class="cm">-- Generated by Saltoria Loot Table Calculator</span>\n`;
+  html+=`<span class="cm">-- ${esc(tname)} | ${items.length} items | Total weight: ${totalWeight()}</span>\n\n`;
+  html+=`<span class="kw">local</span> ${esc(tname)} = {\n`;
+  items.forEach(item=>{
+    const p=pct(item.weight).toFixed(2);
+    html+=`\t{ name = <span class="str">"${esc(item.name)}"</span>, weight = <span class="num">${item.weight}</span>, rarity = <span class="str">"${item.rarity}"</span> }, <span class="cm">-- ${p}%</span>\n`;
+  });
+  html+=`}\n\n`;
+  html+=`<span class="cm">-- Fungsi weighted random pick</span>\n`;
+  html+=`<span class="kw">local function</span> <span class="fn">getRandom</span>(lootTable)\n`;
+  html+=`\t<span class="kw">local</span> totalWeight = <span class="num">0</span>\n`;
+  html+=`\t<span class="kw">for</span> _, item <span class="kw">in</span> <span class="fn">ipairs</span>(lootTable) <span class="kw">do</span>\n`;
+  html+=`\t\ttotalWeight = totalWeight + item.weight\n`;
+  html+=`\t<span class="kw">end</span>\n\n`;
+  html+=`\t<span class="kw">local</span> roll = <span class="fn">math.random</span>() * totalWeight\n`;
+  html+=`\t<span class="kw">for</span> _, item <span class="kw">in</span> <span class="fn">ipairs</span>(lootTable) <span class="kw">do</span>\n`;
+  html+=`\t\troll = roll - item.weight\n`;
+  html+=`\t\t<span class="kw">if</span> roll <= <span class="num">0</span> <span class="kw">then</span>\n`;
+  html+=`\t\t\t<span class="kw">return</span> item\n`;
+  html+=`\t\t<span class="kw">end</span>\n`;
+  html+=`\t<span class="kw">end</span>\n`;
+  html+=`\t<span class="kw">return</span> lootTable[#lootTable] <span class="cm">-- fallback</span>\n`;
+  html+=`<span class="kw">end</span>\n\n`;
+  html+=`<span class="cm">-- Contoh penggunaan:</span>\n`;
+  html+=`<span class="cm">-- local dropped = getRandom(${esc(tname)})</span>\n`;
+  html+=`<span class="cm">-- print("Dropped:", dropped.name, "|", dropped.rarity)</span>`;
+
+  document.getElementById('code-inner').innerHTML=html;
+}
+
+function copyCode(){
+  navigator.clipboard.writeText(window._rawCode||'').then(()=>{
+    const btn=document.querySelector('.copy-btn');
+    btn.textContent='✓ COPIED!';btn.classList.add('copied');
+    setTimeout(()=>{btn.textContent='📋 COPY';btn.classList.remove('copied');},1800);
+  });
+}
+
+// Init
+renderItems();generate();
+window.addEventListener('resize',drawChart);
+</script>
+</body>
+</html>

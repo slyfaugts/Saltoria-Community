@@ -1,0 +1,619 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Roblox Info Lookup — Saltoria Tools</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+/* ── RESET & BASE ── */
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:#07070F;
+  --surface:#0D0D18;
+  --surface2:#12121E;
+  --accent:#8B5CF6;
+  --accent2:#C4B5FD;
+  --text:#F0EEFF;
+  --muted:#6B7280;
+  --border:rgba(255,255,255,0.06);
+  --glass:rgba(255,255,255,0.03);
+  --glass2:rgba(255,255,255,0.06);
+  --glow:rgba(139,92,246,0.2);
+  --green:#6EE7B7;--red:#F87171;--yellow:#FCD34D;
+  --radius:14px;
+}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;font-size:15px;line-height:1.7;overflow-x:hidden;-webkit-font-smoothing:antialiased;min-height:100vh}
+img{max-width:100%;display:block}
+a{text-decoration:none;color:inherit}
+
+/* ── NAV ── */
+nav{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:0 2rem;height:64px;
+  background:rgba(7,7,15,0.92);
+  backdrop-filter:blur(20px) saturate(1.4);
+  -webkit-backdrop-filter:blur(20px) saturate(1.4);
+  border-bottom:1px solid var(--border);
+  position:sticky;top:0;z-index:200;
+}
+.nav-brand{display:flex;align-items:center;gap:10px}
+.nav-logo-text{font-family:'Inter',sans-serif;font-size:14px;font-weight:800;letter-spacing:.5px;color:#fff}
+.nav-logo-text span{color:var(--accent2)}
+.nav-tool-label{
+  font-family:'Space Mono',monospace;font-size:10px;color:var(--muted);
+  letter-spacing:1.5px;padding:3px 10px;border-radius:6px;
+  background:var(--glass2);border:1px solid var(--border);
+}
+.nav-back{
+  display:inline-flex;align-items:center;gap:6px;
+  font-family:'Space Mono',monospace;font-size:10px;
+  color:var(--muted);letter-spacing:1px;
+  padding:7px 14px;border:1px solid var(--border);border-radius:8px;
+  transition:all .2s;
+}
+.nav-back:hover{color:var(--accent2);border-color:rgba(196,181,253,.3)}
+.nav-back svg{transition:transform .2s}
+.nav-back:hover svg{transform:translateX(-2px)}
+
+/* ── HERO ── */
+.tool-hero{
+  text-align:center;padding:4rem 1.5rem 3rem;
+  position:relative;overflow:hidden;
+  border-bottom:1px solid var(--border);
+}
+.tool-hero::before{
+  content:'';position:absolute;top:0;left:50%;transform:translateX(-50%);
+  width:600px;height:350px;
+  background:radial-gradient(ellipse,rgba(139,92,246,.12) 0%,transparent 70%);
+  pointer-events:none;
+}
+.tool-hero-badge{
+  display:inline-flex;align-items:center;gap:8px;
+  background:rgba(139,92,246,.1);border:1px solid rgba(196,181,253,.2);
+  color:var(--accent2);font-size:10px;font-weight:600;letter-spacing:2px;
+  padding:5px 16px;border-radius:100px;margin-bottom:1.5rem;
+  text-transform:uppercase;font-family:'Space Mono',monospace;
+}
+.tool-hero h1{
+  font-size:clamp(26px,5vw,46px);font-weight:900;
+  color:#fff;line-height:1.05;letter-spacing:-1.5px;margin-bottom:1rem;
+}
+.tool-hero h1 em{
+  font-style:normal;
+  background:linear-gradient(135deg,var(--accent2),#fff,var(--accent));
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+}
+.tool-hero p{color:var(--muted);font-size:14px;max-width:520px;margin:0 auto;line-height:1.85}
+.tool-hero p code{background:rgba(139,92,246,.18);color:var(--accent2);padding:1px 6px;border-radius:4px;font-size:12px;font-family:'Space Mono',monospace}
+
+/* ── MAIN LAYOUT ── */
+.main{max-width:900px;margin:0 auto;padding:2rem 1.5rem}
+
+/* ── CARD ── */
+.card{background:var(--surface);border:1px solid var(--border);border-radius:16px;overflow:hidden;margin-bottom:1.25rem}
+.card-header{padding:1rem 1.25rem;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:10px}
+.card-icon{width:34px;height:34px;border-radius:10px;background:rgba(139,92,246,.12);border:1px solid rgba(139,92,246,.2);display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0}
+.card-title{font-size:13px;font-weight:700;color:#fff;letter-spacing:.2px}
+.card-sub{font-family:'Space Mono',monospace;font-size:9px;color:var(--muted);margin-top:3px;letter-spacing:1px;text-transform:uppercase}
+.card-body{padding:1.25rem}
+
+/* ── FORM ELEMENTS ── */
+.field{margin-bottom:1rem}
+.field:last-child{margin-bottom:0}
+label{display:block;font-family:'Space Mono',monospace;font-size:10px;color:var(--muted);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:6px}
+input[type=text],input[type=url],input[type=password],input[type=number],select,textarea{
+  width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:10px;
+  padding:10px 14px;color:var(--text);font-family:'Space Mono',monospace;font-size:12px;
+  outline:none;transition:border-color .2s;
+}
+input[type=text]:focus,input[type=url]:focus,input[type=password]:focus,input[type=number]:focus,select:focus,textarea:focus{
+  border-color:rgba(139,92,246,.5);box-shadow:0 0 0 3px rgba(139,92,246,.08);
+}
+select option{background:var(--surface2)}
+textarea{resize:vertical;min-height:80px;line-height:1.6}
+.field-hint{font-size:11px;color:var(--muted);margin-top:5px;line-height:1.6}
+input[type=range]{width:100%;accent-color:var(--accent);height:4px}
+input[type=color]{width:100%;height:40px;border-radius:10px;border:1px solid var(--border);background:var(--surface2);cursor:pointer;padding:3px}
+
+/* ── BUTTONS ── */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:10px 20px;border-radius:10px;font-family:'Space Mono',monospace;font-size:11px;cursor:pointer;letter-spacing:1px;border:none;transition:all .2s;text-transform:uppercase;font-weight:700}
+.btn-primary{background:linear-gradient(135deg,var(--accent),#7C3AED);color:#fff;box-shadow:0 4px 16px rgba(139,92,246,.3)}
+.btn-primary:hover:not(:disabled){transform:translateY(-1px);box-shadow:0 6px 24px rgba(139,92,246,.5)}
+.btn-primary:disabled{opacity:.4;cursor:not-allowed;transform:none;box-shadow:none}
+.btn-outline{background:transparent;border:1px solid var(--border);color:var(--muted)}
+.btn-outline:hover{border-color:rgba(196,181,253,.3);color:var(--accent2)}
+.btn-green{background:rgba(110,231,183,.1);border:1px solid rgba(110,231,183,.25);color:var(--green)}
+.btn-green:hover{background:rgba(110,231,183,.18)}
+.btn-red{background:rgba(248,113,113,.1);border:1px solid rgba(248,113,113,.25);color:var(--red)}
+.btn-red:hover{background:rgba(248,113,113,.18)}
+.btn-full{width:100%}
+.btn-row{display:flex;gap:.75rem;flex-wrap:wrap}
+.btn-sm{padding:6px 14px;font-size:10px}
+
+/* ── GRID HELPERS ── */
+.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:1rem}
+.grid-3{display:grid;grid-template-columns:repeat(3,1fr);gap:1rem}
+
+/* ── OUTPUT BOX ── */
+.output-box{position:relative;background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:.875rem 1rem;font-family:'Space Mono',monospace;font-size:12px;color:var(--accent2);cursor:pointer;transition:all .2s;word-break:break-all}
+.output-box:hover{border-color:rgba(196,181,253,.3);background:rgba(139,92,246,.06)}
+.copy-hint{position:absolute;top:8px;right:10px;font-size:9px;color:var(--muted);letter-spacing:1px;text-transform:uppercase;transition:color .2s}
+.output-box:hover .copy-hint{color:var(--accent2)}
+.output-box.copied{border-color:rgba(110,231,183,.4);background:rgba(110,231,183,.05)}
+
+/* ── RESULT CARD ── */
+.result-card{background:rgba(110,231,183,.06);border:1px solid rgba(110,231,183,.2);border-radius:12px;padding:1.25rem;display:none}
+.result-card.show{display:block}
+.result-title{font-size:11px;font-weight:700;color:var(--green);margin-bottom:.75rem;font-family:'Space Mono',monospace;letter-spacing:1px;text-transform:uppercase}
+.result-row{display:flex;justify-content:space-between;align-items:center;padding:.5rem 0;border-bottom:1px solid rgba(255,255,255,.04)}
+.result-row:last-child{border-bottom:none}
+.result-key{font-family:'Space Mono',monospace;font-size:10px;color:var(--muted);letter-spacing:1px}
+.result-val{font-family:'Space Mono',monospace;font-size:12px;color:var(--text);font-weight:700}
+.result-val.green{color:var(--green)}
+.result-val.red{color:var(--red)}
+.result-val.yellow{color:var(--yellow)}
+
+/* ── STATUS / LOG ── */
+.status-bar{background:var(--surface2);border-radius:10px;border:1px solid var(--border);padding:.875rem 1rem;font-family:'Space Mono',monospace;font-size:10px;line-height:1.9;min-height:48px;max-height:140px;overflow-y:auto;color:var(--muted)}
+.log-ok{color:var(--green)}
+.log-err{color:var(--red)}
+.log-info{color:var(--accent2)}
+.log-warn{color:var(--yellow)}
+
+/* ── LOADING BAR ── */
+.loading-bar{height:3px;background:linear-gradient(90deg,var(--accent),var(--accent2),var(--accent));background-size:200%;animation:shimmer 1.2s infinite;border-radius:3px;display:none;margin-bottom:1rem}
+.loading-bar.show{display:block}
+@keyframes shimmer{0%{background-position:200% 0}100%{background-position:-200% 0}}
+
+/* ── TABS ── */
+.tabs{display:flex;gap:0;border-bottom:1px solid var(--border);overflow-x:auto}
+.tab{flex-shrink:0;padding:.75rem 1rem;font-family:'Space Mono',monospace;font-size:10px;letter-spacing:1.5px;color:var(--muted);cursor:pointer;border-bottom:2px solid transparent;transition:all .2s;background:none;border-top:none;border-left:none;border-right:none;text-transform:uppercase;white-space:nowrap}
+.tab.active{color:var(--accent2);border-bottom-color:var(--accent2)}
+.tab:hover:not(.active){color:var(--text)}
+.tab-panel{display:none;padding:1.25rem}
+.tab-panel.active{display:block}
+
+/* ── TABLE ── */
+.data-table{width:100%;border-collapse:collapse;font-size:12px}
+.data-table th{font-family:'Space Mono',monospace;font-size:9px;color:var(--muted);letter-spacing:1.5px;text-transform:uppercase;padding:.625rem .875rem;border-bottom:1px solid var(--border);text-align:left}
+.data-table td{padding:.625rem .875rem;border-bottom:1px solid var(--border);color:var(--text);vertical-align:middle}
+.data-table tr:last-child td{border-bottom:none}
+.data-table tr:hover td{background:var(--surface2)}
+
+/* ── ROBUX-SPECIFIC ── */
+.calc-display{background:var(--surface2);border:1px solid var(--border);border-radius:14px;padding:1.5rem;text-align:center;margin-bottom:1rem}
+.calc-amount{font-size:42px;font-weight:900;color:var(--accent2);font-family:'Space Mono',monospace;letter-spacing:-1px;line-height:1}
+.calc-label{font-family:'Space Mono',monospace;font-size:10px;color:var(--muted);letter-spacing:2px;margin-top:.5rem;text-transform:uppercase}
+.calc-breakdown{display:grid;grid-template-columns:1fr 1fr;gap:.75rem;margin-top:1rem}
+.calc-item{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:.875rem;text-align:center}
+.calc-item-val{font-family:'Space Mono',monospace;font-size:16px;font-weight:700;color:var(--text)}
+.calc-item-val.red{color:var(--red)}
+.calc-item-val.green{color:var(--green)}
+.calc-item-label{font-family:'Space Mono',monospace;font-size:9px;color:var(--muted);letter-spacing:1px;margin-top:4px;text-transform:uppercase}
+
+/* ── LOOT TABLE ── */
+.loot-row{display:flex;align-items:center;gap:8px;margin-bottom:.5rem;padding:.625rem;background:var(--surface2);border:1px solid var(--border);border-radius:10px;transition:border-color .2s}
+.loot-row:hover{border-color:rgba(139,92,246,.2)}
+.loot-emoji{width:36px;height:36px;border-radius:8px;background:var(--surface);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0}
+.loot-name-inp{flex:1;background:transparent;border:none;color:var(--text);font-family:'Inter',sans-serif;font-size:13px;outline:none;padding:0 4px}
+.loot-weight-inp{width:60px;background:transparent;border:none;border-left:1px solid var(--border);color:var(--accent2);font-family:'Space Mono',monospace;font-size:12px;font-weight:700;outline:none;text-align:right;padding:0 8px;flex-shrink:0}
+.loot-pct{font-family:'Space Mono',monospace;font-size:10px;color:var(--muted);min-width:40px;text-align:right;flex-shrink:0}
+.loot-del{background:none;border:none;color:var(--muted);cursor:pointer;font-size:16px;line-height:1;padding:4px;flex-shrink:0;transition:color .2s}
+.loot-del:hover{color:var(--red)}
+.sim-result{display:flex;align-items:center;gap:10px;padding:.5rem .75rem;border-radius:8px;background:var(--surface2);border:1px solid var(--border);margin-bottom:.375rem}
+.sim-item-name{flex:1;font-size:13px;color:var(--text)}
+.sim-count{font-family:'Space Mono',monospace;font-size:12px;font-weight:700;color:var(--accent2)}
+.sim-bar-wrap{width:80px;height:4px;background:var(--border);border-radius:2px;overflow:hidden;flex-shrink:0}
+.sim-bar-fill{height:100%;background:linear-gradient(90deg,var(--accent),var(--accent2));border-radius:2px}
+
+/* ── INSTANCE TREE ── */
+.tree-node{display:flex;align-items:center;gap:6px;padding:.375rem .5rem;border-radius:8px;cursor:pointer;transition:background .15s;user-select:none;position:relative}
+.tree-node:hover{background:var(--surface2)}
+.tree-node.selected{background:rgba(139,92,246,.12);border:1px solid rgba(139,92,246,.2)}
+.tree-toggle{width:16px;height:16px;display:flex;align-items:center;justify-content:center;font-size:10px;color:var(--muted);flex-shrink:0}
+.tree-icon{font-size:14px;flex-shrink:0}
+.tree-label{font-size:13px;color:var(--text)}
+.tree-type{font-family:'Space Mono',monospace;font-size:9px;color:var(--muted);margin-left:4px}
+.tree-children{padding-left:20px;border-left:1px solid var(--border);margin-left:8px}
+.add-child-btn{display:inline-flex;align-items:center;gap:4px;font-family:'Space Mono',monospace;font-size:9px;color:var(--muted);background:none;border:1px dashed var(--border);border-radius:6px;padding:3px 8px;cursor:pointer;transition:all .2s;margin-left:8px;letter-spacing:.5px}
+.add-child-btn:hover{border-color:rgba(139,92,246,.4);color:var(--accent2)}
+.code-output{background:var(--surface2);border:1px solid var(--border);border-radius:12px;padding:1.25rem;font-family:'Space Mono',monospace;font-size:11px;color:var(--accent2);line-height:1.9;max-height:320px;overflow-y:auto;white-space:pre}
+
+/* ── FONT PREVIEW ── */
+.controls{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:1.25rem;margin-bottom:1.25rem;display:flex;flex-wrap:wrap;gap:1rem;align-items:flex-end}
+.ctrl-field{flex:1;min-width:160px}
+.size-display{font-family:'Space Mono',monospace;font-size:10px;color:var(--accent2);margin-top:4px}
+.filter-chips{display:flex;gap:.5rem;flex-wrap:wrap;margin-bottom:1.25rem}
+.filter-chip{background:var(--surface);border:1px solid var(--border);border-radius:100px;padding:5px 14px;font-family:'Space Mono',monospace;font-size:9px;color:var(--muted);cursor:pointer;transition:all .15s;letter-spacing:.5px}
+.filter-chip:hover{border-color:rgba(196,181,253,.3);color:var(--accent2)}
+.filter-chip.active{background:rgba(139,92,246,.15);border-color:rgba(196,181,253,.3);color:var(--accent2)}
+.font-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:1rem}
+.font-card{background:var(--surface);border:1px solid var(--border);border-radius:14px;overflow:hidden;transition:all .2s;cursor:pointer}
+.font-card:hover{border-color:rgba(196,181,253,.3);transform:translateY(-2px)}
+.font-card.selected{border-color:var(--accent2);background:rgba(139,92,246,.07)}
+.font-preview{padding:1.25rem 1.25rem .75rem;min-height:80px;display:flex;align-items:center}
+.font-preview-text{line-height:1.2;word-break:break-word;transition:all .3s}
+.font-meta{padding:.625rem 1.25rem .875rem;border-top:1px solid var(--border);display:flex;align-items:center;justify-content:space-between}
+.font-name-label{font-size:12px;font-weight:700;color:#fff}
+.font-roblox-name{font-family:'Space Mono',monospace;font-size:9px;color:var(--accent2);margin-top:2px;letter-spacing:.5px}
+.font-tags{display:flex;gap:.35rem;flex-wrap:wrap;margin-top:3px}
+.font-tag{font-family:'Space Mono',monospace;font-size:8px;background:rgba(139,92,246,.12);color:var(--muted);padding:2px 7px;border-radius:4px}
+.copy-icon{background:rgba(139,92,246,.12);border:1px solid rgba(139,92,246,.2);border-radius:8px;padding:5px 10px;font-size:12px;cursor:pointer;transition:all .2s;flex-shrink:0}
+.copy-icon:hover{background:rgba(139,92,246,.25)}
+.copy-icon.copied{background:rgba(110,231,183,.12);border-color:rgba(110,231,183,.3)}
+.selected-box{background:rgba(139,92,246,.07);border:1px solid rgba(196,181,253,.18);border-radius:12px;padding:.875rem 1rem;margin-bottom:1.25rem;display:flex;align-items:center;justify-content:space-between;gap:1rem;flex-wrap:wrap}
+.selected-box .code{font-family:'Space Mono',monospace;color:var(--accent2);font-size:12px;flex:1;word-break:break-all}
+.selected-box .copy-all{background:linear-gradient(135deg,var(--accent),#7C3AED);color:#fff;border:none;border-radius:8px;padding:7px 16px;font-family:'Space Mono',monospace;font-size:9px;cursor:pointer;letter-spacing:1px;transition:all .2s;flex-shrink:0;font-weight:700}
+.selected-box .copy-all:hover{transform:translateY(-1px);box-shadow:0 4px 12px rgba(139,92,246,.4)}
+.no-result{font-family:'Space Mono',monospace;font-size:11px;color:var(--muted);text-align:center;padding:3rem;letter-spacing:1px}
+
+/* ── INFO LOOKUP ── */
+.info-card{background:var(--surface2);border:1px solid var(--border);border-radius:12px;padding:1.25rem;margin-bottom:1rem}
+.info-avatar{width:80px;height:80px;border-radius:50%;border:3px solid rgba(139,92,246,.3);object-fit:cover;flex-shrink:0}
+.info-name{font-size:20px;font-weight:800;color:#fff;letter-spacing:-.5px}
+.info-handle{font-family:'Space Mono',monospace;font-size:11px;color:var(--muted);margin-top:2px}
+.info-badge{display:inline-flex;align-items:center;gap:5px;font-family:'Space Mono',monospace;font-size:9px;letter-spacing:1px;padding:3px 10px;border-radius:100px;border:1px solid var(--border);background:var(--surface);color:var(--muted)}
+.info-stat{text-align:center;padding:.75rem}
+.info-stat-val{font-size:22px;font-weight:800;color:var(--accent2);font-family:'Space Mono',monospace;letter-spacing:-1px}
+.info-stat-label{font-family:'Space Mono',monospace;font-size:9px;color:var(--muted);letter-spacing:1px;margin-top:3px;text-transform:uppercase}
+
+/* ── HIDDEN ── */
+.hidden{display:none!important}
+
+/* ── RESPONSIVE ── */
+@media(max-width:640px){
+  .main{padding:1rem}
+  nav{padding:0 1rem}
+  .grid-2,.grid-3{grid-template-columns:1fr}
+  .calc-breakdown{grid-template-columns:1fr 1fr}
+  .font-grid{grid-template-columns:1fr}
+  .controls{gap:.75rem}
+  .ctrl-field{min-width:140px}
+  .anim-row{flex-wrap:wrap}
+}
+</style>
+</head>
+<body>
+
+<nav>
+  <a href="../index.html" class="nav-brand">
+    <span class="nav-logo-text">SALT<span>ORIA</span></span>
+    <span class="nav-tool-label">INFO LOOKUP</span>
+  </a>
+  <a href="../index.html#tools" class="nav-back">
+    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>
+    Tools
+  </a>
+</nav>
+
+<div class="tool-hero">
+  <div class="tool-hero-badge">🔍 SALTORIA TOOLS</div>
+  <h1>Roblox Info <em>Lookup</em></h1>
+  <p>Cari info user, game, atau group Roblox berdasarkan username atau ID — langsung dari Roblox API.</p>
+</div>
+<div class="main">
+
+  <div class="cors-note" style="margin-bottom:1.25rem">
+    ℹ️ Tool ini menggunakan <b>Roblox API publik</b>. Tidak semua data tersedia karena CORS restrictions browser — beberapa info di-fetch via proxy publik. <b>Tidak memerlukan API key.</b>
+  </div>
+
+  <div class="card">
+    <div class="card-header">
+      <div class="card-icon">🔍</div>
+      <div>
+        <div class="card-title">Cari Informasi Roblox</div>
+        <div class="card-sub">USER · GAME · GROUP</div>
+      </div>
+    </div>
+    <div class="card-body">
+      <div class="type-tabs">
+        <button class="type-tab active" onclick="setType('user')">👤 User</button>
+        <button class="type-tab" onclick="setType('game')">🎮 Game</button>
+        <button class="type-tab" onclick="setType('group')">👥 Group</button>
+      </div>
+      <div class="search-row">
+        <input type="text" id="search-input" placeholder="Username atau ID..." onkeydown="if(event.key==='Enter')doLookup()">
+        <button class="btn btn-primary" id="btn-lookup" onclick="doLookup()">🔍 LOOKUP</button>
+      </div>
+      <div id="input-hint" style="font-family:'Space Mono',monospace;font-size:10px;color:var(--muted);margin-top:8px;letter-spacing:0.5px">
+        Masukkan username Roblox atau User ID
+      </div>
+
+      <!-- Loading -->
+      <div class="loading-bar" id="loading-bar" style="margin-top:1rem"></div>
+
+      <!-- Error -->
+      <div class="error-box" id="error-box"></div>
+
+      <!-- Result: User -->
+      <div class="result-card" id="result-user">
+        <div class="profile-header">
+          <img id="user-avatar" class="profile-avatar" src="" alt="avatar" onerror="this.style.display='none';document.getElementById('user-avatar-ph').style.display='flex'">
+          <div id="user-avatar-ph" class="profile-avatar-placeholder" style="display:none">?</div>
+          <div>
+            <div class="profile-name" id="user-displayname"></div>
+            <div class="profile-id">@<span id="user-username"></span> · ID: <span id="user-id-val"></span></div>
+            <span class="profile-badge badge-active" id="user-status-badge">ACTIVE</span>
+          </div>
+        </div>
+        <div class="info-grid">
+          <div class="info-item">
+            <div class="info-item-label">Bergabung</div>
+            <div class="info-item-val accent" id="user-joined"></div>
+          </div>
+          <div class="info-item">
+            <div class="info-item-label">Friends</div>
+            <div class="info-item-val green" id="user-friends"></div>
+          </div>
+          <div class="info-item">
+            <div class="info-item-label">Followers</div>
+            <div class="info-item-val accent" id="user-followers"></div>
+          </div>
+          <div class="info-item">
+            <div class="info-item-label">Following</div>
+            <div class="info-item-val" id="user-following"></div>
+          </div>
+        </div>
+        <div id="user-desc-wrap" style="display:none">
+          <div style="font-family:'Space Mono',monospace;font-size:10px;color:var(--muted);letter-spacing:1px;margin-top:1rem;margin-bottom:6px">DESKRIPSI PROFIL</div>
+          <div class="desc-box" id="user-desc"></div>
+        </div>
+      </div>
+
+      <!-- Result: Game -->
+      <div class="result-card" id="result-game">
+        <div id="game-thumb-wrap">
+          <div class="game-thumb-placeholder" id="game-thumb-ph">🎮</div>
+        </div>
+        <div class="profile-name" id="game-name" style="margin-bottom:6px"></div>
+        <div class="profile-id" id="game-creator" style="margin-bottom:0.75rem"></div>
+        <div class="stat-row">
+          <div class="stat-box"><div class="stat-num" id="game-visits"></div><div class="stat-lbl">VISITS</div></div>
+          <div class="stat-box"><div class="stat-num" id="game-playing"></div><div class="stat-lbl">PLAYING</div></div>
+          <div class="stat-box"><div class="stat-num" id="game-favs"></div><div class="stat-lbl">FAVORITES</div></div>
+        </div>
+        <div class="info-grid" style="margin-top:0.75rem">
+          <div class="info-item"><div class="info-item-label">Status</div><div class="info-item-val green" id="game-status"></div></div>
+          <div class="info-item"><div class="info-item-label">Genre</div><div class="info-item-val" id="game-genre"></div></div>
+          <div class="info-item"><div class="info-item-label">Max Players</div><div class="info-item-val accent" id="game-maxplayers"></div></div>
+          <div class="info-item"><div class="info-item-label">Created</div><div class="info-item-val" id="game-created"></div></div>
+        </div>
+        <div id="game-desc-wrap" style="display:none">
+          <div style="font-family:'Space Mono',monospace;font-size:10px;color:var(--muted);letter-spacing:1px;margin-top:1rem;margin-bottom:6px">DESKRIPSI GAME</div>
+          <div class="desc-box" id="game-desc"></div>
+        </div>
+      </div>
+
+      <!-- Result: Group -->
+      <div class="result-card" id="result-group">
+        <div class="profile-header">
+          <div class="profile-avatar-placeholder" id="group-icon" style="border-radius:10px;width:64px;height:64px;font-size:28px">👥</div>
+          <div>
+            <div class="profile-name" id="group-name"></div>
+            <div class="profile-id">Group ID: <span id="group-id-val"></span></div>
+            <span class="profile-badge badge-active" id="group-status-badge">PUBLIC</span>
+          </div>
+        </div>
+        <div class="info-grid">
+          <div class="info-item"><div class="info-item-label">Owner</div><div class="info-item-val accent" id="group-owner"></div></div>
+          <div class="info-item"><div class="info-item-label">Members</div><div class="info-item-val green" id="group-members"></div></div>
+        </div>
+        <div id="group-desc-wrap" style="display:none">
+          <div style="font-family:'Space Mono',monospace;font-size:10px;color:var(--muted);letter-spacing:1px;margin-top:1rem;margin-bottom:6px">DESKRIPSI GROUP</div>
+          <div class="desc-box" id="group-desc"></div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <div class="info-note">
+    ⚠️ Data diambil langsung dari <b>Roblox Public API</b>. Beberapa endpoint memerlukan proxy karena CORS browser. Akun private atau data terbatas mungkin tidak muncul sepenuhnya.
+  </div>
+</div>
+
+<script>
+const PROXY = 'https://corsproxy.io/?';
+let currentType = 'user';
+
+function setType(t) {
+  currentType = t;
+  document.querySelectorAll('.type-tab').forEach((tab, i) => {
+    tab.classList.toggle('active', (t==='user'&&i===0)||(t==='game'&&i===1)||(t==='group'&&i===2));
+  });
+  const hints = {
+    user: 'Masukkan username Roblox atau User ID',
+    game: 'Masukkan Place ID atau Universe ID game',
+    group: 'Masukkan Group ID'
+  };
+  const placeholders = {
+    user: 'Username atau User ID...',
+    game: 'Place ID / Universe ID...',
+    group: 'Group ID...'
+  };
+  document.getElementById('input-hint').textContent = hints[t];
+  document.getElementById('search-input').placeholder = placeholders[t];
+  hideAll();
+}
+
+function hideAll() {
+  ['result-user','result-game','result-group','error-box'].forEach(id => {
+    document.getElementById(id).classList.remove('show');
+    document.getElementById(id).style.display = '';
+  });
+}
+
+function showError(msg) {
+  const box = document.getElementById('error-box');
+  box.textContent = '❌ ' + msg;
+  box.classList.add('show');
+}
+
+function setLoading(show) {
+  document.getElementById('loading-bar').classList.toggle('show', show);
+  document.getElementById('btn-lookup').disabled = show;
+  document.getElementById('btn-lookup').textContent = show ? '⏳ Loading...' : '🔍 LOOKUP';
+}
+
+async function doLookup() {
+  const q = document.getElementById('search-input').value.trim();
+  if(!q) return;
+  hideAll();
+  setLoading(true);
+
+  try {
+    if(currentType === 'user') await lookupUser(q);
+    else if(currentType === 'game') await lookupGame(q);
+    else await lookupGroup(q);
+  } catch(e) {
+    showError(e.message || 'Gagal fetch data. Coba lagi.');
+  }
+  setLoading(false);
+}
+
+async function fetchJSON(url) {
+  const res = await fetch(PROXY + encodeURIComponent(url));
+  if(!res.ok) throw new Error(`HTTP ${res.status}`);
+  return res.json();
+}
+
+function fmtNum(n) {
+  if(n === undefined || n === null) return '—';
+  if(n >= 1e9) return (n/1e9).toFixed(1)+'B';
+  if(n >= 1e6) return (n/1e6).toFixed(1)+'M';
+  if(n >= 1e3) return (n/1e3).toFixed(1)+'K';
+  return n.toLocaleString('id-ID');
+}
+
+function fmtDate(d) {
+  if(!d) return '—';
+  return new Date(d).toLocaleDateString('id-ID', {year:'numeric',month:'long',day:'numeric'});
+}
+
+async function lookupUser(q) {
+  let userId;
+  if(/^\d+$/.test(q)) {
+    userId = q;
+  } else {
+    // Lookup by username via POST corsproxy
+    const res = await fetch(PROXY + encodeURIComponent('https://users.roblox.com/v1/usernames/users'), {
+      method: 'POST',
+      headers: {'Content-Type':'application/json'},
+      body: JSON.stringify({usernames:[q], excludeBannedUsers:false})
+    });
+    const d = await res.json();
+    if(!d.data || d.data.length === 0) throw new Error(`User "${q}" tidak ditemukan`);
+    userId = d.data[0].id;
+  }
+
+  const [profile, friends, followers, following] = await Promise.allSettled([
+    fetchJSON(`https://users.roblox.com/v1/users/${userId}`),
+    fetchJSON(`https://friends.roblox.com/v1/users/${userId}/friends/count`),
+    fetchJSON(`https://friends.roblox.com/v1/users/${userId}/followers/count`),
+    fetchJSON(`https://friends.roblox.com/v1/users/${userId}/followings/count`),
+  ]);
+
+  const p = profile.value;
+  if(!p || p.errors) throw new Error('User tidak ditemukan atau profil private');
+
+  document.getElementById('user-displayname').textContent = p.displayName || p.name;
+  document.getElementById('user-username').textContent = p.name;
+  document.getElementById('user-id-val').textContent = p.id;
+  document.getElementById('user-joined').textContent = fmtDate(p.created);
+  document.getElementById('user-friends').textContent = fmtNum(friends.value?.count);
+  document.getElementById('user-followers').textContent = fmtNum(followers.value?.count);
+  document.getElementById('user-following').textContent = fmtNum(following.value?.count);
+
+  const badge = document.getElementById('user-status-badge');
+  if(p.isBanned) {
+    badge.textContent = 'BANNED';
+    badge.className = 'profile-badge badge-banned';
+  } else {
+    badge.textContent = 'ACTIVE';
+    badge.className = 'profile-badge badge-active';
+  }
+
+  if(p.description) {
+    document.getElementById('user-desc').textContent = p.description;
+    document.getElementById('user-desc-wrap').style.display = 'block';
+  }
+
+  // Fetch avatar headshot
+  try {
+    const av = await fetchJSON(`https://thumbnails.roblox.com/v1/users/avatar-headshot?userIds=${p.id}&size=150x150&format=Png`);
+    if(av.data?.[0]?.imageUrl) {
+      document.getElementById('user-avatar').src = av.data[0].imageUrl;
+      document.getElementById('user-avatar').style.display = '';
+      document.getElementById('user-avatar-ph').style.display = 'none';
+    }
+  } catch(e) {
+    document.getElementById('user-avatar-ph').textContent = p.name[0].toUpperCase();
+    document.getElementById('user-avatar-ph').style.display = 'flex';
+  }
+
+  document.getElementById('result-user').classList.add('show');
+  document.getElementById('result-user').style.display = 'block';
+}
+
+async function lookupGame(q) {
+  if(!/^\d+$/.test(q)) throw new Error('Masukkan angka Place ID atau Universe ID game');
+  const placeId = q;
+
+  let universeId;
+  try {
+    const uni = await fetchJSON(`https://apis.roblox.com/universes/v1/places/${placeId}/universe`);
+    universeId = uni.universeId;
+  } catch(e) {
+    universeId = placeId; // try as universe ID directly
+  }
+
+  const data = await fetchJSON(`https://games.roblox.com/v1/games?universeIds=${universeId}`);
+  if(!data.data || data.data.length === 0) throw new Error('Game tidak ditemukan. Cek Place ID atau Universe ID.');
+  const g = data.data[0];
+
+  document.getElementById('game-name').textContent = g.name;
+  document.getElementById('game-creator').textContent = 'By ' + (g.creator?.name || '—');
+  document.getElementById('game-visits').textContent = fmtNum(g.visits);
+  document.getElementById('game-playing').textContent = fmtNum(g.playing);
+  document.getElementById('game-favs').textContent = fmtNum(g.favoritedCount);
+  document.getElementById('game-status').textContent = g.isPlayable ? 'Playable' : 'Not Playable';
+  document.getElementById('game-genre').textContent = g.genre || '—';
+  document.getElementById('game-maxplayers').textContent = g.maxPlayers || '—';
+  document.getElementById('game-created').textContent = fmtDate(g.created);
+
+  if(g.description) {
+    document.getElementById('game-desc').textContent = g.description;
+    document.getElementById('game-desc-wrap').style.display = 'block';
+  }
+
+  document.getElementById('result-game').classList.add('show');
+  document.getElementById('result-game').style.display = 'block';
+}
+
+async function lookupGroup(q) {
+  if(!/^\d+$/.test(q)) throw new Error('Masukkan Group ID (angka)');
+  const data = await fetchJSON(`https://groups.roblox.com/v1/groups/${q}`);
+  if(data.errors) throw new Error('Group tidak ditemukan');
+
+  document.getElementById('group-name').textContent = data.name;
+  document.getElementById('group-id-val').textContent = data.id;
+  document.getElementById('group-owner').textContent = data.owner?.username || 'N/A';
+  document.getElementById('group-members').textContent = fmtNum(data.memberCount);
+
+  const badge = document.getElementById('group-status-badge');
+  badge.textContent = data.publicEntryAllowed ? 'PUBLIC' : 'PRIVATE';
+  badge.className = data.publicEntryAllowed ? 'profile-badge badge-active' : 'profile-badge badge-banned';
+
+  if(data.description) {
+    document.getElementById('group-desc').textContent = data.description;
+    document.getElementById('group-desc-wrap').style.display = 'block';
+  }
+
+  document.getElementById('result-group').classList.add('show');
+  document.getElementById('result-group').style.display = 'block';
+}
+</script>
+</body>
+</html>
