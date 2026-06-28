@@ -1,5 +1,6 @@
 {
   "version": 2,
+  "cleanUrls": true,
   "functions": {
     "api/youtube-fetch.js": {
       "maxDuration": 60,
