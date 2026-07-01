@@ -39,7 +39,17 @@ export default async function handler(req, res) {
       const opRes = await fetch(`https://apis.roblox.com/${path}`, {
         headers: { 'x-api-key': apiKey },
       });
-      const data = await opRes.json();
+      const raw = await opRes.text();
+      let data;
+      try {
+        data = JSON.parse(raw);
+      } catch {
+        // Upstream (or something in front of it) returned a non-JSON body.
+        return res.status(opRes.status || 502).json({
+          error: 'Non-JSON response from Roblox API',
+          detail: raw.slice(0, 500),
+        });
+      }
       return res.status(opRes.status).json(data);
     } catch (err) {
       return res.status(500).json({ error: 'Internal proxy error', detail: String(err) });
@@ -63,6 +73,20 @@ export default async function handler(req, res) {
     }
     const rawBody = Buffer.concat(chunks);
 
+    // Vercel/Next.js serverless functions cap the incoming request body at
+    // ~4.5MB regardless of `bodyParser: false` — that limit is enforced by the
+    // platform before this handler even runs, so if the request got this far
+    // it already passed that gate. But if you're on a different host (or a
+    // reverse proxy / CDN in front of this function) with its own cap, this
+    // guard gives a clear error instead of forwarding a truncated body.
+    const MAX_BODY_BYTES = 20 * 1024 * 1024; // keep in sync with Roblox's own asset size limits
+    if (rawBody.length > MAX_BODY_BYTES) {
+      return res.status(413).json({
+        error: 'File too large',
+        detail: `Body is ${rawBody.length} bytes, exceeds ${MAX_BODY_BYTES} byte limit.`,
+      });
+    }
+
     const contentType = req.headers['content-type'];
     if (!contentType || !contentType.includes('multipart/form-data')) {
       return res.status(400).json({ error: 'Expected multipart/form-data content-type.' });
@@ -77,7 +101,19 @@ export default async function handler(req, res) {
       body: rawBody,
     });
 
-    const data = await robloxRes.json();
+    const raw = await robloxRes.text();
+    let data;
+    try {
+      data = JSON.parse(raw);
+    } catch {
+      // Roblox (or a proxy/CDN/hosting platform in front of this function)
+      // returned a non-JSON body — e.g. a plain-text "Request Entity Too Large"
+      // from a platform-level body-size limit. Surface it instead of crashing.
+      return res.status(robloxRes.status || 502).json({
+        error: 'Non-JSON response from Roblox API',
+        detail: raw.slice(0, 500),
+      });
+    }
     return res.status(robloxRes.status).json(data);
   } catch (err) {
     return res.status(500).json({ error: 'Internal proxy error', detail: String(err) });
