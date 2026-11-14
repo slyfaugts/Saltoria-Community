@@ -1,0 +1,26 @@
+{
+  "version": 2,
+  "cleanUrls": true,
+  "redirects": [
+    {
+      "source": "/tools/(anim-converter|color-converter|robux-tax-calculator|tween-calculator|roblox-info-lookup|server-status|badge-checker|ds-key-gen|thumbnail-generator|instance-tree-gen|font-preview)",
+      "destination": "/#tools",
+      "permanent": false
+    },
+    {
+      "source": "/tools/(anim-converter|color-converter|robux-tax-calculator|tween-calculator|roblox-info-lookup|server-status|badge-checker|ds-key-gen|thumbnail-generator|instance-tree-gen|font-preview).html",
+      "destination": "/#tools",
+      "permanent": false
+    }
+  ],
+  "functions": {
+    "api/youtube-fetch.js": {
+      "maxDuration": 60,
+      "memory": 1024
+    },
+    "api/upload-asset.js": {
+      "maxDuration": 60,
+      "memory": 512
+    }
+  }
+}
