@@ -1,0 +1,610 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lua Obfuscator — Saltoria Tools</title>
+<meta name="description" content="Obfuscate script Luau/Roblox kamu langsung di browser — rename variabel, enkripsi string, tanpa loadstring. Support Script, LocalScript, dan ModuleScript.">
+<meta name="theme-color" content="#0E0E16">
+<meta property="og:title" content="Lua Obfuscator — Saltoria Tools">
+<meta property="og:description" content="Lindungi script Luau/Roblox kamu dari pencurian — rename + enkripsi string, 100% kompatibel tanpa loadstring.">
+<meta property="og:image" content="https://saltoria.site/assets/og-image.png">
+<meta property="og:url" content="https://saltoria.site/tools/lua-obfuscator">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Saltoria Community">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="canonical" href="https://saltoria.site/tools/lua-obfuscator">
+<link rel="icon" type="image/png" href="../assets/favicon.png">
+<link rel="apple-touch-icon" href="../assets/favicon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700;800&family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet">
+<script>try{if(localStorage.getItem('saltoria-theme')==='light')document.documentElement.classList.add('light-mode')}catch(e){}</script>
+<link rel="stylesheet" href="../shared.css">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;font-size:15px;line-height:1.7;overflow-x:hidden;-webkit-font-smoothing:antialiased;min-height:100vh;position:relative}
+body::before{
+  content:'';position:fixed;inset:0;z-index:1;pointer-events:none;opacity:.035;mix-blend-mode:overlay;
+  background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='120' height='120'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>");
+}
+img{max-width:100%;display:block}
+a{text-decoration:none;color:inherit}
+.hide{display:none!important}
+.ms{font-family:'Material Symbols Rounded';font-weight:normal;font-style:normal;line-height:1;display:inline-block;white-space:nowrap;word-wrap:normal;direction:ltr;font-variation-settings:'FILL' 0,'wght' 400,'GRAD' 0,'opsz' 24;vertical-align:middle}
+main,.tool-hero,.layout{position:relative;z-index:2}
+.tool-hero{text-align:center;padding:4.5rem 1.5rem 3.25rem;position:relative;overflow:hidden;border-bottom:1px solid var(--border)}
+.tool-hero::before{content:'';position:absolute;top:0;left:50%;transform:translateX(-50%);width:700px;height:380px;background:radial-gradient(ellipse,rgba(124,92,252,.14) 0%,transparent 70%);pointer-events:none}
+.tool-hero>*{position:relative}
+.tool-hero-badge{display:inline-flex;align-items:center;gap:8px;background:rgba(124,92,252,.12);border:1px solid rgba(195,180,255,.22);color:var(--accent2);font-size:11px;font-weight:600;letter-spacing:1.6px;padding:6px 16px 6px 12px;border-radius:100px;margin-bottom:1.5rem;text-transform:uppercase}
+.tool-hero-badge .ms{font-size:16px}
+.tool-hero h1{font-family:'Space Grotesk',sans-serif;font-size:clamp(34px,6vw,60px);font-weight:700;color:var(--text);line-height:1;letter-spacing:-2px;margin-bottom:1.1rem}
+.tool-hero h1 em{font-style:normal;background:linear-gradient(135deg,var(--accent2),var(--text) 45%,var(--accent));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.tool-hero p{color:var(--muted);font-size:15px;max-width:620px;margin:0 auto;line-height:1.85}
+.tool-hero-chips{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-top:1.25rem}
+.tool-hero-chip{display:inline-flex;align-items:center;gap:5px;background:var(--glass);border:1px solid var(--border);color:var(--muted);font-size:11px;font-weight:600;padding:5px 12px;border-radius:100px}
+.tool-hero-chip .ms{font-size:14px;color:var(--green)}
+.card{background:var(--surface);border:1px solid var(--border);border-radius:20px;overflow:hidden;margin-bottom:1.25rem}
+.card-header{padding:1.1rem 1.35rem;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:12px}
+.card-icon{width:40px;height:40px;border-radius:12px;background:rgba(124,92,252,.1);border:1px solid rgba(124,92,252,.18);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.card-icon .ms{font-size:20px;color:var(--accent2)}
+.card-header>div:nth-child(2){min-width:0}
+.card-title{white-space:nowrap;font-family:'Space Grotesk',sans-serif;font-size:16px;font-weight:700;color:var(--text);letter-spacing:-.2px;line-height:1.2}
+.card-sub{font-size:12px;color:var(--muted);margin-top:2px}
+.card-body{padding:1.35rem}
+.hdr-actions{margin-left:auto;display:flex;gap:8px;flex-shrink:0}
+.field{margin-bottom:1.1rem}
+.field:last-child{margin-bottom:0}
+label{display:block;font-size:11px;font-weight:600;letter-spacing:1px;text-transform:uppercase;color:var(--muted);margin-bottom:7px}
+input[type=text],textarea{width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:12px;padding:11px 14px;color:var(--text);font-family:'Inter',sans-serif;font-size:13px;font-weight:500;outline:none;transition:all .2s}
+input[type=text]:hover,textarea:hover{border-color:var(--border-strong)}
+input[type=text]:focus,textarea:focus{border-color:rgba(195,180,255,.3);box-shadow:0 0 0 3px rgba(124,92,252,.1)}
+textarea{resize:vertical;line-height:1.6;font-family:'JetBrains Mono',monospace;font-size:12px}
+#f-input{min-height:260px}
+.hint{font-size:12px;color:var(--muted);margin-top:8px;line-height:1.7}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:7px;padding:9px 16px;border-radius:10px;font-family:'Inter',sans-serif;font-size:12px;font-weight:600;letter-spacing:.3px;cursor:pointer;border:1px solid transparent;transition:all .25s var(--ease);white-space:nowrap}
+.btn .ms{font-size:16px}
+.btn-primary{background:linear-gradient(135deg,var(--accent),var(--accent-deep));color:#fff;box-shadow:0 4px 18px rgba(124,92,252,.32)}
+.btn-primary:hover{transform:translateY(-1px);box-shadow:0 8px 26px rgba(124,92,252,.5)}
+.btn-primary.copied{background:rgba(110,231,183,.12);border-color:rgba(110,231,183,.28);color:var(--green);box-shadow:none;transform:none}
+.btn-ghost{background:var(--glass2);border-color:var(--border-strong);color:var(--text)}
+.btn-ghost:hover{background:var(--surface3);transform:translateY(-1px)}
+.btn-outline{background:transparent;border-color:var(--border-strong);color:var(--muted)}
+.btn-outline:hover{border-color:rgba(195,180,255,.35);color:var(--accent2)}
+.btn-row{display:flex;gap:.6rem;flex-wrap:wrap}
+.btn-full{width:100%}
+.style-chips{display:flex;gap:8px;flex-wrap:wrap}
+.style-chip{background:var(--glass);border:1px solid var(--border);color:var(--muted);font-size:12px;font-weight:600;padding:7px 16px;border-radius:100px;cursor:pointer;transition:all .2s;user-select:none}
+.style-chip:hover{color:var(--text);border-color:rgba(195,180,255,.3)}
+.style-chip.active{background:var(--accent);border-color:var(--accent);color:#fff}
+.level-card{border:1px solid var(--border);border-radius:14px;padding:12px 14px;cursor:pointer;transition:all .2s;background:var(--surface2)}
+.level-card:hover{border-color:rgba(195,180,255,.3)}
+.level-card.active{border-color:var(--accent);box-shadow:0 0 0 1px var(--accent);background:rgba(124,92,252,.08)}
+.level-card-title{font-size:13px;font-weight:700;color:var(--text);display:flex;align-items:center;gap:6px;margin-bottom:3px}
+.level-card-desc{font-size:11.5px;color:var(--muted);line-height:1.5}
+.level-grid{display:grid;grid-template-columns:1fr;gap:8px}
+.code-block{position:relative;background:var(--code-bg);border:1px solid var(--code-border);border-radius:14px;padding:1.25rem;font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--code-text);line-height:1.8;overflow:auto;white-space:pre;min-height:200px;max-height:65vh}
+.card-body[style*="padding:0"] .code-block{border:none;border-radius:0}
+.stat{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--muted);padding:.75rem 1.35rem;border-top:1px solid var(--border)}
+.stat.warn{color:var(--yellow)}
+.warn-box{background:rgba(252,211,77,.08);border:1px solid rgba(252,211,77,.25);border-radius:14px;padding:1rem 1.1rem;font-size:12.5px;color:var(--text);line-height:1.7;display:flex;gap:10px;margin-bottom:1.25rem}
+.warn-box .ms{color:var(--yellow);font-size:20px;flex-shrink:0}
+.layout{max-width:1080px;margin:0 auto;padding:2.5rem 1.5rem 5rem;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:1.25rem;align-items:start}
+.layout>div{min-width:0}
+.layout>div>.card:last-child{margin-bottom:0}
+.code-wrap{position:sticky;top:88px}
+.key-note{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--accent2);background:rgba(124,92,252,.08);border:1px dashed rgba(195,180,255,.3);border-radius:10px;padding:10px 12px;margin-top:.75rem;word-break:break-all}
+@media(max-width:900px){.layout{grid-template-columns:1fr;padding:1.5rem 1rem 3.5rem}.code-wrap{position:static}}
+@media(max-width:640px){.card-header{flex-wrap:wrap}.hdr-actions{margin-left:0;width:100%}.hdr-actions .btn{flex:1}}
+</style>
+</head>
+<body>
+<nav id="main-nav" data-tool="LUA OBFUSCATOR"><a href="../index.html" class="nav-logo-text">SALTORIA</a></nav>
+<div class="tool-hero">
+  <div class="tool-hero-badge"><span class="ms" aria-hidden="true">lock</span>Security tool</div>
+  <h1>Lua <em>Obfuscator</em></h1>
+  <p>Lindungi script Luau kamu dari pencurian — rename variabel jadi acak, enkripsi semua string literal, langsung di browser kamu, tidak pernah dikirim ke server manapun. Tidak pakai <code class="mono">loadstring</code>, jadi 100% kompatibel di semua jenis script.</p>
+  <div class="tool-hero-chips">
+    <span class="tool-hero-chip"><span class="ms" aria-hidden="true">check_circle</span>Script</span>
+    <span class="tool-hero-chip"><span class="ms" aria-hidden="true">check_circle</span>LocalScript</span>
+    <span class="tool-hero-chip"><span class="ms" aria-hidden="true">check_circle</span>ModuleScript</span>
+    <span class="tool-hero-chip"><span class="ms" aria-hidden="true">check_circle</span>Semua Roblox Service</span>
+  </div>
+</div>
+<div class="layout">
+  <!-- LEFT -->
+  <div>
+    <div class="warn-box">
+      <span class="ms" aria-hidden="true">info</span>
+      <div>Tokenizer-based, bukan full Lua parser. Udah ditest ratusan kali (termasuk pakai interpreter Luau asli) buat pola umum Script/LocalScript/ModuleScript dan semua Roblox service — tapi tetap <b>test dulu di Studio</b> sebelum taruh di production, terutama buat script yang sangat panjang/kompleks.</div>
+    </div>
+
+    <div class="card">
+      <div class="card-header"><div class="card-icon"><span class="ms" aria-hidden="true">code</span></div><div><div class="card-title">Source Script</div><div class="card-sub">Paste script Lua/Luau kamu</div></div></div>
+      <div class="card-body">
+        <div class="field">
+          <textarea id="f-input" spellcheck="false" placeholder="-- paste script Lua/Luau kamu di sini
+local Players = game:GetService('Players')
+local function onPlayerAdded(player)
+    print('Welcome, ' .. player.Name)
+end
+Players.PlayerAdded:Connect(onPlayerAdded)"></textarea>
+        </div>
+        <div class="hint" id="input-stat">0 baris, 0 karakter</div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header"><div class="card-icon"><span class="ms" aria-hidden="true">tune</span></div><div><div class="card-title">Level Obfuscation</div><div class="card-sub">Makin tinggi, makin kuat</div></div></div>
+      <div class="card-body">
+        <div class="level-grid" id="level-grid">
+          <div class="level-card active" data-level="1">
+            <div class="level-card-title">🟢 Ringan</div>
+            <div class="level-card-desc">Enkripsi semua string literal + hapus komentar. Paling aman, cocok buat script yang sering di-update.</div>
+          </div>
+          <div class="level-card" data-level="2">
+            <div class="level-card-title">🟡 Sedang</div>
+            <div class="level-card-desc">Level Ringan + rename semua variabel/fungsi lokal jadi nama acak (nama field table tetap aman, tidak ikut di-rename).</div>
+          </div>
+          <div class="level-card" data-level="3">
+            <div class="level-card-title">🔴 Berat</div>
+            <div class="level-card-desc">Level Sedang + samarkan angka literal + sisipkan kode sampah di awal tiap fungsi.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header"><div class="card-icon"><span class="ms" aria-hidden="true">badge</span></div><div><div class="card-title">Credit / Owner</div><div class="card-sub">Watermark anti-tamper</div></div></div>
+      <div class="card-body">
+        <div class="field"><label>Nama kamu / brand (wajib diisi untuk proteksi penuh)</label>
+          <input type="text" id="f-owner" placeholder="contoh: Saltoria Community" value="Saltoria Community">
+          <div class="hint">Nama ini ikut jadi bagian kunci enkripsi string. Kalau orang lain menghapus/mengganti baris credit di script hasil obfuscate, string-string di dalamnya jadi rusak — jadi kredit kamu tidak bisa di-strip diam-diam.</div>
+        </div>
+      </div>
+    </div>
+
+    <button class="btn btn-primary btn-full" id="gen-btn" type="button" style="padding:13px"><span class="ms" aria-hidden="true">bolt</span>Obfuscate Script</button>
+  </div>
+
+  <!-- RIGHT -->
+  <div class="code-wrap">
+    <div class="card">
+      <div class="card-header"><div class="card-icon"><span class="ms" aria-hidden="true">terminal</span></div><div><div class="card-title">Hasil Obfuscate</div><div class="card-sub">Siap tempel ke Studio</div></div><div class="hdr-actions"><button class="btn btn-ghost" id="dl-btn" type="button"><span class="ms" aria-hidden="true">download</span>.lua</button><button class="btn btn-primary" id="copy-btn" type="button"><span class="ms" aria-hidden="true">content_copy</span>Salin</button></div></div>
+      <div class="card-body" style="padding:0">
+        <div class="code-block" id="code-out">-- Hasil obfuscate akan muncul di sini setelah kamu klik "Obfuscate Script"</div>
+      </div>
+      <div class="stat" id="stat"></div>
+    </div>
+  </div>
+</div>
+
+<script>
+const KEYWORDS = new Set(['and','break','do','else','elseif','end','false','for','function','if','in','local','nil','not','or','repeat','return','then','true','until','while','self']);
+const PROTECTED = new Set(['game','workspace','script','Instance','Vector3','Vector2','CFrame','Color3','UDim2','UDim','Enum','wait','task','print','warn','error','pairs','ipairs','next','type','typeof','tostring','tonumber','pcall','xpcall','select','unpack','table','string','math','os','coroutine','require','Players','ReplicatedStorage','ServerScriptService','ServerStorage','RunService','UserInputService','TweenService','HttpService','DataStoreService','SoundService','Lighting','StarterGui','StarterPack','StarterPlayer','_G','shared','bit32','loadstring','spawn','delay','elapsedTime','collectgarbage','rawget','rawset','rawequal','setmetatable','getmetatable','newproxy']);
+
+function tokenize(src){
+  const tokens = [];
+  let i = 0; const n = src.length;
+  while (i < n){
+    const c = src[i];
+    if (/\s/.test(c)){
+      const start=i; while(i<n && /\s/.test(src[i])) i++;
+      tokens.push({type:'ws', text:src.slice(start,i)}); continue;
+    }
+    if (c==='-' && src[i+1]==='-'){
+      const start=i; i+=2;
+      if (src[i]==='['){
+        let eq=0, j=i+1;
+        while (src[j]==='=') { eq++; j++; }
+        if (src[j]==='['){
+          const closeStr=']'+'='.repeat(eq)+']';
+          let endIdx = src.indexOf(closeStr, j+1);
+          if (endIdx===-1) endIdx=n; else endIdx+=closeStr.length;
+          i = endIdx;
+          tokens.push({type:'comment', text:src.slice(start,i)}); continue;
+        }
+      }
+      while (i<n && src[i]!=='\n') i++;
+      tokens.push({type:'comment', text:src.slice(start,i)}); continue;
+    }
+    if (c==='[' && (src[i+1]==='[' || src[i+1]==='=')){
+      let j=i+1, eq=0;
+      while (src[j]==='=') { eq++; j++; }
+      if (src[j]==='['){
+        const start=i;
+        const closeStr=']'+'='.repeat(eq)+']';
+        let endIdx = src.indexOf(closeStr, j+1);
+        if (endIdx===-1) endIdx=n; else endIdx+=closeStr.length;
+        i=endIdx;
+        tokens.push({type:'longstring', text:src.slice(start,i)}); continue;
+      }
+    }
+    if (c==='"' || c==="'"){
+      const start=i; const quote=c; i++;
+      while (i<n){
+        if (src[i]==='\\'){ i+=2; continue; }
+        if (src[i]===quote){ i++; break; }
+        i++;
+      }
+      tokens.push({type:'string', text:src.slice(start,i), quote}); continue;
+    }
+    if (/[0-9]/.test(c)){
+      const start=i;
+      if (c==='0' && (src[i+1]==='x'||src[i+1]==='X')){
+        i+=2; while (i<n && /[0-9a-fA-F]/.test(src[i])) i++;
+      } else {
+        while (i<n && /[0-9.]/.test(src[i])) i++;
+        if (src[i]==='e'||src[i]==='E'){ i++; if(src[i]==='+'||src[i]==='-') i++; while(i<n && /[0-9]/.test(src[i])) i++; }
+      }
+      tokens.push({type:'number', text:src.slice(start,i)}); continue;
+    }
+    if (/[A-Za-z_]/.test(c)){
+      const start=i; while (i<n && /[A-Za-z0-9_]/.test(src[i])) i++;
+      tokens.push({type:'ident', text:src.slice(start,i)}); continue;
+    }
+    tokens.push({type:'sym', text:c}); i++;
+  }
+  return tokens;
+}
+
+function collectLocalNames(tokens){
+  const names = new Set();
+  function collectIdentList(startIdx){
+    let k = startIdx, expectIdent = true;
+    while (tokens[k]){
+      const tk = tokens[k];
+      if (tk.type==='ws'){ k++; continue; }
+      if (expectIdent && tk.type==='ident' && !KEYWORDS.has(tk.text)){ names.add(tk.text); k++; expectIdent=false; continue; }
+      if (!expectIdent && tk.type==='sym' && tk.text===','){ k++; expectIdent=true; continue; }
+      break;
+    }
+  }
+  for (let i=0;i<tokens.length;i++){
+    const t = tokens[i];
+    if (t.type!=='ident') continue;
+    if (t.text==='local'){
+      let j=i+1; while (tokens[j] && tokens[j].type==='ws') j++;
+      if (tokens[j] && tokens[j].text==='function'){
+        let k=j+1; while (tokens[k] && tokens[k].type==='ws') k++;
+        if (tokens[k] && tokens[k].type==='ident'){ names.add(tokens[k].text); k++; }
+        while (tokens[k] && tokens[k].text!=='(') k++;
+        if (tokens[k]){
+          const { paramNames } = scanParamList(tokens, k);
+          for (const pn of paramNames) names.add(pn);
+        }
+      } else {
+        collectIdentList(j);
+      }
+    }
+    if (t.text==='for'){ collectIdentList(i+1); }
+    if (t.text==='function'){
+      let k=i+1; while (tokens[k] && tokens[k].type==='ws') k++;
+      while (tokens[k] && tokens[k].text!=='(' ) k++;
+      if (tokens[k] && tokens[k].text==='('){
+        const { paramNames } = scanParamList(tokens, k);
+        for (const pn of paramNames) names.add(pn);
+      }
+    }
+  }
+  for (const kw of KEYWORDS) names.delete(kw);
+  for (const p of PROTECTED) names.delete(p);
+  return names;
+}
+
+// Any identifier that EVER appears as a table-field/method name anywhere in
+// the file (obj.name, obj:name(), or { name = ... } / { name: Type } table
+// literals) must never be renamed, even if the same spelling is also a
+// legitimate local/parameter elsewhere -- otherwise renaming a local would
+// silently rename an unrelated table field to match, which can break
+// anything outside this file that reads that field by its original name.
+function collectFieldLikeNames(tokens){
+  const fieldNames = new Set();
+  const stack = [];
+  for (let i=0;i<tokens.length;i++){
+    const t = tokens[i];
+    if (t.type==='sym'){
+      if (t.text==='{'||t.text==='('||t.text==='[') stack.push(t.text);
+      else if (t.text==='}'||t.text===')'||t.text===']') stack.pop();
+    }
+    if (t.type!=='ident') continue;
+    let p=i-1; while (tokens[p] && (tokens[p].type==='ws'||tokens[p].type==='comment')) p--;
+    if (tokens[p] && (tokens[p].text==='.'||tokens[p].text===':')) { fieldNames.add(t.text); continue; }
+    if (stack[stack.length-1] === '{'){
+      let n=i+1; while (tokens[n] && (tokens[n].type==='ws'||tokens[n].type==='comment')) n++;
+      if (tokens[n] && (tokens[n].text==='='||tokens[n].text===':')) fieldNames.add(t.text);
+    }
+  }
+  return fieldNames;
+}
+
+// Given the index of a parameter list's opening '(', returns the parameter
+// NAMES only (never the type annotations after ':') and the index of the
+// closing ')'. Correctly skips nested (), {}, [] inside type expressions
+// -- e.g. `cb: (number) -> string` or `data: { [string]: number }` --
+// so type-expression identifiers are never mistaken for parameter names.
+function scanParamList(tokens, openIdx){
+  const paramNames = [];
+  let m = openIdx + 1;
+  let expectName = true;
+  while (tokens[m]){
+    const tk = tokens[m];
+    if (tk.type==='ws' || tk.type==='comment'){ m++; continue; }
+    if (tk.text===')'){ break; }
+    if (expectName){
+      if (tk.type==='ident' && tk.text!=='self') paramNames.push(tk.text);
+      expectName = false; m++; continue;
+    }
+    if (tk.text===':'){
+      m++;
+      let depth = 0;
+      while (tokens[m]){
+        const tk2 = tokens[m];
+        if (tk2.type==='ws'||tk2.type==='comment'){ m++; continue; }
+        if (tk2.text==='('||tk2.text==='{'||tk2.text==='['){ depth++; m++; continue; }
+        if (tk2.text===')'||tk2.text==='}'||tk2.text===']'){
+          if (depth===0) break;
+          depth--; m++; continue;
+        }
+        if (depth===0 && tk2.text===',') break;
+        m++;
+      }
+      continue;
+    }
+    if (tk.text===','){ expectName = true; m++; continue; }
+    m++; // '?' optional marker or anything else, skip
+  }
+  return { paramNames, closeIdx: m };
+}
+
+function randName(){
+  return '_' + Math.random().toString(36).slice(2,8);
+}
+
+function findFunctionBodyStarts(tokens){
+  // Index of the ')' that closes a function's parameter list -- but ONLY
+  // when nothing risky follows it. Luau allows a return-type annotation
+  // like `function(x: string): SomeType` right after that ')', and fully
+  // parsing Luau's type syntax (unions, generics, function types) is out
+  // of scope -- so we skip any function that has one, rather than guess.
+  const starts = new Set();
+  for (let i=0;i<tokens.length;i++){
+    if (tokens[i].type==='ident' && tokens[i].text==='function'){
+      let k=i+1;
+      while (tokens[k] && tokens[k].text!=='(') k++;
+      if (!tokens[k]) continue;
+      const { closeIdx } = scanParamList(tokens, k);
+      if (tokens[closeIdx] === undefined) continue;
+      let p = closeIdx+1;
+      while (tokens[p] && (tokens[p].type==='ws' || tokens[p].type==='comment')) p++;
+      if (tokens[p] && tokens[p].text===':') continue; // return-type annotation -- skip this function entirely
+      starts.add(closeIdx);
+    }
+  }
+  return starts;
+}
+
+function randomKeyStr(n=16){
+  const chars='ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz23456789';
+  const arr=new Uint8Array(n); crypto.getRandomValues(arr);
+  return Array.from(arr,b=>chars[b%chars.length]).join('');
+}
+function deriveStream(keyStr, round, length){
+  let seed=0; const s=keyStr+String(round);
+  for (let i=0;i<s.length;i++) seed=(seed*31+s.charCodeAt(i))>>>0;
+  const out=new Uint8Array(length);
+  for (let i=0;i<length;i++){ seed=(Math.imul(seed,1103515245)+12345)>>>0; out[i]=(seed>>>16)&0xFF; }
+  return out;
+}
+function xorBytes(bytes,keyBytes){ const out=new Uint8Array(bytes.length); for(let i=0;i<bytes.length;i++) out[i]=bytes[i]^keyBytes[i%keyBytes.length]; return out; }
+function toBase64(bytes){ let bin=''; for(let i=0;i<bytes.length;i++) bin+=String.fromCharCode(bytes[i]); return btoa(bin); }
+
+function encryptString(str, key, rounds){
+  let bytes = new TextEncoder().encode(str);
+  for (let r=1;r<=rounds;r++){ bytes = xorBytes(bytes, deriveStream(key,r,bytes.length)); }
+  return toBase64(bytes);
+}
+
+function obfuscate(src, level, owner){
+  const tokens = tokenize(src);
+  const key = randomKeyStr(16);
+  const effKey = key + '::' + (owner||'Unlicensed');
+  const rounds = 2;
+
+  let renameMap = null;
+  if (level >= 2){
+    const names = collectLocalNames(tokens);
+    const fieldLike = collectFieldLikeNames(tokens);
+    for (const fl of fieldLike) names.delete(fl);
+    renameMap = new Map();
+    for (const nm of names) renameMap.set(nm, randName());
+  }
+
+  let strCount = 0;
+  let numCount = 0;
+  const outParts = [];
+  const funcBodyStarts = level >= 3 ? findFunctionBodyStarts(tokens) : new Set();
+  if (level >= 3){
+    const n1 = Math.floor(Math.random()*9000)+1, n2 = Math.floor(Math.random()*9000)+1;
+    outParts.push(`local ${randName()} = ${n1} + ${n2}\n`);
+  }
+  for (let i=0;i<tokens.length;i++){
+    const t = tokens[i];
+    if (t.type==='comment'){ continue; }
+    if (t.type==='ident'){
+      if (renameMap && renameMap.has(t.text)) outParts.push(renameMap.get(t.text));
+      else outParts.push(t.text);
+      continue;
+    }
+    if (t.type==='string'){
+      const quote = t.quote;
+      let raw;
+      try { raw = JSON.parse(quote==='"' ? t.text : t.text.replace(/\\'/g,"'").replace(/"/g,'\\"').replace(/^'/,'"').replace(/'$/,'"')); }
+      catch(e){ raw = t.text.slice(1,-1); }
+      const enc = encryptString(raw, effKey, rounds);
+      strCount++;
+      outParts.push(`_SLTR_DEC("${enc}")`);
+      continue;
+    }
+    if (t.type==='number' && level >= 3){
+      if (/^[0-9]+$/.test(t.text)){
+        const v = parseInt(t.text,10);
+        if (v >= 2 && v < 1e9){
+          const a = Math.floor(Math.random()*(v-1))+1;
+          const b = v - a;
+          numCount++;
+          outParts.push(`(${a}+${b})`);
+          continue;
+        }
+      }
+      outParts.push(t.text); continue;
+    }
+    if (t.type==='sym'){
+      outParts.push(t.text);
+      if (funcBodyStarts.has(i) && Math.random() < 0.6){
+        const n1 = Math.floor(Math.random()*9000)+1, n2 = Math.floor(Math.random()*9000)+1;
+        outParts.push(` local ${randName()} = ${n1} + ${n2} `);
+      }
+      continue;
+    }
+    outParts.push(t.text);
+  }
+
+  const decoderLua = `-- ============================================
+-- Protected by: Saltoria Lua Obfuscator v2
+-- Owner/credit : ${owner||'Unlicensed'}
+-- Level: ${level} | Strings encrypted: ${strCount}${level>=3 ? ' | Numbers obfuscated: '+numCount : ''}
+-- Tidak pakai loadstring -- 100% kompatibel Script & LocalScript
+-- ============================================
+local _SLTR_KEY = "${key}"
+local _SLTR_OWNER = "${(owner||'Unlicensed').replace(/\\\\/g,'\\\\\\\\').replace(/"/g,'\\\\"')}" -- JANGAN dihapus/diubah
+local _SLTR_EFFKEY = _SLTR_KEY .. "::" .. _SLTR_OWNER
+local _SLTR_B64CHARS = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/"
+
+local function _SLTR_B64DEC(data)
+  data = data:gsub('[^'.._SLTR_B64CHARS..'=]', '')
+  local out = {}
+  local bits, value = 0, 0
+  for i = 1, #data do
+    local c = data:sub(i,i)
+    if c ~= '=' then
+      local idx = _SLTR_B64CHARS:find(c, 1, true)
+      if idx then
+        value = (value * 64) + (idx - 1)
+        bits = bits + 6
+        if bits >= 8 then
+          bits = bits - 8
+          table.insert(out, string.char(bit32.band(bit32.rshift(value, bits), 0xFF)))
+          value = value % (2 ^ bits)
+        end
+      end
+    end
+  end
+  return table.concat(out)
+end
+
+local function _SLTR_STREAM(keyStr, round, length)
+  local seed = 0
+  local s = keyStr .. tostring(round)
+  for i = 1, #s do
+    seed = (seed * 31 + string.byte(s, i)) % 4294967296
+  end
+  local out = {}
+  for i = 1, length do
+    local aH, aL = math.floor(seed / 65536), seed % 65536
+    local bH, bL = 16838, 20077
+    local cross = (aH * bL + aL * bH) % 65536
+    seed = ((cross * 65536 + aL * bL) % 4294967296 + 12345) % 4294967296
+    out[i] = bit32.band(bit32.rshift(seed, 16), 0xFF)
+  end
+  return out
+end
+
+function _SLTR_DEC(b64)
+  local raw = _SLTR_B64DEC(b64)
+  for r = ${rounds}, 1, -1 do
+    local stream = _SLTR_STREAM(_SLTR_EFFKEY, r, #raw)
+    local out = {}
+    local n = #stream
+    for i = 1, #raw do
+      out[i] = string.char(bit32.bxor(string.byte(raw, i), stream[((i-1)%n)+1]))
+    end
+    raw = table.concat(out)
+  end
+  return raw
+end
+
+`;
+
+  const body = outParts.join('');
+  return { lua: decoderLua + body, strCount, numCount, key };
+}
+
+
+(function(){
+'use strict';
+var $=function(i){return document.getElementById(i)};
+var currentLevel = 1;
+
+document.querySelectorAll('.level-card').forEach(function(el){
+  el.addEventListener('click', function(){
+    document.querySelectorAll('.level-card').forEach(function(x){x.classList.remove('active')});
+    el.classList.add('active');
+    currentLevel = parseInt(el.dataset.level,10);
+  });
+});
+
+function updateInputStat(){
+  var v = $('f-input').value;
+  var lines = v ? v.split('\n').length : 0;
+  $('input-stat').textContent = lines + ' baris, ' + v.length + ' karakter';
+}
+$('f-input').addEventListener('input', updateInputStat);
+updateInputStat();
+
+$('gen-btn').addEventListener('click', function(){
+  var src = $('f-input').value;
+  if (!src.trim()){ alert('Isi dulu script-nya.'); return; }
+  var owner = $('f-owner').value.trim() || 'Unlicensed';
+  var result = obfuscate(src, currentLevel, owner);
+  $('code-out').textContent = result.lua;
+  var extra = currentLevel>=3 ? (', ' + result.numCount + ' angka disamarkan') : '';
+  $('stat').textContent = 'Level ' + currentLevel + ' — ' + result.strCount + ' string dienkripsi' + extra + '. Tanpa loadstring, langsung bisa dipakai di Script/LocalScript/ModuleScript.';
+  if (typeof $('code-out').scrollIntoView === 'function'){ $('code-out').scrollIntoView({behavior:'smooth', block:'nearest'}); }
+});
+
+function copyBtn(id, get){
+  var b=$(id), orig=b.innerHTML;
+  b.addEventListener('click', function(){
+    var t=get();
+    if (!t){ return; }
+    var done=function(){
+      b.innerHTML='<span class="ms" aria-hidden="true">check</span>Tersalin';b.classList.add('copied');
+      setTimeout(function(){b.innerHTML=orig;b.classList.remove('copied')},1800);
+    };
+    var fb=function(){
+      var x=document.createElement('textarea');x.value=t;document.body.appendChild(x);x.select();
+      try{document.execCommand('copy');done()}catch(e){}
+      document.body.removeChild(x);
+    };
+    if(navigator.clipboard&&navigator.clipboard.writeText)navigator.clipboard.writeText(t).then(done,fb);else fb();
+  });
+}
+copyBtn('copy-btn', function(){ return $('code-out').textContent.indexOf('Hasil obfuscate akan muncul')===0 ? '' : $('code-out').textContent; });
+
+$('dl-btn').addEventListener('click', function(){
+  var t = $('code-out').textContent;
+  if (!t || t.indexOf('Hasil obfuscate akan muncul')===0) return;
+  var a=document.createElement('a');
+  a.href=URL.createObjectURL(new Blob([t],{type:'text/plain'}));
+  a.download='obfuscated.lua';
+  document.body.appendChild(a);a.click();document.body.removeChild(a);
+  setTimeout(function(){URL.revokeObjectURL(a.href)},1000);
+});
+})();
+</script>
+<script src="../shared.js" defer></script>
+</body>
+</html>

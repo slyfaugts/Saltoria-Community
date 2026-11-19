@@ -1,0 +1,413 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DataStore Manager — Saltoria Tools</title>
+<meta name="description" content="Kelola DataStore Roblox: explorer, editor, backup, restore, migrasi antar-experience, OrderedDataStore, ProfileService, dan pengelolaan data pemain per User ID lewat Open Cloud.">
+<meta name="theme-color" content="#0E0E16">
+<meta property="og:title" content="DataStore Manager — Saltoria Tools">
+<meta property="og:description" content="Explorer, editor, backup, restore, dan migrasi DataStore Roblox dalam satu tool gratis.">
+<meta property="og:image" content="https://saltoria.site/assets/og-image.png">
+<meta property="og:url" content="https://saltoria.site/tools/datastore-manager">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Saltoria Community">
+<link rel="canonical" href="https://saltoria.site/tools/datastore-manager">
+<link rel="icon" type="image/png" href="../assets/favicon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700;800&family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<script>
+/* terapkan tema sebelum render (kunci sama dengan landing: saltoria-theme) */
+try{ if((localStorage.getItem('saltoria-theme')||'').indexOf('light')>-1) document.documentElement.classList.add('light-mode'); }catch(e){}
+</script>
+<link rel="stylesheet" href="../shared.css">
+<style>
+body{font-family:'Inter',system-ui,sans-serif;margin:0}
+.wrap{max-width:1200px;margin:0 auto;padding:2rem 1.25rem 4rem}
+.sub{color:var(--muted);max-width:640px;line-height:1.6}
+.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:1.25rem;margin-top:1rem}
+.grid{display:grid;grid-template-columns:330px 1fr;gap:1rem}@media(max-width:900px){.grid{grid-template-columns:1fr}}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:end}.row>div{flex:1;min-width:150px}
+label{display:block;font-size:11px;color:var(--muted);letter-spacing:1px;text-transform:uppercase;margin:10px 0 5px}
+input,select,textarea{background:var(--surface2);border:1px solid var(--border);color:var(--text);border-radius:var(--radius-sm);padding:9px 12px;font:inherit;width:100%;box-sizing:border-box}
+.btn{background:linear-gradient(135deg,var(--accent),var(--accent-deep));color:#fff;border:0;border-radius:10px;padding:10px 18px;font-weight:600;font-size:13px;cursor:pointer;box-shadow:0 4px 18px rgba(124,92,252,.3)}
+.btn.ghost{background:var(--glass2);border:1px solid var(--border-strong);color:var(--text);box-shadow:none}.btn.danger{background:var(--red);box-shadow:none}
+.btn:disabled{opacity:.4;cursor:not-allowed}
+.list{max-height:230px;overflow:auto;margin-top:6px}.item{padding:7px 10px;border-radius:8px;cursor:pointer;font-size:13px;word-break:break-all}
+.item:hover{background:var(--glass2)}.item.on{color:var(--accent2);background:var(--glass2)}
+.code{font:12.5px/1.5 'JetBrains Mono',monospace;background:var(--code-bg);color:var(--code-text);border-radius:10px;padding:12px;white-space:pre-wrap;margin:0;border:1px solid var(--code-border)}
+textarea.code{min-height:300px;resize:vertical}
+.sw{display:flex;gap:8px;align-items:center;font-size:13px;color:var(--muted)}.sw input{width:auto}
+.warn{color:var(--yellow);font-size:12px;margin-top:8px}
+footer{text-align:center;color:var(--muted-dim);font-size:12px;padding:2rem}
+
+.hero{margin-bottom:8px}.badges{display:flex;gap:8px;flex-wrap:wrap}
+.badge{font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;padding:5px 12px;border-radius:999px}
+.badge.a{background:rgba(124,92,252,.18);color:var(--accent2);border:1px solid rgba(124,92,252,.35)}
+.badge.g{background:var(--gold-dim);color:var(--gold);border:1px solid rgba(228,190,124,.3)}
+html.light-mode .badge.g{color:#8A6420}
+.hero h1{margin-top:14px;font-size:clamp(30px,5vw,44px);line-height:1.08;font-weight:700;letter-spacing:-.02em}
+.hero h1 em{font-style:italic;background:linear-gradient(135deg,var(--accent),var(--accent2));-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
+html.light-mode .hero h1 em{background:linear-gradient(135deg,var(--accent),var(--accent-deep));-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
+.hero p{margin-top:12px}
+</style>
+</head>
+<body>
+
+<nav id="main-nav" data-tool="DATASTORE MANAGER"></nav>
+
+<main class="wrap">
+ <section class="hero"><div class="badges"><span class="badge a">Tool</span><span class="badge g">Roblox Open Cloud</span><span class="badge a">Beta</span></div>
+ <h1>DataStore <em>Manager</em></h1>
+ <p class="sub">Jelajahi, edit, backup, restore, dan <b>migrasi</b> DataStore, OrderedDataStore &amp; data ProfileService/ProfileStore/DataStore2 dari satu tempat. API key hanya ada di memori tab ini dan diteruskan lewat proxy tanpa disimpan. Ketik <b>demo</b> sebagai key untuk mencoba tanpa Roblox.</p></section>
+ <section class="card"><div class="row">
+  <div><label for="key">API Key</label><input id="key" type="password" autocomplete="off" placeholder="Open Cloud API key atau: demo"></div>
+  <div><label for="uid">Universe ID (bukan Place ID)</label><input id="uid" inputmode="numeric" placeholder="1234567890"></div>
+  <div style="flex:0"><button class="btn" id="go">Hubungkan</button></div></div>
+  <div class="sw" style="margin-top:12px"><input type="checkbox" id="wr"><label for="wr" style="margin:0;text-transform:none;letter-spacing:0;font-size:13px">Mode Tulis (default: hanya baca)</label></div>
+  <div class="warn" id="wn" hidden>⚠ Jangan mengedit profil yang sedang dipakai server (session lock ProfileService/ProfileStore). Tutup server dulu.</div>
+ </section>
+ <div class="grid">
+  <section class="card"><label style="margin-top:0">DataStore</label><div class="list" id="dsl"><span class="sub">Belum terhubung.</span></div>
+   <div class="row"><div><label for="sc">Scope</label><input id="sc" value="global"></div><div><label for="px">Prefix key</label><input id="px" placeholder="Player_"></div></div>
+   <button class="btn ghost" id="lk" style="margin-top:10px">Muat key</button>
+   <label>Key</label><div class="list" id="kl"></div><button class="btn ghost" id="more" hidden style="margin-top:8px">Muat lagi</button></section>
+  <section class="card"><label style="margin-top:0" id="ttl">Editor</label>
+   <textarea class="code" id="ed" spellcheck="false" placeholder="Pilih key untuk memuat nilainya"></textarea>
+   <div class="row" style="margin-top:10px"><button class="btn ghost" id="df">Dry run (lihat perubahan)</button><button class="btn" id="sv" disabled>Simpan &amp; verifikasi</button><button class="btn ghost" id="vh">Riwayat versi</button><button class="btn danger" id="dk">Hapus key</button><div class="sw"><input type="checkbox" id="bk" checked><label for="bk" style="margin:0;text-transform:none;letter-spacing:0;font-size:13px">unduh salinan dulu</label></div></div>
+   <label>Perubahan</label><pre class="code" id="diff">—</pre>
+   <label>Log</label><pre class="code" id="log" style="max-height:160px;overflow:auto"></pre></section>
+ </div>
+<section class="card" id="mg"><label style="margin-top:0">Migrasi · sumber = universe di atas</label>
+ <div class="row"><div><label for="tu">Universe ID tujuan</label><input id="tu" inputmode="numeric"></div>
+ <div><label for="tk">API key tujuan (kosong = sama)</label><input id="tk" type="password" autocomplete="off"></div>
+ <div><label for="mp">Cakupan</label><select id="mp"><option value="one">DataStore terpilih</option><option value="all">Semua DataStore</option></select></div>
+ <div><label for="mc">Jika key sudah ada</label><select id="mc"><option value="skip">Lewati</option><option value="over">Timpa</option><option value="newer">Yang terbaru menang</option><option value="merge">Merge per field (angka=max, array=gabung)</option></select></div>
+ <div><label for="mx">Prefix key</label><input id="mx" placeholder="(semua)"></div><div><label for="rn">Ganti nama DataStore (lama=baru)</label><input id="rn" placeholder="Data=DataBaru"></div><div><label for="rp">Ganti prefix key (lama=baru)</label><input id="rp" placeholder="Old_=New_"></div></div>
+ <div class="sw" style="margin-top:12px"><input type="checkbox" id="md"><label for="md" style="margin:0;text-transform:none;letter-spacing:0;font-size:13px">Dry run dalam (baca semua nilai: cek ukuran &amp; validitas)</label></div>
+ <div class="sw" style="margin-top:8px"><input type="checkbox" id="od2"><label for="od2" style="margin:0;text-transform:none;letter-spacing:0;font-size:13px">Setelah selesai, salin juga OrderedDataStore bernama sama untuk DataStore berpola Nama/UserId (DataStore2)</label></div>
+ <div class="row" style="margin-top:12px"><button class="btn ghost" id="m1">1. Dry run</button><button class="btn" id="m2" disabled>2. Mulai / Lanjutkan</button><button class="btn ghost" id="m3" disabled>Jeda</button><button class="btn ghost" id="m4">Ekspor checkpoint</button><button class="btn ghost" id="m5">Impor checkpoint</button><button class="btn ghost" id="m6">Laporan gagal</button></div>
+ <div style="height:8px;background:var(--surface2);border-radius:6px;margin-top:12px"><div id="pb" style="height:8px;width:0;background:var(--accent);border-radius:6px;transition:width .3s"></div></div>
+ <pre class="code" id="ms" style="margin-top:10px">—</pre><input type="file" id="mf" hidden accept=".json">
+ <div class="warn">Salinan tidak atomik: pemain yang online bisa mengubah data setelah dibaca. Jalankan saat game sumber ditutup. API key tidak pernah masuk checkpoint; setelah reload hubungkan ulang untuk melanjutkan.</div></section>
+<section class="card" id="od"><label style="margin-top:0">OrderedDataStore · Leaderboard</label>
+ <div class="row"><div><label for="on">Nama</label><input id="on" placeholder="Coins"></div><div><label for="os">Scope</label><input id="os" value="global"></div>
+ <div><label for="oo">Urutan</label><select id="oo"><option value="desc">Tertinggi dulu</option><option value="asc">Terendah dulu</option></select></div>
+ <div style="flex:0"><button class="btn" id="o1">Muat</button></div></div>
+ <div class="list" id="ol" style="max-height:320px;margin-top:10px"></div>
+ <div class="row" style="margin-top:10px"><button class="btn ghost" id="o2" hidden>Muat lagi</button><button class="btn ghost" id="o3">Ekspor CSV</button><button class="btn ghost" id="o4">Salin ke universe tujuan</button><button class="btn ghost" id="o5">Arsipkan musim</button><button class="btn danger" id="o6">Reset massal…</button></div>
+ <pre class="code" id="oi" style="margin-top:10px">Klik entri untuk mengubah nilainya (perlu Mode Tulis). Tujuan salinan memakai kolom di kartu Migrasi.</pre></section>
+<section class="card" id="bkp"><label style="margin-top:0">Backup &amp; Restore · memakai cakupan di kartu Migrasi</label>
+ <div class="row"><button class="btn" id="b1">Backup (.jsonl)</button><button class="btn ghost" id="b2">Restore dari file…</button></div><input type="file" id="bf" hidden accept=".jsonl,.json">
+ <pre class="code" id="bs" style="margin-top:10px">Backup = manifest + checksum SHA-256; restore menolak file rusak, menampilkan dry run, lalu memverifikasi tiap key. Tujuan restore: Universe tujuan di kartu Migrasi (kosong = universe terhubung).</pre></section>
+<section class="card" id="uc"><label style="margin-top:0">Pemain berdasarkan User ID</label>
+ <div class="row"><div><label for="ui">User ID</label><input id="ui" inputmode="numeric"></div><div><label for="ut">Pola key (koma; {id} = User ID)</label><input id="ut" value="{id},Player_{id}"></div><div style="flex:0"><button class="btn" id="u1">Cari</button></div></div>
+ <pre class="code" id="ur" style="margin-top:10px">Mencari di semua DataStore (scope di kolom Scope). Pola DataStore2 "Nama/UserId" dikenali otomatis.</pre>
+ <div class="row" style="margin-top:10px"><button class="btn ghost" id="u2">Unduh data pemain</button><button class="btn danger" id="u3">Hapus semua data pemain</button></div></section>
+<section class="card" id="bm"><label style="margin-top:0">Edit Massal · Reconcile &amp; Remap ID · memakai cakupan &amp; prefix di kartu Migrasi</label>
+ <div class="row"><div><label for="bt">Mode</label><select id="bt"><option value="rec">Reconcile (tambah field yang hilang)</option><option value="map">Remap ID (gamepass / product / item)</option></select></div>
+ <div><label for="bp">Path (opsional)</label><input id="bp" placeholder="kosong = otomatis (Data jika format ProfileService)"></div></div>
+ <label for="bx">Reconcile: template JSON · Remap: satu pemetaan per baris, contoh 111=222</label>
+ <textarea class="code" id="bx" style="min-height:100px" spellcheck="false" placeholder='{"Coins":0,"Gems":0}   atau   111=222'></textarea>
+ <div class="sw" style="margin-top:10px"><input type="checkbox" id="bl" checked><label for="bl" style="margin:0;text-transform:none;letter-spacing:0;font-size:13px">Lewati profil dengan session lock aktif</label></div>
+ <div class="row" style="margin-top:10px"><button class="btn ghost" id="c1">1. Dry run</button><button class="btn" id="c2" disabled>2. Terapkan (backup otomatis)</button></div>
+ <pre class="code" id="cr" style="margin-top:10px">—</pre>
+ <div class="warn">Remap hanya mengubah catatan di data Anda. Kepemilikan gamepass Roblox tidak ikut pindah universe: pemain tetap perlu memilikinya di game baru. Sebelum menulis, tiap key dicek ulang; yang berubah sejak dry run dilewati.</div></section>
+<section class="card" id="au"><label style="margin-top:0">Log Audit</label><pre class="code" id="as">0 aksi.</pre>
+ <div class="row" style="margin-top:10px"><button class="btn ghost" id="a1">Ekspor log (.json)</button><button class="btn ghost" id="a2">Hapus log</button></div></section>
+<section class="card" id="tl"><label style="margin-top:0">Alat Bantu</label>
+ <div class="row"><div><label for="pi">Place ID</label><input id="pi" inputmode="numeric"></div><div style="flex:0"><button class="btn ghost" id="pu">→ Universe ID</button></div>
+ <div><label for="ni">Username</label><input id="ni"></div><div style="flex:0"><button class="btn ghost" id="un">→ User ID</button></div></div>
+ <div class="row" style="margin-top:12px"><div><label for="st">Cari nilai (teks di dalam isi data; cakupan = kartu Migrasi)</label><input id="st"></div><div style="flex:0"><button class="btn ghost" id="sq">Cari</button></div></div>
+ <div class="row" style="margin-top:12px"><button class="btn ghost" id="pk">Cek izin API key</button><button class="btn ghost" id="gp">Daftar Gamepass &amp; Product</button><button class="btn ghost" id="gm">Pemetaan ID otomatis (sumber → tujuan)</button></div>
+ <pre class="code" id="pr" style="margin-top:10px">—</pre></section>
+</main>
+<footer>© 2026 Saltoria Community · Independent community tool · Tidak berafiliasi dengan Roblox Corporation</footer>
+<script>
+const q=s=>document.querySelector(s);let KEY='',UID='',cur={ds:'',cursor:''},ctx={};
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const log=m=>{const e=q('#log');e.textContent=new Date().toLocaleTimeString()+'  '+m+'\n'+e.textContent};
+const SEED={PlayerData:{global:{Player_1:{Coins:120,Items:['Sword']},Player_2:{Coins:5,Items:[]},Player_3:{Coins:9,Items:['Bow']}}}};
+const DEMO={};
+const ORD={};
+function odemo(m,p,qy,b){const[,u,n,sc,id]=p.match(/universes\/(\d+)\/orderedDataStores\/([^/]+)\/scopes\/([^/]+)\/entries(?:\/([^/]+))?/),k=u+'|'+decodeURIComponent(n)+'|'+sc;
+ const O=ORD[k]=ORD[k]||(u==='0'?{Player_1:120,Player_2:5,Player_3:9}:{}),ok=o=>({status:200,headers:{},body:JSON.stringify(o)});
+ if(!id&&m==='GET'){const a=Object.entries(O).sort((x,y)=>qy.order_by==='asc'?x[1]-y[1]:y[1]-x[1]),s=+qy.page_token||0,z=+qy.max_page_size||50;return ok({entries:a.slice(s,s+z).map(([id,value])=>({id,value})),nextPageToken:s+z<a.length?String(s+z):''})}
+ if(m==='POST'){if(qy.id in O)return{status:409,headers:{},body:'exists'};O[qy.id]=b.value;return ok({id:qy.id,value:b.value})}
+ if(m==='DELETE'){delete O[decodeURIComponent(id)];return ok({})}
+ if(m==='PATCH'){O[decodeURIComponent(id)]=b.value;return ok({id,value:b.value})}
+ const v=O[decodeURIComponent(id)];return v!==undefined?ok({id,value:v}):{status:404,headers:{},body:'not found'}}
+function demo(m,p,qy,b){if(p.includes('/ordered-data-stores/'))return odemo(m,p,qy,b);const uid=(p.match(/universes\/(\d+)/)||[])[1]||'0';const S=DEMO[uid]=DEMO[uid]||(uid==='0'?JSON.parse(JSON.stringify(SEED)):{});
+ const ok=o=>({status:200,headers:{'roblox-entry-version':'demo'},body:typeof o==='string'?o:JSON.stringify(o)});
+ if(p.includes('/places/'))return ok({universeId:777});
+ if(p.includes('/usernames/'))return ok({data:(b.usernames||[]).map((n,i)=>({requestedUsername:n,id:1+i,name:n}))});
+ if(p.endsWith('/entry/versions'))return ok({versions:[{version:'v2',createdTime:'2026-01-02T00:00:00Z',contentLength:42},{version:'v1',createdTime:'2026-01-01T00:00:00Z',contentLength:40}]});
+ if(p.endsWith('/versions/version'))return ok({Coins:1,Items:[]});
+ if(p.includes('/game-passes/'))return ok({gamePasses:[{id:uid==='0'?1:9,name:'VIP'},{id:uid==='0'?2:8,name:'Double Coins'}]});
+ if(p.includes('/developer-products/'))return ok({developerProducts:[{productId:uid==='0'?30:40,name:'100 Gems'}]});
+ if(p.endsWith('/standard-datastores'))return ok({datastores:Object.keys(S).map(name=>({name}))});
+ const D=S[qy.datastoreName]||{};
+ if(p.endsWith('/entries')){const sc=qy.allScopes?Object.keys(D):[qy.scope],keys=[];sc.forEach(x=>Object.keys(D[x]||{}).forEach(k=>{if(k.startsWith(qy.prefix||''))keys.push({scope:x,key:k})}));return ok({keys})}
+ if(m==='DELETE'){delete (D[qy.scope]||{})[qy.entryKey];return ok({})}
+ if(m==='POST'){const d=S[qy.datastoreName]=S[qy.datastoreName]||{};(d[qy.scope]=d[qy.scope]||{})[qy.entryKey]=b;return ok({version:'demo'})}
+ const v=(D[qy.scope]||{})[qy.entryKey];return v!==undefined?ok(v):{status:404,headers:{},body:'Key tidak ditemukan'}}
+async function rbx(method,path,query,body,headers,key){key=key||KEY;
+ if(key==='demo')return demo(method,path,query,body);
+ const r=await fetch('/api/datastore-proxy',{method:'POST',headers:{'content-type':'application/json','x-api-key':key},body:JSON.stringify({method,path,query,body,headers})});
+ return r.json()}
+const base=u=>`/datastores/v1/universes/${u||UID||0}/standard-datastores`;
+const hint=s=>s===401?'API key salah/kedaluwarsa':s===403?'Izin kurang, atau ID ini Place ID bukan Universe ID':s===404?'Universe/DataStore/key tidak ada':s===429?'Kena batas kecepatan, tunggu lalu coba lagi':'';
+const fail=r=>log(`HTTP ${r.status} ${hint(r.status)} ${String(r.body).slice(0,160)}`);
+q('#go').onclick=async()=>{KEY=q('#key').value.trim();UID=q('#uid').value.trim();if(KEY==='demo'&&!UID){UID='0';q('#uid').value='0'}
+ if(!KEY||(KEY!=='demo'&&!/^\d+$/.test(UID)))return log('Isi API key dan Universe ID (angka saja).');
+ const r=await rbx('GET',base(),{limit:100});if(r.status!==200)return fail(r);
+ const d=JSON.parse(r.body).datastores||[];log(`Terhubung. ${d.length} DataStore.`);
+ q('#dsl').innerHTML=d.length?d.map(x=>`<div class="item" data-n="${esc(x.name)}">${esc(x.name)}</div>`).join(''):'<span class="sub">Kosong.</span>';
+ q('#dsl').querySelectorAll('.item').forEach(e=>e.onclick=()=>{q('#dsl .on')?.classList.remove('on');e.classList.add('on');cur={ds:e.dataset.n,cursor:''};q('#kl').innerHTML='';loadKeys()})};
+async function loadKeys(){if(!cur.ds)return log('Pilih DataStore dulu.');
+ const r=await rbx('GET',base()+'/datastore/entries',{datastoreName:cur.ds,scope:q('#sc').value||'global',prefix:q('#px').value,limit:50,cursor:cur.cursor});
+ if(r.status!==200)return fail(r);const d=JSON.parse(r.body);cur.cursor=d.nextPageCursor||'';q('#more').hidden=!cur.cursor;
+ q('#kl').insertAdjacentHTML('beforeend',(d.keys||[]).map(k=>`<div class="item" data-k="${esc(k.key)}" data-s="${esc(k.scope)}">${esc(k.key)}</div>`).join('')||'<span class="sub">Tidak ada key.</span>');
+ q('#kl').querySelectorAll('.item[data-k]').forEach(e=>e.onclick=()=>openKey(e))}
+q('#lk').onclick=()=>{cur.cursor='';q('#kl').innerHTML='';loadKeys()};q('#more').onclick=loadKeys;
+const eq=()=>({datastoreName:ctx.ds,scope:ctx.scope,entryKey:ctx.key});
+async function openKey(e){q('#kl .on')?.classList.remove('on');e.classList.add('on');
+ ctx={ds:cur.ds,scope:e.dataset.s,key:e.dataset.k};const r=await rbx('GET',base()+'/datastore/entries/entry',eq());
+ if(r.status!==200)return fail(r);ctx.uids=r.headers['roblox-entry-userids'];ctx.attrs=r.headers['roblox-entry-attributes'];
+ let t=r.body;try{t=JSON.stringify(JSON.parse(t),null,2)}catch(x){}ctx.orig=t;try{const o=JSON.parse(t);if(o&&o.MetaData&&o.MetaData.ActiveSession)log('⚠ Profil ini tampaknya punya session lock aktif (ProfileService/ProfileStore). Jangan edit saat server masih berjalan.')}catch(x){}q('#ed').value=t;q('#diff').textContent='—';try{const o=JSON.parse(t);if(o&&o.GlobalUpdates)q('#diff').textContent='GlobalUpdates (ProfileService, tampilan mentah):\n'+JSON.stringify(o.GlobalUpdates,null,1)}catch(x){}
+ q('#ttl').textContent=`${ctx.ds} / ${ctx.scope} / ${ctx.key}  ·  versi ${r.headers['roblox-entry-version']||'?'}`;q('#sv').disabled=!q('#wr').checked;log('Dimuat '+ctx.key)}
+q('#wr').onchange=e=>{q('#wn').hidden=!e.target.checked;q('#sv').disabled=!(e.target.checked&&ctx.key)};
+function diff(){let a,b;try{a=JSON.parse(ctx.orig);b=JSON.parse(q('#ed').value)}catch(e){q('#diff').textContent='JSON tidak valid: '+e.message;return null}
+ const o=[],j=JSON.stringify;if(a&&b&&typeof a=='object'&&typeof b=='object'){for(const k of new Set([...Object.keys(a),...Object.keys(b)])){const x=j(a[k]),y=j(b[k]);
+  if(x===undefined)o.push(`+ ${k}: ${y}`);else if(y===undefined)o.push(`- ${k}: ${x}`);else if(x!==y)o.push(`~ ${k}: ${x} → ${y}`)}}
+ else if(j(a)!==j(b))o.push(`~ ${j(a)} → ${j(b)}`);q('#diff').textContent=o.length?o.join('\n'):'Tidak ada perubahan.';return{b,n:o.length}}
+q('#df').onclick=()=>{if(!ctx.key)return log('Pilih key dulu.');diff()};
+q('#sv').onclick=async()=>{const d=diff();if(!d||!d.n)return;{const f=await call(KEY,'GET',base()+'/datastore/entries/entry',eq());let same=false;try{same=cs(JSON.parse(f.body))===cs(JSON.parse(ctx.orig))}catch(x){}if(!same){log('⛔ Key berubah di Roblox sejak Anda memuatnya (atau gagal dibaca). Muat ulang key lalu edit lagi. Tidak ada yang ditulis.');return}}if(!confirm(`Tulis ke ${ctx.ds}/${ctx.scope}/${ctx.key}?\n\n${q('#diff').textContent}`))return;
+ const h={};if(ctx.uids)h['roblox-entry-userids']=ctx.uids;if(ctx.attrs)h['roblox-entry-attributes']=ctx.attrs;
+ const w=await rbx('POST',base()+'/datastore/entries/entry',eq(),d.b,h);if(w.status!==200)return fail(w);
+ const v=await rbx('GET',base()+'/datastore/entries/entry',eq());let ok=false;try{ok=cs(JSON.parse(v.body))===cs(d.b)}catch(e){}
+ log(ok?'✔ Tersimpan & terverifikasi (dibaca ulang, isi sama).':'⚠ Tersimpan tetapi hasil baca ulang berbeda — periksa manual.');
+ if(ok){ctx.orig=JSON.stringify(d.b,null,2);q('#diff').textContent='—'}}
+
+const cs=v=>JSON.stringify(v,(k,x)=>x&&typeof x==='object'&&!Array.isArray(x)?Object.keys(x).sort().reduce((o,y)=>(o[y]=x[y],o),{}):x);
+const sleep=ms=>new Promise(r=>setTimeout(r,ms));
+const H=async t=>[...new Uint8Array(await crypto.subtle.digest('SHA-256',new TextEncoder().encode(t)))].map(x=>x.toString(16).padStart(2,'0')).join('').slice(0,16);
+async function kv(op,k,v){try{const d=await new Promise((res,rej)=>{const o=indexedDB.open('saltoria-ds',1);o.onupgradeneeded=()=>o.result.createObjectStore('kv');o.onsuccess=()=>res(o.result);o.onerror=()=>rej(o.error)});
+ return await new Promise((res,rej)=>{const t=d.transaction('kv',op==='get'?'readonly':'readwrite').objectStore('kv'),r=op==='get'?t.get(k):t.put(v,k);r.onsuccess=()=>res(r.result);r.onerror=()=>rej(r.error)})}catch(e){return null}}
+let J=null,paused=true,gap=0;
+const cfg=()=>({src:UID,tu:q('#tu').value.trim(),mp:q('#mp').value,ds:cur.ds,mc:q('#mc').value,mx:q('#mx').value,rn:q('#rn').value.trim(),rp:q('#rp').value.trim()});
+const tk=()=>q('#tk').value.trim()||KEY;
+const save=()=>J&&kv('put','job',J);
+function stat(){if(!J)return;const c={};J.items.forEach(i=>c[i[3]]=(c[i[3]]||0)+1);const n=J.items.length;
+ q('#pb').style.width=(n?(n-(c.pending||0))/n*100:0)+'%';
+ q('#ms').textContent=`Job ${J.id} · ${n} key\n`+Object.entries(c).map(([k,v])=>k+': '+v).join('   ')+(J.note?'\n\n'+J.note:'')}
+async function call0(key,m,p,qy,b,h){for(let a=0;a<6;a++){if(gap)await sleep(gap);const r=await rbx(m,p,qy,b,h,key);
+ if(r.status===429||r.status>=500){gap=Math.min(gap*2+500,6000);await sleep(Math.min(30000,1000*2**a));continue}gap=Math.max(0,gap-40);return r}
+ return{status:429,headers:{},body:'batas percobaan habis'}}
+async function listAll(uid,key,ds,prefix){const out=[];let cursor='';do{
+ const r=await call(key,'GET',base(uid)+'/datastore/entries',{datastoreName:ds,allScopes:true,scope:'global',prefix,limit:100,cursor});
+ if(r.status===404)return out;if(r.status!==200)throw new Error('list '+r.status+' '+String(r.body).slice(0,80));
+ const d=JSON.parse(r.body);out.push(...(d.keys||[]));cursor=d.nextPageCursor||''}while(cursor);return out}
+async function dry(){const c=cfg();if(!KEY||!UID)return log('Hubungkan dulu.');
+ if(!/^\d+$/.test(c.tu)||c.tu===UID)return log('Isi Universe ID tujuan (angka, berbeda dari sumber).');
+ if(c.mp==='one'&&!c.ds)return log('Pilih DataStore dulu, atau pilih "Semua DataStore".');
+ q('#m1').disabled=true;paused=true;
+ try{let names=[c.ds];if(c.mp==='all'){const r=await call(KEY,'GET',base(UID),{limit:100});if(r.status!==200)throw new Error('daftar '+r.status);names=JSON.parse(r.body).datastores.map(x=>x.name)}
+  const items=[];for(const ds of names){q('#ms').textContent='Memindai '+ds+'…';const s=await listAll(UID,KEY,ds,c.mx);
+   const t=new Set((await listAll(c.tu,tk(),tr(c,ds,'')[0],'').catch(()=>[])).map(k=>k.scope+'\0'+k.key));
+   s.forEach(k=>items.push([ds,k.scope,k.key,'pending',t.has(k.scope+'\0'+tr(c,ds,k.key)[1])]))}
+  const deep=q('#md').checked;if(deep){let n=0;const w=async()=>{for(;;){const i=items[n++];if(!i)return;
+    const g=await call(KEY,'GET',base(UID)+'/datastore/entries/entry',{datastoreName:i[0],scope:i[1],entryKey:i[2]});
+    i[5]=g.status===200?g.body.length:-1;if(g.status!==200){i[3]='invalid';i[6]='baca '+g.status}else if(i[5]>4e6){i[3]='invalid';i[6]='>4MB'}
+    if(n%20===0)q('#ms').textContent=`Membaca nilai ${n}/${items.length}`}};await Promise.all([w(),w(),w()])}
+  J={id:Date.now().toString(36),cfg:c,items,dry:true};J.hash=await H(JSON.stringify([c,items.map(i=>i.slice(0,3))]));
+  const ex=items.filter(i=>i[4]).length,inv=items.filter(i=>i[3]==='invalid').length,todo=items.filter(i=>i[3]==='pending'&&!(c.mc==='skip'&&i[4])).length;
+  J.note=`Hash rencana: ${J.hash}\nAkan ditulis: ${todo} · Sudah ada di tujuan: ${ex} (${c.mc==='skip'?'dilewati':'ditimpa'})\n`+(deep?`Tidak valid / terlalu besar: ${inv}`:'Dry run cepat: nilai belum dibaca (centang "dalam" untuk cek ukuran)')+`\nPerkiraan kasar: ±${Math.ceil(todo*3/300)} menit (≈3 request/key, asumsi 300 req/menit; cek batas resmi Roblox).`;
+  await save();stat();q('#m2').disabled=false;log('Dry run selesai. Tidak ada data yang ditulis.')}
+ catch(e){log('Dry run gagal: '+e.message)}finally{q('#m1').disabled=false}}
+async function one(i){const[ds,sc,key]=i,c=J.cfg,Q={datastoreName:ds,scope:sc,entryKey:key},[td,tkk]=tr(c,ds,key),Qt={datastoreName:td,scope:sc,entryKey:tkk},P='/datastore/entries/entry';
+ try{if(c.mc==='skip'&&i[4]){i[3]='skipped';return}
+  const g=await call(KEY,'GET',base(c.src)+P,Q);if(g.status!==200){i[3]='error';i[6]='baca '+g.status;return}
+  let v;try{v=JSON.parse(g.body)}catch(e){i[3]='error';i[6]='bukan JSON';return}
+  const h={};if(g.headers['roblox-entry-userids'])h['roblox-entry-userids']=g.headers['roblox-entry-userids'];if(g.headers['roblox-entry-attributes'])h['roblox-entry-attributes']=g.headers['roblox-entry-attributes'];
+  if(i[4]&&(c.mc==='newer'||c.mc==='merge')){const t=await call(tk(),'GET',base(c.tu)+P,Qt);if(t.status===200){
+   if(c.mc==='newer'){if(Date.parse(t.headers['roblox-entry-version-created-time'])>=Date.parse(g.headers['roblox-entry-version-created-time'])){i[3]='skipped';return}}
+   else try{v=dmerge(JSON.parse(t.body),v)}catch(x){}}}
+  const w=await call(tk(),'POST',base(c.tu)+P,Qt,v,h);if(w.status!==200){i[3]='error';i[6]='tulis '+w.status;return}
+  const r=await call(tk(),'GET',base(c.tu)+P,Qt);let ok=false;try{ok=r.status===200&&cs(JSON.parse(r.body))===cs(v)}catch(e){}
+  i[3]=ok?'verified':'error';if(!ok)i[6]='verifikasi berbeda'}catch(e){i[3]='error';i[6]=String(e.message||e).slice(0,80)}}
+async function run(){if(!J)return log('Jalankan dry run dulu.');if(J.cfg.src!==UID||!KEY)return log('Hubungkan ke universe sumber yang sama ('+J.cfg.src+') dulu.');
+ if(!q('#wr').checked)return log('Aktifkan Mode Tulis dulu.');
+ const todo=J.items.filter(i=>i[3]==='pending');if(!todo.length)return log('Tidak ada yang tersisa.');
+ if(!confirm(`Tulis ${todo.length} key ke universe ${J.cfg.tu}?\nRencana ${J.hash}`))return;
+ paused=false;q('#m2').disabled=true;q('#m3').disabled=false;let idx=0,n=0;
+ const w=async()=>{while(!paused){const i=todo[idx++];if(!i)return;await one(i);if(++n%25===0){await save();stat()}}};
+ await Promise.all([w(),w(),w()]);await save();stat();q('#m2').disabled=false;q('#m3').disabled=true;
+ const left=J.items.filter(i=>i[3]==='pending').length;log(left?'Dijeda. Sisa '+left+'.':'Selesai. Cek status error lewat "Laporan gagal".');if(!left&&q('#od2').checked)await ordSync()}
+const dl=(n,o)=>{const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([JSON.stringify(o,null,1)],{type:'application/json'}));a.download=n;a.click()};
+q('#m1').onclick=dry;q('#m2').onclick=run;q('#m3').onclick=()=>{paused=true;log('Menjeda…')};
+q('#m4').onclick=()=>J?dl('checkpoint-'+J.id+'.json',J):log('Belum ada job.');
+q('#m6').onclick=()=>J?dl('gagal-'+J.id+'.json',J.items.filter(i=>i[3]==='error'||i[3]==='invalid')):log('Belum ada job.');
+q('#m5').onclick=()=>q('#mf').click();
+q('#mf').onchange=async e=>{try{const j=JSON.parse(await e.target.files[0].text());if(!j.cfg||!Array.isArray(j.items))throw 0;J=j;await save();stat();q('#m2').disabled=false;log('Checkpoint diimpor. Hubungkan lalu Lanjutkan.')}catch(x){log('File checkpoint tidak valid.')}};
+kv('get','job').then(j=>{if(j&&j.items&&j.items.some(i=>i[3]==='pending')){J=j;stat();q('#m2').disabled=false;log('Job tersimpan ditemukan ('+j.id+'). Hubungkan ke sumber lalu tekan Lanjutkan.')}});
+
+const ob=(u,n,sc)=>`/ordered-data-stores/v1/universes/${u}/orderedDataStores/${encodeURIComponent(n)}/scopes/${encodeURIComponent(sc)}/entries`;
+let OD={tok:'',rows:[]};const oN=()=>q('#on').value.trim(),oS=()=>q('#os').value.trim()||'global';
+async function oall(u,key,n,sc){const out=[];let tok='';do{const r=await call(key,'GET',ob(u,n,sc),{max_page_size:100,order_by:'desc',page_token:tok});
+ if(r.status===404&&u!==UID)return out;if(r.status!==200)throw new Error('list '+r.status);const d=JSON.parse(r.body);out.push(...(d.entries||[]));tok=d.nextPageToken||''}while(tok);return out}
+async function oload(more){if(!KEY||!oN())return log('Hubungkan dan isi nama OrderedDataStore.');
+ if(!more){OD={tok:'',rows:[]};q('#ol').innerHTML=''}
+ const r=await call(KEY,'GET',ob(UID||0,oN(),oS()),{max_page_size:100,order_by:q('#oo').value,page_token:OD.tok});if(r.status!==200)return fail(r);
+ const d=JSON.parse(r.body),st=OD.rows.length;OD.rows.push(...(d.entries||[]));OD.tok=d.nextPageToken||'';
+ q('#ol').insertAdjacentHTML('beforeend',(d.entries||[]).map((e,i)=>`<div class="item" data-id="${esc(e.id)}" style="display:flex;justify-content:space-between;gap:8px"><span>#${st+i+1} ${esc(e.id)}</span><b>${esc(e.value)}</b></div>`).join('')||'<span class="sub">Kosong.</span>');
+ q('#o2').hidden=!OD.tok;q('#oi').textContent=OD.rows.length+' entri dimuat';q('#ol').querySelectorAll('.item[data-id]').forEach(e=>e.onclick=()=>oedit(e))}
+async function oedit(e){if(!q('#wr').checked)return log('Aktifkan Mode Tulis untuk mengubah nilai.');
+ const id=e.dataset.id,row=OD.rows.find(x=>x.id===id),v=prompt(`Nilai baru untuk ${id} (sekarang ${row.value}):`,row.value);
+ if(v===null)return;if(v.trim()===''||!Number.isInteger(+v))return log('Nilai harus bilangan bulat.');
+ const r=await call(KEY,'PATCH',ob(UID||0,oN(),oS())+'/'+encodeURIComponent(id),{allow_missing:true},{value:+v});if(r.status!==200)return fail(r);
+ log(`✔ ${id}: ${row.value} → ${v}`);row.value=+v;e.querySelector('b').textContent=v}
+async function ocopy(){const n=oN(),sc=oS(),tu=q('#tu').value.trim();
+ if(!KEY||!n||!/^\d+$/.test(tu)||tu===UID)return log('Isi nama, dan Universe ID tujuan (beda dari sumber) di kartu Migrasi.');
+ if(!q('#wr').checked)return log('Aktifkan Mode Tulis dulu.');
+ try{q('#oi').textContent='Dry run: membaca sumber & tujuan…';const all=await oall(UID,KEY,n,sc),tm=new Map((await oall(tu,tk(),n,sc)).map(x=>[x.id,x.value]));
+  const baru=all.filter(x=>!tm.has(x.id)).length,sama=all.filter(x=>tm.get(x.id)===x.value).length,tim=all.length-baru-sama;
+  const sum=`Dry run "${n}": ${all.length} entri · baru ${baru} · identik ${sama} · akan ditimpa ${tim}`;q('#oi').textContent=sum;
+  if(!confirm(sum+`\n\nLanjut salin ke universe ${tu}?`))return;
+  let bad=0,i=0;const w=async()=>{for(;;){const e=all[i++];if(!e)return;if(tm.get(e.id)===e.value)continue;
+   let r=await call(tk(),'POST',ob(tu,n,sc),{id:e.id},{value:e.value});
+   if(r.status===409)r=await call(tk(),'PATCH',ob(tu,n,sc)+'/'+encodeURIComponent(e.id),{allow_missing:true},{value:e.value});
+   if(r.status!==200)bad++;if(i%25===0)q('#oi').textContent=`Menyalin ${i}/${all.length}…`}};
+  await Promise.all([w(),w(),w()]);
+  const t2=new Map((await oall(tu,tk(),n,sc)).map(x=>[x.id,x.value])),diff=all.filter(x=>t2.get(x.id)!==x.value).length;
+  q('#oi').textContent=sum+`\nSelesai · gagal tulis: ${bad} · berbeda saat verifikasi: ${diff} ${bad||diff?'⚠':'✔'}`}
+ catch(e){log('Salin gagal: '+e.message)}}
+q('#o1').onclick=()=>oload(false);q('#o2').onclick=()=>oload(true);q('#o4').onclick=ocopy;
+q('#o3').onclick=()=>{if(!OD.rows.length)return log('Muat dulu.');const a=document.createElement('a');a.href=URL.createObjectURL(new Blob(['rank,id,value\n'+OD.rows.map((r,i)=>`${i+1},"${String(r.id).replace(/"/g,'""')}",${r.value}`).join('\n')],{type:'text/csv'}));a.download=oN()+'.csv';a.click()};
+
+const dlt=(n,t)=>{const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([t],{type:'application/x-ndjson'}));a.download=n;a.click()};
+const jl=async E=>{const L=E.map(e=>JSON.stringify(e));return JSON.stringify({type:'manifest',v:1,universe:UID,created:new Date().toISOString(),count:L.length,sha:await H(L.join('\n'))})+'\n'+L.join('\n')};
+async function readEntry(u,key,ds,sc,k){const r=await call(key,'GET',base(u)+'/datastore/entries/entry',{datastoreName:ds,scope:sc,entryKey:k});if(r.status!==200)return null;
+ try{return{ds,scope:sc,key:k,value:JSON.parse(r.body),uids:r.headers['roblox-entry-userids']||'',attrs:r.headers['roblox-entry-attributes']||''}}catch(e){return null}}
+async function dsNames(c){if(c.mp!=='all')return[c.ds];const r=await call(KEY,'GET',base(UID),{limit:100});if(r.status!==200)throw new Error('daftar '+r.status);return JSON.parse(r.body).datastores.map(x=>x.name)}
+const okS=r=>r.status===200||r.status===204;
+q('#b1').onclick=async()=>{if(!KEY||!UID)return log('Hubungkan dulu.');const c=cfg();if(c.mp==='one'&&!c.ds)return log('Pilih DataStore dulu atau "Semua DataStore".');
+ try{const E=[];let bad=0;for(const ds of await dsNames(c)){const ks=await listAll(UID,KEY,ds,c.mx);let n=0;
+   const w=async()=>{for(;;){const k=ks[n++];if(!k)return;const e=await readEntry(UID,KEY,ds,k.scope,k.key);e?E.push(e):bad++;if(n%20===0)q('#bs').textContent=`${ds}: ${n}/${ks.length}`}};await Promise.all([w(),w(),w()])}
+  dlt(`backup-${UID}-${Date.now()}.jsonl`,await jl(E));q('#bs').textContent=`Backup selesai: ${E.length} entri, gagal baca ${bad}. Simpan file di tempat aman.`}catch(e){log('Backup gagal: '+e.message)}};
+q('#b2').onclick=()=>q('#bf').click();
+q('#bf').onchange=async ev=>{try{const L=(await ev.target.files[0].text()).split('\n').filter(Boolean);let m;try{m=JSON.parse(L[0])}catch(x){}
+  if(!m||m.type!=='manifest')return log('Bukan file backup Saltoria.');const body=L.slice(1);
+  if(body.length!==m.count||await H(body.join('\n'))!==m.sha)return log('⚠ Checksum/jumlah tidak cocok: file rusak atau diubah. Restore dibatalkan.');
+  const tu=q('#tu').value.trim()||UID;if(!KEY||!/^\d+$/.test(tu))return log('Hubungkan dan/atau isi Universe ID tujuan.');if(!q('#wr').checked)return log('Aktifkan Mode Tulis dulu.');
+  const E=body.map(l=>JSON.parse(l)),key=tu===UID?KEY:tk(),over=q('#mc').value==='over',ex=new Set(),id=e=>e.scope+'\0'+e.ds+'\0'+e.key;
+  q('#bs').textContent='Dry run: memeriksa tujuan…';for(const ds of new Set(E.map(e=>e.ds)))(await listAll(tu,key,ds,'').catch(()=>[])).forEach(k=>ex.add(k.scope+'\0'+ds+'\0'+k.key));
+  const have=E.filter(e=>ex.has(id(e))).length,sum=`Backup ${m.created} (universe ${m.universe})\n${E.length} entri · sudah ada di tujuan ${have} (${over?'akan ditimpa':'dilewati'})\nTujuan: universe ${tu}`;q('#bs').textContent=sum;
+  if(!confirm(sum+'\n\nLanjut restore?'))return;let i=0,ok=0,sk=0,bad=0;
+  const w=async()=>{for(;;){const e=E[i++];if(!e)return;if(!over&&ex.has(id(e))){sk++;continue}const h={};if(e.uids)h['roblox-entry-userids']=e.uids;if(e.attrs)h['roblox-entry-attributes']=e.attrs;
+   const Q={datastoreName:e.ds,scope:e.scope,entryKey:e.key},P=base(tu)+'/datastore/entries/entry';if((await call(key,'POST',P,Q,e.value,h)).status!==200){bad++;continue}
+   const r=await call(key,'GET',P,Q);let same=false;try{same=cs(JSON.parse(r.body))===cs(e.value)}catch(x){}same?ok++:bad++;if(i%20===0)q('#bs').textContent=`Restore ${i}/${E.length}…`}};
+  await Promise.all([w(),w(),w()]);q('#bs').textContent=sum+`\nSelesai · terverifikasi ${ok} · dilewati ${sk} · gagal ${bad} ${bad?'⚠':'✔'}`}catch(e){log('Restore gagal: '+e.message)}};
+q('#dk').onclick=async()=>{if(!ctx.key)return log('Pilih key dulu.');if(!q('#wr').checked)return log('Aktifkan Mode Tulis dulu.');const c0={...ctx};
+ const t=prompt(`Hapus ${c0.ds}/${c0.scope}/${c0.key}?\nKetik nama key untuk konfirmasi:`);if(t!==c0.key)return t!==null&&log('Konfirmasi tidak cocok, dibatalkan.');
+ if(q('#bk').checked){const e=await readEntry(UID,KEY,c0.ds,c0.scope,c0.key);if(e)dlt(`hapus-${c0.key}.jsonl`,await jl([e]))}
+ const r=await call(KEY,'DELETE',base()+'/datastore/entries/entry',{datastoreName:c0.ds,scope:c0.scope,entryKey:c0.key});if(!okS(r))return fail(r);
+ log('🗑 Dihapus: '+c0.key);q('#ed').value='';ctx={}};
+let UH=[];
+q('#u1').onclick=async()=>{const id=q('#ui').value.trim();if(!KEY||!UID||!/^\d+$/.test(id))return log('Hubungkan dan isi User ID (angka).');
+ const pats=q('#ut').value.split(',').map(x=>x.trim()).filter(Boolean),sc=q('#sc').value||'global';UH=[];
+ try{const r=await call(KEY,'GET',base(UID),{limit:100});if(r.status!==200)return fail(r);
+  for(const ds of JSON.parse(r.body).datastores.map(x=>x.name)){q('#ur').textContent='Memindai '+ds+'…';if(ds.endsWith('/'+id)){UH.push({ds,kind:'ds2'});continue}
+   for(const p of pats){const k=p.replace(/\{id\}/g,id),e=await readEntry(UID,KEY,ds,sc,k);if(e)UH.push({ds,scope:sc,key:k,kind:'key',e})}}
+  q('#ur').textContent=UH.length?UH.map(h=>h.kind==='ds2'?`DataStore2: ${h.ds} (semua key + OrderedDataStore bernama sama)`:`${h.ds} / ${h.scope} / ${h.key}`).join('\n'):'Tidak ada data ditemukan dengan pola ini.'}catch(e){log('Pencarian gagal: '+e.message)}};
+async function ucollect(){const out=[];for(const h of UH){if(h.kind==='key')out.push(h.e);else for(const k of await listAll(UID,KEY,h.ds,'')){const e=await readEntry(UID,KEY,h.ds,k.scope,k.key);e&&out.push(e)}}return out}
+q('#u2').onclick=async()=>{if(!UH.length)return log('Cari dulu.');dlt(`pemain-${q('#ui').value.trim()}.jsonl`,await jl(await ucollect()))};
+q('#u3').onclick=async()=>{const id=q('#ui').value.trim();if(!UH.length)return log('Cari dulu.');if(!q('#wr').checked)return log('Aktifkan Mode Tulis dulu.');
+ const E=await ucollect();if(!confirm(`Hapus ${E.length} entri milik User ${id}?\nBackup .jsonl diunduh dulu.`))return;if(prompt('Ketik User ID untuk konfirmasi:')!==id)return log('Konfirmasi tidak cocok.');
+ dlt(`pemain-${id}-sebelum-hapus.jsonl`,await jl(E));let ok=0,bad=0;
+ for(const e of E)okS(await call(KEY,'DELETE',base()+'/datastore/entries/entry',{datastoreName:e.ds,scope:e.scope,entryKey:e.key}))?ok++:bad++;
+ for(const h of UH.filter(x=>x.kind==='ds2'))try{for(const o of await oall(UID,KEY,h.ds,'global'))okS(await call(KEY,'DELETE',ob(UID,h.ds,'global')+'/'+encodeURIComponent(o.id)))?ok++:bad++}catch(e){}
+ q('#ur').textContent=`Selesai · terhapus ${ok} · gagal ${bad}`;UH=[]};
+
+const AUD=[];const audS=()=>q('#as').textContent=AUD.length+' aksi tulis/hapus tercatat di perangkat ini (tanpa API key dan tanpa isi data).';
+kv('get','audit').then(a=>{if(Array.isArray(a))AUD.unshift(...a);audS()});
+async function call(key,m,p,qy,b,h){const r=await call0(key,m,p,qy,b,h);if(m!=='GET'){AUD.push({t:new Date().toISOString(),m,p,q:qy,s:r.status});if(AUD.length%10===0||m==='DELETE')kv('put','audit',AUD);audS()}return r}
+q('#a1').onclick=()=>{kv('put','audit',AUD);dl('audit-'+Date.now()+'.json',AUD)};q('#a2').onclick=()=>{if(confirm('Hapus log audit di perangkat ini?')){AUD.length=0;kv('put','audit',AUD);audS()}};
+function reconcile(v,t){if(!t||typeof t!=='object'||Array.isArray(t)||!v||typeof v!=='object'||Array.isArray(v))return v;
+ for(const k of Object.keys(t))v[k]=k in v?reconcile(v[k],t[k]):JSON.parse(JSON.stringify(t[k]));return v}
+function remap(v,M){if(Array.isArray(v))return v.map(x=>remap(x,M));
+ if(v&&typeof v==='object'){const o={};for(const k of Object.keys(v))o[M.has(k)?M.get(k):k]=remap(v[k],M);return o}
+ if(typeof v==='number'&&M.has(String(v)))return +M.get(String(v));if(typeof v==='string'&&M.has(v))return M.get(v);return v}
+function apply(o,p,f){if(!p)return f(o);const ks=p.split('.'),l=ks.pop(),par=ks.reduce((a,k)=>a&&a[k],o);if(par&&typeof par==='object'&&l in par)par[l]=f(par[l]);return o}
+let BP=null;
+q('#c1').onclick=async()=>{const c=cfg();if(!KEY||!UID)return log('Hubungkan dulu.');if(c.mp==='one'&&!c.ds)return log('Pilih DataStore atau "Semua DataStore".');
+ const mode=q('#bt').value,txt=q('#bx').value;let T,M;
+ try{if(mode==='rec')T=JSON.parse(txt);else{M=new Map();txt.split(/\r?\n/).forEach(l=>{const m=l.match(/^\s*(\S+?)\s*(?:=>|->|=|,)\s*(\S+)\s*$/);if(m)M.set(m[1],m[2])});if(!M.size)throw new Error('pemetaan kosong')}}catch(e){return log('Input tidak valid: '+e.message)}
+ q('#c1').disabled=true;BP=null;q('#c2').disabled=true;
+ try{const items=[];let scanned=0,locked=0;
+  for(const ds of await dsNames(c)){const ks=await listAll(UID,KEY,ds,c.mx);let n=0;const w=async()=>{for(;;){const k=ks[n++];if(!k)return;
+   const e=await readEntry(UID,KEY,ds,k.scope,k.key);if(!e)continue;scanned++;const v=e.value;
+   if(q('#bl').checked&&v&&v.MetaData&&v.MetaData.ActiveSession){locked++;continue}
+   const p=q('#bp').value.trim()||(v&&v.Data&&v.MetaData?'Data':''),nv=apply(JSON.parse(JSON.stringify(v)),p,mode==='rec'?x=>reconcile(x,T):x=>remap(x,M));
+   if(cs(nv)!==cs(v))items.push({e,nv});if(scanned%20===0)q('#cr').textContent='Memindai '+scanned+'…'}};await Promise.all([w(),w(),w()])}
+  BP=items;q('#cr').textContent=`Dipindai ${scanned} · akan berubah ${items.length} · dilewati (session lock) ${locked}\n`+items.slice(0,5).map(i=>`~ ${i.e.ds}/${i.e.scope}/${i.e.key}`).join('\n')+(items.length>5?`\n… +${items.length-5} lainnya`:'');q('#c2').disabled=!items.length}
+ catch(e){log('Dry run gagal: '+e.message)}finally{q('#c1').disabled=false}};
+q('#c2').onclick=async()=>{if(!BP||!BP.length)return log('Dry run dulu.');if(!q('#wr').checked)return log('Aktifkan Mode Tulis dulu.');
+ if(!confirm(`Ubah ${BP.length} key?\nBackup data asli diunduh dulu. Tutup server game agar data tidak berubah di tengah jalan.`))return;
+ dlt(`sebelum-edit-massal-${Date.now()}.jsonl`,await jl(BP.map(i=>i.e)));let i=0,ok=0,bad=0,chg=0;
+ const w=async()=>{for(;;){const it=BP[i++];if(!it)return;const e=it.e,h={};if(e.uids)h['roblox-entry-userids']=e.uids;if(e.attrs)h['roblox-entry-attributes']=e.attrs;
+  const Q={datastoreName:e.ds,scope:e.scope,entryKey:e.key},P=base()+'/datastore/entries/entry';
+  const cur=await call(KEY,'GET',P,Q);let same0=false;try{same0=cs(JSON.parse(cur.body))===cs(e.value)}catch(x){}if(!same0){chg++;continue}
+  if((await call(KEY,'POST',P,Q,it.nv,h)).status!==200){bad++;continue}
+  const r=await call(KEY,'GET',P,Q);let same=false;try{same=cs(JSON.parse(r.body))===cs(it.nv)}catch(x){}same?ok++:bad++;if(i%20===0)q('#cr').textContent=`Menulis ${i}/${BP.length}…`}};
+ await Promise.all([w(),w(),w()]);q('#cr').textContent=`Selesai · terverifikasi ${ok} · berubah sejak dry run (dilewati) ${chg} · gagal ${bad} ${bad||chg?'⚠':'✔'}`;BP=null;q('#c2').disabled=true};
+
+const tr=(c,ds,k)=>{const f=(x,r)=>{const m=(r||'').split('=');return m.length===2&&m[0]&&x.startsWith(m[0])?m[1]+x.slice(m[0].length):x};return[f(ds,c.rn),f(k,c.rp)]};
+function dmerge(t,s){if(Array.isArray(t)&&Array.isArray(s)){const seen=new Set(t.map(cs));return[...t,...s.filter(x=>!seen.has(cs(x)))]}
+ if(t&&s&&typeof t=='object'&&typeof s=='object'&&!Array.isArray(t)&&!Array.isArray(s)){const o={...t};for(const k of Object.keys(s))o[k]=k in t?dmerge(t[k],s[k]):s[k];return o}
+ if(typeof t=='number'&&typeof s=='number')return Math.max(t,s);return s}
+async function ordSync(){const c=J.cfg;let n=0,bad=0,st=0;const names=[...new Set(J.items.filter(i=>i[0].includes('/')&&i[3]==='verified').map(i=>i[0]))];
+ for(const ds of names){let all;try{all=await oall(UID,KEY,ds,'global')}catch(e){continue}if(!all.length)continue;st++;const td=tr(c,ds,'')[0];
+  for(const e of all){let r=await call(tk(),'POST',ob(c.tu,td,'global'),{id:e.id},{value:e.value});if(r.status===409)r=await call(tk(),'PATCH',ob(c.tu,td,'global')+'/'+encodeURIComponent(e.id),{allow_missing:true},{value:e.value});okS(r)?n++:bad++}}
+ log(`OrderedDataStore DataStore2: ${st} store, ${n} entri tersalin, ${bad} gagal.`)}
+q('#vh').onclick=async()=>{if(!ctx.key)return log('Pilih key dulu.');const r=await call(KEY,'GET',base()+'/datastore/entries/entry/versions',{datastoreName:ctx.ds,scope:ctx.scope,entryKey:ctx.key,limit:20,sortOrder:'Descending'});if(r.status!==200)return fail(r);
+ const V=JSON.parse(r.body).versions||[];q('#diff').textContent=V.map(v=>`${v.version}  ${v.createdTime||''}  ${v.contentLength||'?'}B${v.deleted?' (dihapus)':''}`).join('\n')||'Tidak ada versi.';
+ const id=V.length&&prompt('Muat versi ke editor (tempel ID versi, kosong = batal):');if(!id)return;
+ const g=await call(KEY,'GET',base()+'/datastore/entries/entry/versions/version',{datastoreName:ctx.ds,scope:ctx.scope,entryKey:ctx.key,versionId:id.trim()});if(g.status!==200)return fail(g);
+ try{q('#ed').value=JSON.stringify(JSON.parse(g.body),null,2)}catch(e){q('#ed').value=g.body}log('Versi '+id.trim()+' dimuat ke editor. Cek diff, lalu Simpan untuk memulihkan.')};
+q('#pu').onclick=async()=>{const id=q('#pi').value.trim();if(!/^\d+$/.test(id))return log('Isi Place ID (angka).');const r=await rbx('GET','/universes/v1/places/'+id+'/universe',{},undefined,{},KEY||'-');
+ try{const u=JSON.parse(r.body).universeId;if(!u)throw 0;q('#pr').textContent=`Place ${id} → Universe ID ${u}`;if(!q('#uid').value)q('#uid').value=u}catch(e){fail(r)}};
+q('#un').onclick=async()=>{const n=q('#ni').value.trim();if(!n)return log('Isi username.');const r=await rbx('POST','/v1/usernames/users',{},{usernames:[n],excludeBannedUsers:false},{},KEY||'-');
+ try{const d=JSON.parse(r.body).data[0];q('#pr').textContent=d?`${d.name} → User ID ${d.id}`:'Username tidak ditemukan.';if(d)q('#ui').value=d.id}catch(e){fail(r)}};
+q('#sq').onclick=async()=>{const t=q('#st').value,c=cfg();if(!KEY||!UID||!t)return log('Hubungkan dan isi kata kunci.');if(c.mp==='one'&&!c.ds)return log('Pilih DataStore dulu atau "Semua DataStore".');
+ try{const hit=[];let n=0,tot=0;for(const ds of await dsNames(c)){const ks=await listAll(UID,KEY,ds,c.mx);tot+=ks.length;let j=0;
+  const w=async()=>{for(;;){const k=ks[j++];if(!k)return;const e=await readEntry(UID,KEY,ds,k.scope,k.key);n++;if(e&&JSON.stringify(e.value).includes(t))hit.push(`${ds} / ${k.scope} / ${k.key}`);if(n%20===0)q('#pr').textContent=`Memindai ${n}/${tot}…`}};await Promise.all([w(),w(),w()])}
+  q('#pr').textContent=`Cocok ${hit.length} dari ${n} key\n`+hit.slice(0,100).join('\n')}catch(e){log('Pencarian gagal: '+e.message)}};
+q('#pk').onclick=async()=>{if(!KEY||!UID)return log('Hubungkan dulu.');const out=[],t=async(n,f)=>{try{const r=await f();out.push((okS(r)?'✔ ':r.status===404?'≈ ':'✖ ')+n+' ('+r.status+(r.status===404?', izin ada tapi data tidak ada':'')+')')}catch(e){out.push('✖ '+n+' ('+e.message+')')}};
+ let first='';await t('DataStore: daftar',async()=>{const r=await call(KEY,'GET',base(UID),{limit:1});try{first=JSON.parse(r.body).datastores[0].name}catch(e){}return r});
+ if(first)await t('DataStore: daftar key + baca',()=>call(KEY,'GET',base(UID)+'/datastore/entries',{datastoreName:first,scope:'global',limit:1}));
+ await t('OrderedDataStore: baca',()=>call(KEY,'GET',ob(UID,'__saltoria_probe__','global'),{max_page_size:1}));
+ await t('Gamepass: daftar',()=>call(KEY,'GET',`/game-passes/v1/universes/${UID}/game-passes/creator`,{}));
+ await t('Developer Product: daftar',()=>call(KEY,'GET',`/developer-products/v2/universes/${UID}/developer-products/creator`,{}));
+ if(q('#wr').checked){const Q={datastoreName:'__SaltoriaProbe',scope:'global',entryKey:'probe'},P=base(UID)+'/datastore/entries/entry';
+  await t('DataStore: tulis (key uji __SaltoriaProbe/probe)',()=>call(KEY,'POST',P,Q,{ok:1}));await t('DataStore: hapus',()=>call(KEY,'DELETE',P,Q))}else out.push('… uji tulis/hapus dilewati (aktifkan Mode Tulis untuk menguji)');
+ q('#pr').textContent=out.join('\n')};
+const gl=async(u,k)=>{const out=[];for(const[p,tag]of[[`/game-passes/v1/universes/${u}/game-passes/creator`,'pass'],[`/developer-products/v2/universes/${u}/developer-products/creator`,'product']]){
+ const r=await rbx('GET',p,{},undefined,{},k);if(r.status!==200)throw new Error(tag+' HTTP '+r.status+' '+String(r.body).slice(0,120));
+ const d=JSON.parse(r.body),a=Array.isArray(d)?d:Object.values(d).find(Array.isArray)||[];a.forEach(x=>out.push({tag,id:x.gamePassId||x.productId||x.id,name:x.name||x.displayName}))}return out};
+q('#gp').onclick=async()=>{if(!KEY||!UID)return log('Hubungkan dulu.');try{const a=await gl(UID,KEY);q('#pr').textContent=a.map(x=>`${x.tag}  ${x.id}  ${x.name}`).join('\n')||'Kosong.'}catch(e){log(e.message)}};
+q('#gm').onclick=async()=>{const tu=q('#tu').value.trim();if(!KEY||!UID||!/^\d+$/.test(tu))return log('Hubungkan dan isi Universe ID tujuan.');
+ try{const A=await gl(UID,KEY),B=await gl(tu,tk()),L=[];A.forEach(x=>{const y=B.find(z=>z.tag===x.tag&&z.name===x.name);if(y)L.push(`${x.id}=${y.id}`)});
+  q('#bt').value='map';q('#bx').value=L.join('\n');q('#pr').textContent=`Pemetaan otomatis (nama sama): ${L.length} dari ${A.length}. Sudah dimasukkan ke Edit Massal (mode Remap).`}catch(e){log(e.message)}};
+const arch=async all=>dlt(`musim-${oN()}-${Date.now()}.jsonl`,await jl(all.map(e=>({ds:'ordered:'+oN(),scope:oS(),key:e.id,value:e.value}))));
+q('#o5').onclick=async()=>{if(!KEY||!oN())return log('Hubungkan dan isi nama OrderedDataStore.');try{const a=await oall(UID,KEY,oN(),oS());await arch(a);q('#oi').textContent='Arsip musim diunduh: '+a.length+' entri.'}catch(e){log(e.message)}};
+q('#o6').onclick=async()=>{const n=oN(),sc=oS();if(!KEY||!n)return log('Hubungkan dan isi nama OrderedDataStore.');if(!q('#wr').checked)return log('Aktifkan Mode Tulis dulu.');
+ const v=prompt('Reset SEMUA entri ke nilai (bilangan bulat):','0');if(v===null)return;if(v.trim()===''||!Number.isInteger(+v))return log('Nilai harus bilangan bulat.');
+ try{const all=await oall(UID,KEY,n,sc);if(!confirm(`Reset ${all.length} entri "${n}" ke ${v}?\nArsip musim diunduh dulu.`))return;if(prompt('Ketik nama OrderedDataStore untuk konfirmasi:')!==n)return log('Konfirmasi tidak cocok.');
+  await arch(all);let i=0,bad=0;const w=async()=>{for(;;){const e=all[i++];if(!e)return;const r=await call(KEY,'PATCH',ob(UID,n,sc)+'/'+encodeURIComponent(e.id),{allow_missing:true},{value:+v});if(!okS(r))bad++;if(i%25===0)q('#oi').textContent=`Reset ${i}/${all.length}…`}};
+  await Promise.all([w(),w(),w()]);const chk=(await oall(UID,KEY,n,sc)).filter(e=>e.value!==+v).length;q('#oi').textContent=`Reset selesai · gagal tulis ${bad} · belum bernilai ${v}: ${chk} ${bad||chk?'⚠':'✔'}`}catch(e){log('Reset gagal: '+e.message)}};
+</script>
+<script src="../shared.js"></script>
+</body>
+</html>

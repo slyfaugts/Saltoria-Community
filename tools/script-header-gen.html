@@ -1,0 +1,609 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Script Header Generator — Saltoria Tools</title>
+<meta name="description" content="Generate comment header profesional buat script Luau — author, versi, deskripsi, tanggal otomatis, ASCII art dari judul atau gambar PNG.">
+<meta name="theme-color" content="#0E0E16">
+<meta property="og:title" content="Script Header Generator — Saltoria Tools">
+<meta property="og:description" content="Generate comment header profesional buat script Luau, lengkap dengan ASCII art dari judul atau gambar PNG.">
+<meta property="og:image" content="https://saltoria.site/assets/og-image.png">
+<meta property="og:url" content="https://saltoria.site/tools/script-header-gen">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Saltoria Community">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="canonical" href="https://saltoria.site/tools/script-header-gen">
+<link rel="icon" type="image/png" href="../assets/favicon.png">
+<link rel="apple-touch-icon" href="../assets/favicon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700;800&family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet">
+<script>try{if(localStorage.getItem('saltoria-theme')==='light')document.documentElement.classList.add('light-mode')}catch(e){}</script>
+<link rel="stylesheet" href="../shared.css">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;font-size:15px;line-height:1.7;overflow-x:hidden;-webkit-font-smoothing:antialiased;min-height:100vh;position:relative}
+body::before{
+  content:'';position:fixed;inset:0;z-index:1;pointer-events:none;opacity:.035;mix-blend-mode:overlay;
+  background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='120' height='120'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>");
+}
+img{max-width:100%;display:block}
+a{text-decoration:none;color:inherit}
+.hide{display:none!important}
+.ms{font-family:'Material Symbols Rounded';font-weight:normal;font-style:normal;line-height:1;display:inline-block;white-space:nowrap;word-wrap:normal;direction:ltr;font-variation-settings:'FILL' 0,'wght' 400,'GRAD' 0,'opsz' 24;vertical-align:middle}
+main,.tool-hero,.layout{position:relative;z-index:2}
+/* HERO */
+.tool-hero{text-align:center;padding:4.5rem 1.5rem 3.25rem;position:relative;overflow:hidden;border-bottom:1px solid var(--border)}
+.tool-hero::before{content:'';position:absolute;top:0;left:50%;transform:translateX(-50%);width:700px;height:380px;background:radial-gradient(ellipse,rgba(124,92,252,.14) 0%,transparent 70%);pointer-events:none}
+.tool-hero>*{position:relative}
+.tool-hero-badge{display:inline-flex;align-items:center;gap:8px;background:rgba(124,92,252,.12);border:1px solid rgba(195,180,255,.22);color:var(--accent2);font-size:11px;font-weight:600;letter-spacing:1.6px;padding:6px 16px 6px 12px;border-radius:100px;margin-bottom:1.5rem;text-transform:uppercase}
+.tool-hero-badge .ms{font-size:16px}
+.tool-hero h1{font-family:'Space Grotesk',sans-serif;font-size:clamp(34px,6vw,60px);font-weight:700;color:var(--text);line-height:1;letter-spacing:-2px;margin-bottom:1.1rem}
+.tool-hero h1 em{font-style:normal;background:linear-gradient(135deg,var(--accent2),var(--text) 45%,var(--accent));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.tool-hero p{color:var(--muted);font-size:15px;max-width:560px;margin:0 auto;line-height:1.85}
+/* CARD */
+.card{background:var(--surface);border:1px solid var(--border);border-radius:20px;overflow:hidden;margin-bottom:1.25rem}
+.card-header{padding:1.1rem 1.35rem;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:12px}
+.card-icon{width:40px;height:40px;border-radius:12px;background:rgba(124,92,252,.1);border:1px solid rgba(124,92,252,.18);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.card-icon .ms{font-size:20px;color:var(--accent2)}
+.card-header>div:nth-child(2){min-width:0}
+.card-title{white-space:nowrap;font-family:'Space Grotesk',sans-serif;font-size:16px;font-weight:700;color:var(--text);letter-spacing:-.2px;line-height:1.2}
+.card-sub{font-size:12px;color:var(--muted);margin-top:2px}
+.card-body{padding:1.35rem}
+.hdr-actions{margin-left:auto;display:flex;gap:8px;flex-shrink:0}
+/* FORM */
+.field{margin-bottom:1.1rem}
+.field:last-child{margin-bottom:0}
+label{display:block;font-size:11px;font-weight:600;letter-spacing:1px;text-transform:uppercase;color:var(--muted);margin-bottom:7px}
+input[type=text],input[type=number],input[type=date],select,textarea{width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:12px;padding:11px 14px;color:var(--text);font-family:'Inter',sans-serif;font-size:13px;font-weight:500;outline:none;transition:all .2s}
+input[type=text]:hover,input[type=number]:hover,input[type=date]:hover,select:hover,textarea:hover{border-color:var(--border-strong)}
+input[type=text]:focus,input[type=number]:focus,input[type=date]:focus,select:focus,textarea:focus{border-color:rgba(195,180,255,.3);box-shadow:0 0 0 3px rgba(124,92,252,.1)}
+select option{background:var(--surface2)}
+textarea{resize:vertical;min-height:84px;line-height:1.6}
+#f-art-text{font-family:'JetBrains Mono',monospace;font-size:11px}
+input[type=range]{width:100%;accent-color:var(--accent);cursor:pointer}
+input[type=checkbox]{accent-color:var(--accent);width:15px;height:15px;cursor:pointer}
+.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:1rem}
+.hint{font-size:12px;color:var(--muted);margin-top:8px;line-height:1.7}
+/* BUTTON */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:7px;padding:9px 16px;border-radius:10px;font-family:'Inter',sans-serif;font-size:12px;font-weight:600;letter-spacing:.3px;cursor:pointer;border:1px solid transparent;transition:all .25s var(--ease);white-space:nowrap}
+.btn .ms{font-size:16px}
+.btn-primary{background:linear-gradient(135deg,var(--accent),var(--accent-deep));color:#fff;box-shadow:0 4px 18px rgba(124,92,252,.32)}
+.btn-primary:hover{transform:translateY(-1px);box-shadow:0 8px 26px rgba(124,92,252,.5)}
+.btn-primary.copied{background:rgba(110,231,183,.12);border-color:rgba(110,231,183,.28);color:var(--green);box-shadow:none;transform:none}
+.btn-ghost{background:var(--glass2);border-color:var(--border-strong);color:var(--text)}
+.btn-ghost:hover{background:var(--surface3);transform:translateY(-1px)}
+.btn-outline{background:transparent;border-color:var(--border-strong);color:var(--muted)}
+.btn-outline:hover{border-color:rgba(195,180,255,.35);color:var(--accent2)}
+.btn-row{display:flex;gap:.6rem;flex-wrap:wrap}
+/* TOGGLE */
+.toggle-row{display:flex;align-items:center;justify-content:space-between;padding:.7rem 0;border-bottom:1px solid var(--border)}
+.toggle-row:last-child{border-bottom:none}
+.toggle{position:relative;width:40px;height:22px;flex-shrink:0}
+.toggle input{opacity:0;width:0;height:0;position:absolute}
+.toggle-slider{position:absolute;cursor:pointer;inset:0;background:var(--surface3);border:1px solid var(--border);border-radius:11px;transition:.2s}
+.toggle-slider::before{content:'';position:absolute;height:16px;width:16px;left:2px;bottom:2px;background:#fff;border-radius:50%;transition:.2s}
+.toggle input:checked+.toggle-slider{background:var(--accent);border-color:var(--accent)}
+.toggle input:checked+.toggle-slider::before{transform:translateX(18px)}
+.toggle input:focus-visible+.toggle-slider{outline:2px solid var(--accent2);outline-offset:2px}
+.toggle-label{font-size:13px;color:var(--text);font-weight:500;padding-right:1rem}
+/* DROP ZONE */
+.drop-zone{border:2px dashed var(--border-strong);border-radius:14px;padding:1.75rem 1.5rem;text-align:center;cursor:pointer;transition:all .2s;position:relative}
+.drop-zone:hover,.drop-zone.dragover{border-color:var(--accent);background:rgba(124,92,252,.05)}
+.drop-zone input[type=file]{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%}
+.drop-icon{width:44px;height:44px;border-radius:12px;background:rgba(124,92,252,.1);border:1px solid rgba(124,92,252,.18);display:flex;align-items:center;justify-content:center;margin:0 auto .75rem}
+.drop-icon .ms{font-size:21px;color:var(--accent2)}
+.drop-text{font-size:13px;font-weight:600;color:var(--text)}
+.drop-hint{font-size:12px;color:var(--muted);margin-top:4px}
+.img-status{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--muted);margin:.75rem 0;word-break:break-all}
+.img-status.err{color:var(--red)}
+/* CHIP (sama dengan .tools-cat-chip di landing) */
+.style-chips{display:flex;gap:8px;flex-wrap:wrap}
+.style-chip{background:var(--glass);border:1px solid var(--border);color:var(--muted);font-size:12px;font-weight:600;padding:7px 16px;border-radius:100px;cursor:pointer;transition:all .2s;user-select:none}
+.style-chip:hover{color:var(--text);border-color:rgba(195,180,255,.3)}
+.style-chip.active{background:var(--accent);border-color:var(--accent);color:#fff}
+/* CODE */
+.code-block{position:relative;background:var(--code-bg);border:1px solid var(--code-border);border-radius:14px;padding:1.25rem;font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--code-text);line-height:1.9;overflow:auto;white-space:pre;min-height:120px;max-height:70vh}
+.card-body[style*="padding:0"] .code-block{border:none;border-radius:0}
+.art-prev{font-size:6px;line-height:1.05;min-height:0;max-height:200px;padding:.75rem;color:var(--accent2);border-radius:12px}
+.code-block .cm{color:#7C7896}
+.code-block .hi{color:#C3B4FF;font-weight:700}
+.code-block .yl{color:#FCD34D}
+.code-block .gr{color:#6EE7B7}
+#art-inner{color:var(--accent2)}
+.stat{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--muted);padding:.75rem 1.35rem;border-top:1px solid var(--border)}
+.stat.warn{color:var(--yellow)}
+/* LAYOUT */
+.layout{max-width:1080px;margin:0 auto;padding:2.5rem 1.5rem 5rem;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:1.25rem;align-items:start}
+.layout>div{min-width:0}
+.layout>div>.card:last-child{margin-bottom:0}
+.code-wrap{position:sticky;top:88px}
+@media(max-width:900px){.layout{grid-template-columns:1fr;padding:1.5rem 1rem 3.5rem}.code-wrap{position:static}}
+@media(max-width:640px){.grid-2{grid-template-columns:1fr}.card-header{flex-wrap:wrap}.hdr-actions{margin-left:0;width:100%}.hdr-actions .btn{flex:1}}
+</style>
+</head>
+<body>
+<nav id="main-nav" data-tool="SCRIPT HEADER GEN"><a href="../index.html" class="nav-logo-text">SALTORIA</a></nav>
+<div class="tool-hero">
+  <div class="tool-hero-badge"><span class="ms" aria-hidden="true">description</span>Dev tool</div>
+  <h1>Script <em>Header</em> Generator</h1>
+  <p>Buat comment header profesional untuk script Luau — nama, author, versi, license, deskripsi, plus ASCII art dari judul atau gambar PNG. Langsung copy paste ke Roblox Studio.</p>
+</div>
+<div class="layout">
+  <!-- LEFT -->
+  <div>
+    <div class="card">
+      <div class="card-header"><div class="card-icon"><span class="ms" aria-hidden="true">palette</span></div><div><div class="card-title">Style Header</div><div class="card-sub">Pilih desain header</div></div></div>
+      <div class="card-body">
+        <div class="style-chips" id="chips">
+          <div class="style-chip active" data-s="box">Box</div>
+          <div class="style-chip" data-s="banner">Banner</div>
+          <div class="style-chip" data-s="minimal">Minimal</div>
+          <div class="style-chip" data-s="ascii">ASCII Art</div>
+          <div class="style-chip" data-s="divider">Divider</div>
+          <div class="style-chip" data-s="block">Block</div>
+          <div class="style-chip" data-s="doc">Doc</div>
+        </div>
+        <div class="field" style="margin-top:1rem"><label>Lebar header (karakter)</label><input type="number" id="f-w" value="60" min="40" max="120" step="2"></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header"><div class="card-icon"><span class="ms" aria-hidden="true">edit_note</span></div><div><div class="card-title">Info Script</div><div class="card-sub">Isi identitas script</div></div></div>
+      <div class="card-body">
+        <div class="field"><label>Profil tersimpan</label>
+          <select id="f-prof"><option value="">(pilih profil)</option></select>
+          <div class="btn-row" style="margin-top:.5rem"><input type="text" id="f-prof-name" placeholder="Nama profil" style="flex:1;min-width:120px"><button class="btn btn-outline" id="prof-save" type="button">Simpan</button><button class="btn btn-outline" id="prof-del" type="button">Hapus</button></div>
+          <div class="hint">Menyimpan author, game, license, dan kontak di browser ini.</div>
+        </div>
+        <div class="field"><label>Nama Script</label><input type="text" id="f-name" value="MyScript"></div>
+        <div class="field"><label>Author / Creator</label><input type="text" id="f-author" value="AhmadSaltoria"></div>
+        <div class="grid-2">
+          <div class="field"><label>Versi</label><input type="text" id="f-ver" value="1.0.0"></div>
+          <div class="field"><label>Tanggal (kosong = hari ini)</label><input type="date" id="f-date"></div>
+        </div>
+        <div class="field"><label>Deskripsi singkat</label><textarea id="f-desc" rows="2">Deskripsi singkat tentang apa yang dilakukan script ini.</textarea></div>
+        <div class="grid-2">
+          <div class="field"><label>Game / Project</label><input type="text" id="f-game" value="Saltoria Game"></div>
+          <div class="field"><label>License</label>
+            <select id="f-license"><option>MIT</option><option>Apache 2.0</option><option selected>All Rights Reserved</option><option>CC BY 4.0</option><option>Custom</option><option>None</option></select>
+          </div>
+        </div>
+        <div class="field"><label>Custom License Text (jika "Custom")</label><input type="text" id="f-custom-lic" placeholder="Tulis lisensi custom..."></div>
+        <div class="field"><label>Discord / Contact</label><input type="text" id="f-contact" value="discord.gg/saltoria"></div>
+        <div class="grid-2">
+          <div class="field"><label>Tipe script</label><select id="f-type"><option value="">(kosong)</option><option selected>Script</option><option>LocalScript</option><option>ModuleScript</option></select></div>
+          <div class="field"><label>Lokasi di Explorer</label><input type="text" id="f-loc" placeholder="ServerScriptService"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header"><div class="card-icon"><span class="ms" aria-hidden="true">image</span></div><div><div class="card-title">ASCII Art</div><div class="card-sub">Dari judul, gambar PNG, atau custom</div></div></div>
+      <div class="card-body">
+        <div class="field"><label>Sumber art</label>
+          <select id="f-art">
+            <option value="none">Tanpa art</option>
+            <option value="title">Judul jadi huruf blok</option>
+            <option value="image">Dari gambar (PNG / JPG / WebP)</option>
+            <option value="gem">Preset: Gem</option>
+            <option value="shield">Preset: Shield</option>
+            <option value="terminal">Preset: Terminal</option>
+            <option value="custom">Custom (tempel sendiri)</option>
+          </select>
+          <div class="hint">Style ASCII Art otomatis memakai huruf blok dari judul jika sumber art kosong. Style Minimal dan Doc tidak menampilkan art.</div>
+        </div>
+
+        <div id="p-title" class="field hide"><label>Karakter huruf</label>
+          <select id="f-char"><option>█</option><option>#</option><option>@</option></select>
+          <div class="hint">Hanya A–Z, 0–9, spasi, titik, - dan _. Judul panjang membuat header melebar.</div>
+        </div>
+
+        <div id="p-image" class="hide">
+          <div class="drop-zone" id="drop-zone">
+            <input type="file" id="f-file" accept="image/*">
+            <div class="drop-icon"><span class="ms" aria-hidden="true">add_photo_alternate</span></div>
+            <div class="drop-text">Tarik gambar ke sini, atau klik untuk memilih</div>
+            <div class="drop-hint">PNG transparan paling bagus — max 8MB</div>
+          </div>
+          <div class="img-status" id="img-status">Belum ada gambar.</div>
+          <div id="img-opts">
+            <div class="grid-2">
+              <div class="field"><label>Lebar (kolom): <span id="v-cols">48</span></label><input type="range" id="i-cols" min="16" max="90" value="48"></div>
+              <div class="field"><label>Kontras: <span id="v-con">1.0</span></label><input type="range" id="i-con" min="0.5" max="2.5" step="0.1" value="1"></div>
+            </div>
+            <div class="field"><label>Set karakter</label>
+              <select id="i-ramp">
+                <option value="detail">Detail  .:-=+*#%@</option>
+                <option value="simple">Simpel  .oO@</option>
+                <option value="block">Blok  ░▒▓█</option>
+                <option value="solid">Solid  █</option>
+              </select>
+            </div>
+            <div class="toggle-row"><span class="toggle-label">Balik terang/gelap</span><label class="toggle"><input type="checkbox" id="i-inv"><span class="toggle-slider"></span></label></div>
+            <div class="toggle-row"><span class="toggle-label">Warna asli untuk string RichText</span><label class="toggle"><input type="checkbox" id="i-col"><span class="toggle-slider"></span></label></div>
+            <div class="field" style="margin-top:1rem"><label>Pratinjau art</label><div class="code-block art-prev" id="art-prev">—</div></div>
+          </div>
+        </div>
+
+        <div id="p-custom" class="field hide"><label>ASCII art kamu</label><textarea id="f-art-text" rows="5" spellcheck="false" placeholder="Tempel ASCII art di sini"></textarea></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header"><div class="card-icon"><span class="ms" aria-hidden="true">tune</span></div><div><div class="card-title">Opsi Tambahan</div><div class="card-sub">Aktifkan sesuai kebutuhan</div></div></div>
+      <div class="card-body">
+        <div class="field"><label>Format tanggal</label>
+          <select id="f-dfmt"><option value="long">15 November 2026</option><option value="iso">2026-11-15</option><option value="dmy">15/11/2026</option></select>
+        </div>
+        <div class="toggle-row"><span class="toggle-label">Tampilkan tanggal</span><label class="toggle"><input type="checkbox" id="opt-date" checked><span class="toggle-slider"></span></label></div>
+        <div class="toggle-row"><span class="toggle-label">Tag @script-type dan @location</span><label class="toggle"><input type="checkbox" id="opt-studio" checked><span class="toggle-slider"></span></label></div>
+        <div class="toggle-row"><span class="toggle-label">Tambah variabel metadata di bawah header</span><label class="toggle"><input type="checkbox" id="opt-meta"><span class="toggle-slider"></span></label></div>
+        <div class="toggle-row"><span class="toggle-label">Tambah separator di akhir</span><label class="toggle"><input type="checkbox" id="opt-sep" checked><span class="toggle-slider"></span></label></div>
+        <div class="hint" style="margin:.75rem 0">Isian tersimpan otomatis di browser ini.</div>
+        <button class="btn btn-outline" id="reset-all" type="button">Reset semua isian</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- RIGHT -->
+  <div class="code-wrap">
+    <div class="card">
+      <div class="card-header"><div class="card-icon"><span class="ms" aria-hidden="true">terminal</span></div><div><div class="card-title">Generated Header</div><div class="card-sub">Siap tempel ke Studio</div></div><div class="hdr-actions"><button class="btn btn-ghost" id="dl-btn" type="button"><span class="ms" aria-hidden="true">download</span>.lua</button><button class="btn btn-primary" id="copy-btn" type="button"><span class="ms" aria-hidden="true">content_copy</span>Salin</button></div></div>
+      <div class="card-body" style="padding:0">
+        <div class="code-block" id="code-out"><span id="code-inner"></span></div>
+      </div>
+      <div class="stat" id="stat"></div>
+    </div>
+    <div class="card hide" id="art-card">
+      <div class="card-header"><div class="card-icon"><span class="ms" aria-hidden="true">data_object</span></div><div><div class="card-title">Art sebagai String Luau</div><div class="card-sub">Untuk TextLabel atau print</div></div><div class="hdr-actions"><button class="btn btn-primary" id="copy2" type="button"><span class="ms" aria-hidden="true">content_copy</span>Salin</button></div></div>
+      <div class="card-body" style="padding:0">
+        <div class="code-block" id="art-out"><span id="art-inner"></span></div>
+      </div>
+      <div class="stat" id="art-stat"></div>
+    </div>
+  </div>
+</div>
+
+<script>
+(function(){
+'use strict';
+var $=function(i){return document.getElementById(i)},V=function(i){return $(i).value},C=function(i){return $(i).checked};
+var esc=function(s){return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')};
+var P=function(s,n){return s+new Array(Math.max(0,n-s.length)+1).join(' ')};
+var R=function(ch,n){return new Array(Math.max(0,n)+1).join(ch)};
+var style='box',imgArt=[],imgEl=null,imgUrl=null,imgName='';
+
+var PRE={
+  gem:['   /\\   ','  /__\\  ','  \\  /  ','   \\/   '],
+  shield:[' .-------. ',' | /===\\ | ',' | \\===/ | ','  \\     /  ','   `-----\u00B4   '],
+  terminal:[' ___________ ','|  >_       |','|___________|']
+};
+var RAMP={detail:' .:-=+*#%@',simple:' .oO@',block:' \u2591\u2592\u2593\u2588',solid:' \u2588'};
+
+/* font blok 3x5 */
+var G={};
+('A111101111101101,B110101110101110,C111100100100111,D110101101101110,E111100110100111,F111100110100100,G111100101101111,H101101111101101,I111010010010111,J001001001101111,K101101110101101,L100100100100111,M101111111101101,N111101101101101,O111101101101111,P111101111100100,Q111101101111001,R111101110101101,S111100111001111,T111010010010010,U101101101101111,V101101101101010,W101101111111101,X101101010101101,Y101101010010010,Z111001010100111,'+
+ '0111101101101111,1010110010010111,2111001111100111,3111001111001111,4101101111001001,5111100111001111,6111100111101111,7111001001010010,8111101111101111,9111101111001111,-000000111000000,_000000000000111,.000000000000010, 000000000000000')
+ .split(',').forEach(function(e){G[e.charAt(0)]=e.slice(1)});
+function bigText(t,ch){
+  t=t.toUpperCase().replace(/[^A-Z0-9 _.\-]/g,'');
+  var rows=['','','','',''],i,r,c,bits,row;
+  for(i=0;i<t.length;i++){
+    bits=G[t.charAt(i)]||G[' '];
+    for(r=0;r<5;r++){
+      row=bits.slice(r*3,r*3+3);
+      for(c=0;c<3;c++)rows[r]+=row.charAt(c)==='1'?ch+ch:'  ';
+      rows[r]+=' ';
+    }
+  }
+  return rows.map(function(x){return x.replace(/\s+$/,'')});
+}
+
+/* gambar -> ASCII */
+var imgCol=[];
+function convert(){
+  if(!imgEl){imgArt=[];imgCol=[];$('art-prev').textContent='—';return}
+  var cols=+V('i-cols'),con=+V('i-con'),ramp=RAMP[V('i-ramp')],inv=C('i-inv');
+  var rows=Math.max(1,Math.round(imgEl.naturalHeight/imgEl.naturalWidth*cols*0.5));
+  var cv=document.createElement('canvas');cv.width=cols;cv.height=rows;
+  var cx=cv.getContext('2d',{willReadFrequently:true});
+  cx.clearRect(0,0,cols,rows);cx.drawImage(imgEl,0,0,cols,rows);
+  var d=cx.getImageData(0,0,cols,rows).data,out=[],cl=[],y,x,i,a,l,w,line,cr;
+  var q=function(v){return ('0'+(Math.round(v/36)*36).toString(16)).slice(-2)};
+  for(y=0;y<rows;y++){
+    line='';cr=[];
+    for(x=0;x<cols;x++){
+      i=(y*cols+x)*4;a=d[i+3]/255;
+      l=(0.299*d[i]+0.587*d[i+1]+0.114*d[i+2])/255;
+      l=Math.min(1,Math.max(0,(l-0.5)*con+0.5));
+      w=(inv?1-l:l)*a;
+      line+=ramp.charAt(Math.round(w*(ramp.length-1)));
+      cr.push('#'+q(d[i])+q(d[i+1])+q(d[i+2]));
+    }
+    out.push(line.replace(/\s+$/,''));cl.push(cr);
+  }
+  while(out.length&&!out[0].trim()){out.shift();cl.shift()}
+  while(out.length&&!out[out.length-1].trim()){out.pop();cl.pop()}
+  var ind=Math.min.apply(null,out.filter(function(l){return l.trim()}).map(function(l){return l.search(/\S/)}).concat([999]));
+  if(ind>0&&ind<999){out=out.map(function(l){return l.slice(ind)});cl=cl.map(function(c){return c.slice(ind)})}
+  imgArt=out;imgCol=cl;
+  $('art-prev').textContent=imgArt.length?imgArt.join('\n'):'Gambar kosong atau terlalu gelap. Coba "Balik terang/gelap".';
+}
+function status(t,err){var s=$('img-status');s.textContent=t;s.className='img-status'+(err?' err':'')}
+function loadFile(f){
+  if(!f)return;
+  if(!/^image\//.test(f.type)){status('File bukan gambar. Pakai PNG, JPG, atau WebP.',1);return}
+  if(f.size>8*1024*1024){status('Gambar lebih dari 8MB. Perkecil dulu.',1);return}
+  if(imgUrl)URL.revokeObjectURL(imgUrl);
+  imgUrl=URL.createObjectURL(f);
+  var im=new Image();
+  im.onload=function(){
+    imgEl=im;imgName=f.name;
+    status(f.name+' — '+im.naturalWidth+'×'+im.naturalHeight+'px');
+    $('f-art').value='image';convert();gen();
+  };
+  im.onerror=function(){status('Gambar tidak bisa dibaca. Coba format lain.',1)};
+  im.src=imgUrl;
+}
+
+/* util teks */
+function wrap(t,w){
+  var out=[];
+  t.split('\n').forEach(function(p){
+    var l='';
+    p.split(/\s+/).filter(Boolean).forEach(function(x){
+      if(l&&(l+' '+x).length>w){out.push(l);l=x}else l=l?l+' '+x:x;
+    });
+    out.push(l);
+  });
+  return out;
+}
+function fmtDate(){
+  var v=V('f-date'),d=v?new Date(v+'T00:00:00'):new Date();
+  var f=V('f-dfmt'),y=d.getFullYear(),m=('0'+(d.getMonth()+1)).slice(-2),dd=('0'+d.getDate()).slice(-2);
+  if(f==='iso')return y+'-'+m+'-'+dd;
+  if(f==='dmy')return dd+'/'+m+'/'+y;
+  return d.toLocaleDateString('id-ID',{year:'numeric',month:'long',day:'numeric'});
+}
+function getArt(){
+  var a=V('f-art');
+  if(a==='title')return V('f-name')?bigText(V('f-name'),V('f-char')):[];
+  if(a==='image')return imgArt;
+  if(a==='custom'){
+    var l=V('f-art-text').replace(/\s+$/,'').split('\n');
+    while(l.length&&!l[0].trim())l.shift();
+    return l;
+  }
+  return PRE[a]||[];
+}
+
+/* art -> string Luau */
+function artString(){
+  var art=getArt();
+  if(!art.length)return null;
+  var rich=V('f-art')==='image'&&C('i-col')&&imgCol.length===art.length,body;
+  if(rich){
+    body=art.map(function(line,r){
+      var t='',cur=null,cc=imgCol[r],x,ch;
+      for(x=0;x<line.length;x++){
+        ch=line.charAt(x);
+        if(ch===' '){t+=ch;continue}
+        if(cc[x]!==cur){if(cur)t+='</font>';t+='<font color="'+cc[x]+'">';cur=cc[x]}
+        t+=ch;
+      }
+      if(cur)t+='</font>';
+      return t;
+    }).join('\n');
+  }else body=art.join('\n');
+  var n=0;
+  while(body.indexOf(']'+R('=',n)+']')>-1)n++;
+  var e=R('=',n);
+  return {len:body.length,rich:rich,
+    text:'local ASCII_ART = ['+e+'['+body+']'+e+']'+(rich?'\n-- TextLabel: RichText = true, Font = Enum.Font.Code, TextXAlignment = Left':'')};
+}
+
+/* build */
+function build(){
+  var name=V('f-name')||'MyScript',author=V('f-author')||'Unknown',ver=V('f-ver')||'1.0.0',
+      desc=V('f-desc').trim()||'—',game=V('f-game')||'—',contact=V('f-contact')||'—',
+      lic=V('f-license')==='Custom'?(V('f-custom-lic')||'Custom License'):V('f-license'),
+      date=C('opt-date')?fmtDate():'',type=V('f-type'),loc=V('f-loc').trim(),
+      base=Math.max(40,+V('f-w')||60),art=getArt();
+  if(style==='ascii'&&!art.length)art=bigText(name,'\u2588');
+  var rows=[['Author',author],['Version',ver]];
+  if(date)rows.push(['Date',date]);
+  rows.push(['Game',game],['License',lic],['Contact',contact]);
+  var L=[],add=function(t,c){L.push({t:t,c:c||'cm'})},maxArt=Math.max.apply(null,art.map(function(l){return l.length}).concat([0]));
+  var safe=function(s){return s.replace(/\]\]/g,'] ]')};
+  var i;
+  if(style==='box'){
+    var W=Math.max(base,maxArt+2),ln=R('\u2500',W),row=function(s){return '--'+P(s,W)+'--'};
+    add('--'+ln+'--');add(row(' '+name));add('--'+ln+'--');
+    if(art.length){art.forEach(function(l){add(row(' '+l),'hi')});add('--'+ln+'--')}
+    rows.forEach(function(r){add(row('  '+P(r[0],7)+': '+r[1]))});
+    add('--'+ln+'--');
+    wrap(desc,W-4).forEach(function(l){add(row('  '+l))});
+    add('--'+ln+'--');
+  }else if(style==='banner'){
+    var bar='-- '+R('\u2588',Math.max(38,maxArt));
+    add(bar);add('--   '+name);add(bar);
+    if(art.length){art.forEach(function(l){add('-- '+l,'hi')});add(bar)}
+    rows.forEach(function(r){add('-- '+P(r[0],8)+': '+r[1])});
+    add(bar);wrap(desc,Math.max(40,base)).forEach(function(l){add('-- '+l)});
+  }else if(style==='minimal'){
+    add('-- '+name+' v'+ver);add('-- by '+author+' | '+game);
+    if(date)add('-- '+date);
+    add('-- '+lic+' | '+contact);
+    wrap(desc,base).forEach(function(l){add('-- '+l)});
+  }else if(style==='ascii'){
+    add('--[[','hi');
+    art.forEach(function(l){add(safe(l),'hi')});
+    add('');add('  '+safe(name)+' \u2014 v'+safe(ver));
+    rows.forEach(function(r){add('  '+P(r[0],7)+' : '+safe(r[1]))});
+    add('');wrap(safe(desc),base-2).forEach(function(l){add('  '+l)});
+    add(']]','hi');
+  }else if(style==='divider'){
+    var dv=R('-',Math.max(base,72));
+    add(dv);add('-- SCRIPT  : '+name);
+    rows.forEach(function(r){add('-- '+P(r[0].toUpperCase(),7)+' : '+r[1])});
+    add(dv);
+    if(art.length){art.forEach(function(l){add('-- '+l,'hi')});add(dv)}
+    wrap(desc,base).forEach(function(l){add('-- '+l)});
+    add(dv);
+  }else if(style==='block'){
+    var rl=R('=',Math.max(base,maxArt));
+    add('--[[','hi');add(rl);
+    art.forEach(function(l){add(safe(l),'hi')});
+    if(art.length)add('');
+    add(safe(name)+' v'+safe(ver));add(rl);
+    rows.forEach(function(r){add(P(r[0],8)+': '+safe(r[1]))});
+    add('');wrap(safe(desc),base).forEach(function(l){add(l)});
+    add(rl);add(']]','hi');
+  }else{ // doc
+    add('--- '+name+' v'+ver);add('--');
+    wrap(desc,base).forEach(function(l){add('-- '+l)});
+    add('--');
+    rows.forEach(function(r){add('-- @'+r[0].toLowerCase()+' '+r[1])});
+  }
+  if(C('opt-studio')&&(type||loc)){
+    add('');
+    if(type)add('-- @script-type '+type);
+    if(loc)add('-- @location '+loc);
+  }
+  var out=L.map(function(o){return {t:o.t,c:o.c}});
+  var html=out.map(function(o){return o.t===''?'':'<span class="'+o.c+'">'+esc(o.t)+'</span>'}).join('\n');
+  var raw=out.map(function(o){return o.t}).join('\n');
+  if(C('opt-meta')){
+    var q=function(s){return s.replace(/\\/g,'\\\\').replace(/"/g,'\\"')};
+    var m=[['SCRIPT_NAME   ',name],['SCRIPT_VERSION',ver],['SCRIPT_AUTHOR ',author]];
+    raw+='\n\n'+m.map(function(x){return 'local '+x[0]+' = "'+q(x[1])+'"'}).join('\n');
+    html+='\n\n'+m.map(function(x){return '<span class="yl">local</span> '+x[0]+' = <span class="gr">"'+esc(q(x[1]))+'"</span>'}).join('\n');
+  }
+  if(C('opt-sep')){
+    var sp='-- '+R('\u2500',70);
+    raw+='\n\n'+sp;html+='\n\n<span class="cm">'+sp+'</span>';
+  }
+  return {raw:raw,html:html};
+}
+var last='',lastArt='';
+function gen(){
+  var a=V('f-art');
+  $('p-title').classList.toggle('hide',a!=='title');
+  $('p-image').classList.toggle('hide',a!=='image');
+  $('p-custom').classList.toggle('hide',a!=='custom');
+  $('v-cols').textContent=V('i-cols');
+  $('v-con').textContent=(+V('i-con')).toFixed(1);
+  var r=build();last=r.raw;
+  $('code-inner').innerHTML=r.html;
+  $('stat').textContent=r.raw.split('\n').length+' baris, '+r.raw.length+' karakter';
+  var as=artString();
+  $('art-card').classList.toggle('hide',!as);
+  if(as){
+    lastArt=as.text;$('art-inner').textContent=as.text;
+    var big=as.len>16384;
+    $('art-stat').className='stat'+(big?' warn':'');
+    $('art-stat').textContent=as.len+' karakter'+(big?' — melebihi batas 16.384 karakter TextLabel, kecilkan lebar atau matikan warna':'');
+  }
+  saveState();
+}
+
+/* events */
+[].forEach.call(document.querySelectorAll('input,select,textarea'),function(e){
+  if(e.type==='file')return;
+  e.addEventListener('input',function(){
+    if(e.closest('#img-opts'))convert();
+    gen();
+  });
+});
+function setStyle(v){
+  style=v;
+  [].forEach.call($('chips').children,function(x){x.classList.toggle('active',x.dataset.s===v)});
+}
+[].forEach.call($('chips').children,function(c){
+  c.addEventListener('click',function(){setStyle(c.dataset.s);gen()});
+});
+var dz=$('drop-zone');
+$('f-file').addEventListener('change',function(e){loadFile(e.target.files[0])});
+['dragenter','dragover'].forEach(function(t){dz.addEventListener(t,function(e){e.preventDefault();dz.classList.add('dragover')})});
+['dragleave','drop'].forEach(function(t){dz.addEventListener(t,function(e){e.preventDefault();dz.classList.remove('dragover')})});
+dz.addEventListener('drop',function(e){loadFile(e.dataTransfer.files[0])});
+
+function copyBtn(id,get){
+  var b=$(id),orig=b.innerHTML;
+  b.addEventListener('click',function(){
+    var t=get(),done=function(){
+      b.innerHTML='<span class="ms" aria-hidden="true">check</span>Tersalin';b.classList.add('copied');
+      setTimeout(function(){b.innerHTML=orig;b.classList.remove('copied')},1800);
+    },fb=function(){
+      var x=document.createElement('textarea');x.value=t;document.body.appendChild(x);x.select();
+      try{document.execCommand('copy');done()}catch(e){}
+      document.body.removeChild(x);
+    };
+    if(navigator.clipboard&&navigator.clipboard.writeText)navigator.clipboard.writeText(t).then(done,fb);else fb();
+  });
+}
+copyBtn('copy-btn',function(){return last});
+copyBtn('copy2',function(){return lastArt});
+$('dl-btn').addEventListener('click',function(){
+  var a=document.createElement('a');
+  a.href=URL.createObjectURL(new Blob([last+'\n'],{type:'text/plain'}));
+  a.download=(V('f-name')||'header').replace(/[^A-Za-z0-9_-]+/g,'_')+'.lua';
+  document.body.appendChild(a);a.click();document.body.removeChild(a);
+  setTimeout(function(){URL.revokeObjectURL(a.href)},1000);
+});
+/* simpan isian otomatis */
+var KEY='saltoria-header-v1',
+SK=[].slice.call(document.querySelectorAll('input,select,textarea')).filter(function(e){return e.id&&e.type!=='file'&&e.id!=='f-date'&&!/^f-prof/.test(e.id)});
+function saveState(){
+  try{var o={style:style};SK.forEach(function(e){o[e.id]=e.type==='checkbox'?e.checked:e.value});localStorage.setItem(KEY,JSON.stringify(o))}catch(e){}
+}
+function loadState(){
+  try{
+    var o=JSON.parse(localStorage.getItem(KEY)||'null');if(!o)return;
+    SK.forEach(function(e){if(!(e.id in o))return;if(e.type==='checkbox')e.checked=!!o[e.id];else e.value=o[e.id]});
+    if(o.style)setStyle(o.style);
+    if(V('f-art')==='image')$('f-art').value='none';
+  }catch(e){}
+}
+$('reset-all').addEventListener('click',function(){
+  if(!confirm('Kembalikan semua isian ke bawaan?'))return;
+  try{localStorage.removeItem(KEY)}catch(e){}
+  location.reload();
+});
+
+/* profil */
+var PK='saltoria-header-profiles',PF=['f-author','f-game','f-license','f-custom-lic','f-contact'];
+function profs(){try{return JSON.parse(localStorage.getItem(PK)||'{}')}catch(e){return {}}}
+function renderProfs(sel){
+  var p=profs(),s=$('f-prof');
+  s.innerHTML='<option value="">(pilih profil)</option>'+Object.keys(p).map(function(k){return '<option>'+esc(k)+'</option>'}).join('');
+  if(sel)s.value=sel;
+}
+$('f-prof').addEventListener('change',function(){
+  var p=profs()[V('f-prof')];if(!p)return;
+  PF.forEach(function(id){if(id in p)$(id).value=p[id]});
+  $('f-prof-name').value=V('f-prof');gen();
+});
+$('prof-save').addEventListener('click',function(){
+  var n=V('f-prof-name').trim();if(!n)return;
+  var all=profs(),o={};PF.forEach(function(id){o[id]=V(id)});all[n]=o;
+  try{localStorage.setItem(PK,JSON.stringify(all))}catch(e){}
+  renderProfs(n);
+});
+$('prof-del').addEventListener('click',function(){
+  var n=V('f-prof');if(!n)return;
+  var all=profs();delete all[n];
+  try{localStorage.setItem(PK,JSON.stringify(all))}catch(e){}
+  $('f-prof-name').value='';renderProfs();
+});
+renderProfs();loadState();
+gen();
+})();
+</script>
+<script src="../shared.js" defer></script>
+</body>
+</html>

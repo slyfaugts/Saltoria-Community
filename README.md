@@ -1,0 +1,280 @@
+# Saltoria Community — Website & Tools
+
+Website resmi **Saltoria Community**, komunitas Roblox developer asal Indonesia. Berisi landing page komunitas + 7 tools gratis buat Roblox developer (converter, calculator, generator), dibangun sebagai static site + serverless API functions, di-deploy lewat GitHub → Vercel.
+
+---
+
+## 1. Penjelasan
+
+### 1.1 Apa ini?
+Saltoria Community website punya dua bagian utama:
+
+1. **Landing page** (`index.html`) — profil komunitas: project showcase, Jasa Map Builder, tim, partner, dan grid 6 developer tools.
+2. **Tools** (`tools/*.html`) — 9 halaman tool. Kebanyakan 1 file HTML self-contained (CSS + JS di dalam file yang sama); **3D Studio** pengecualian: halamannya `tools/3d-studio.html`, kodenya di folder `studio/`. Nggak ada build step.
+
+Semua **client-side only** kecuali 2 tool yang butuh proxy server (Audio Optimizer & upload-related tools), yang jalan lewat serverless function di `api/`.
+
+### 1.2 Struktur folder
+
+```
+saltoria-website/
+├── index.html              ← landing page utama
+├── shared.css               ← tema bersama semua tool: warna, font, navbar, mode terang (token = landing page)
+├── shared.js                ← navbar & tema tool, command palette, recently-used tracker, aria-label patch
+├── vercel.json               ← config serverless function (maxDuration, memory)
+├── tools/                    ← semua tool (9 halaman)
+├── studio/                   ← kode 3D Studio (js/, css/studio.css, fonts/, assets/, tests/)
+│   ├── audio-optimizer.html
+│   ├── skybox-converter.html
+│   ├── loot-table-calc.html
+│   ├── script-header-gen.html
+│   ├── gradient-generator.html
+│   ├── asset-permission.html  ← izin pakai aset Roblox (Audio/Animasi/Decal) lewat Open Cloud
+│   └── datastore-manager.html ← explorer, editor, backup/restore & migrasi DataStore lewat Open Cloud
+├── api/                       ← serverless functions (Vercel Node runtime)
+│   ├── youtube-fetch.js       ← proxy audio dari YouTube/SoundCloud/dll → yt-dlp Railway service
+│   ├── upload-asset.js        ← proxy upload asset ke Roblox Open Cloud API
+│   ├── asset-permission-proxy.js ← proxy (allowlist) untuk tools/asset-permission.html
+│   └── datastore-proxy.js ← proxy (allowlist) untuk tools/datastore-manager.html
+└── assets/                    ← favicon, og-image, dll (belum ada di repo, lihat §3.4)
+```
+
+### 1.3 Tech stack
+- **Frontend:** HTML + CSS murni (custom, no framework) + vanilla JS. Font: Space Grotesk (judul) + Inter (body) + JetBrains Mono (mono) — sama di landing page & semua tool. Landing page juga pakai Material Symbols Rounded (Google Fonts).
+- **Hosting:** Vercel (static hosting + serverless functions Node.js).
+- **Backend proxy:** 2 file di `api/`, jalan sebagai Vercel Serverless Function (bukan Express, format `export default function handler(req, res)`).
+- **External services:**
+  - Railway (self-hosted `yt-dlp` service) — dipakai `youtube-fetch.js` buat convert audio dari link YouTube/dll.
+  - Roblox Open Cloud API — dipakai `upload-asset.js` buat upload asset atas nama user (pakai API key milik user sendiri, bukan punya Saltoria).
+- **Storage:** semua state tool disimpan di `localStorage` browser (nggak ada database).
+
+### 1.4 Fitur shared.js
+File ini di-include di semua halaman (`index.html` dan semua `tools/*.html`) lewat `<script src="shared.js">` (atau `../shared.js` dari dalam folder `tools/`). Fungsinya:
+- **Command Palette** — tekan `Ctrl+K` (Windows/Linux) atau `Cmd+K` (Mac) di halaman manapun buat cari & lompat ke tool lain tanpa balik ke home dulu.
+- **Recently Used** — otomatis nyimpen tool yang baru dibuka, ditampilin di section "Baru dipakai" di landing page.
+- **Aria-label auto-patch** — nambahin label aksesibilitas ke tombol icon-only yang belum dikasih label manual.
+- **Navbar tool + tema terang/gelap** — navbar semua halaman tool dirakit di sini dari `<nav id="main-nav" data-tool="NAMA TOOL">` supaya selalu sama dengan landing page. Pilihan tema disimpan di `localStorage` key `saltoria-theme` (key yang sama dengan landing page), jadi tema ikut terbawa saat pindah halaman.
+
+### 1.5 Tema bersama (`shared.css`)
+Semua token (warna, radius, font) ada di `shared.css`, **tidak** lagi didefinisikan ulang di tiap tool. Ubah warna/aksen di sini → landing page-nya perlu disamakan manual (token di `index.html`), semua tool otomatis ikut. Mode terang memakai class `light-mode` di `<html>`; blok kode/output sengaja tetap gelap di kedua mode.
+
+Kalau nambah tool baru, **wajib** update array `TOOLS` di `shared.js` (lihat §2.4) biar ke-detect di command palette & recently-used.
+
+---
+
+## 2. Tutorial
+
+### 2.1 Jalanin lokal (tanpa install apapun)
+Karena semua file HTML self-contained, paling gampang:
+
+```bash
+# dari root folder project
+python3 -m http.server 3000
+# atau
+npx serve .
+```
+
+Buka `http://localhost:3000`. Semua tool jalan normal kecuali:
+- **Audio Optimizer** — butuh `api/youtube-fetch.js` jalan, artinya butuh `vercel dev` (lihat §2.2), bukan sekadar static server.
+- **Fitur upload asset** — sama, butuh `vercel dev` karena manggil `api/upload-asset.js`.
+
+### 2.2 Jalanin lokal dengan serverless function aktif
+```bash
+npm i -g vercel      # sekali aja kalau belum ada
+vercel dev
+```
+Ini bakal jalanin static file + `api/*.js` sekaligus di `http://localhost:3000`, exact sama seperti environment production Vercel.
+
+### 2.3 Nambah tool baru (checklist)
+1. Bikin file baru di `tools/nama-tool.html`, paling gampang copy `tools/loot-table-calc.html` lalu ganti isinya. Yang **wajib sama** di `<head>`: link Google Fonts (Space Grotesk + Inter + JetBrains Mono), script kecil penyimpan tema, dan `<link rel="stylesheet" href="../shared.css">` (tanpa `:root` sendiri — pakai token dari `shared.css`). Navbar cukup `<nav id="main-nav" data-tool="NAMA TOOL"></nav>` — isinya otomatis dibuat `shared.js`. Pakai `var(--text)`, `var(--border)`, dst., **jangan** hardcode `#fff`/`rgba(255,255,255,…)` supaya mode terang tetap terbaca.
+2. Tambahin meta tags lengkap di `<head>` — description, og:title, og:description, og:image, og:url, canonical, favicon (lihat contoh di `tools/loot-table-calc.html`).
+3. Taruh `<script src="../shared.js" defer></script>` sebelum `</body>`.
+4. Daftarin tool baru di **dua tempat**:
+   - `shared.js` → array `TOOLS` (name, sub, icon, href, category).
+   - `index.html` → tambah `<a class="tool-card" data-category="...">` baru di `#tools-grid`.
+5. Kategori yang dipakai saat ini: `Generator`, `Converter`, `Calculator`. Kalau butuh kategori baru, tambahin juga chip filter-nya di `index.html` (`.tools-cat-wrap`).
+
+### 2.4 Command Palette — cara pakai
+- Buka halaman manapun → tekan `Ctrl+K` / `Cmd+K`.
+- Ketik nama tool atau kategori (misal ketik "converter" bakal nampilin semua tool converter).
+- Navigasi pakai panah atas/bawah, `Enter` buat buka, `Esc` buat tutup.
+
+---
+
+## 3. Cara Deploy
+
+### 3.1 Push ke GitHub
+```bash
+git init
+git add .
+git commit -m "update: shared.js, meta tags, category filter, cors fix"
+git branch -M main
+git remote add origin https://github.com/<username>/saltoria-website.git
+git push -u origin main
+```
+
+### 3.2 Connect ke Vercel (sekali aja, project baru)
+1. Buka [vercel.com](https://vercel.com) → **Add New Project**.
+2. Pilih repo GitHub `saltoria-website`.
+3. Framework Preset: pilih **Other** (bukan Next.js/dll, karena ini static + serverless function biasa).
+4. Build Command: kosongin. Output Directory: kosongin/`.` (root).
+5. Klik **Deploy**.
+
+Setelah project ke-connect, **setiap `git push` ke branch `main` otomatis re-deploy** (CI/CD bawaan Vercel).
+
+### 3.3 Environment Variables (wajib buat Audio Optimizer)
+Di dashboard Vercel → project → **Settings → Environment Variables**, tambahin:
+
+| Key | Value | Keterangan |
+|---|---|---|
+| `YTDLP_API_URL` | `https://saltoria-ytdlp-production.up.railway.app` | URL Railway service `yt-dlp` kamu. Kalau nggak di-set, `youtube-fetch.js` fallback ke URL default ini. |
+
+Setelah nambah/ubah env var, **redeploy manual** dari tab Deployments (env var nggak auto-apply ke deployment yang udah jalan).
+
+### 3.4 Assets yang perlu kamu siapin sendiri
+`index.html` dan semua tool page reference file-file ini, tapi belum ada di upload kamu — pastikan ada di `assets/` sebelum deploy biar nggak broken image/404:
+- `assets/favicon.png`
+- `assets/og-image.png` (buat preview link di Discord/WhatsApp — ukuran ideal 1200×630px)
+
+### 3.5 Custom domain (opsional)
+Vercel → project → **Settings → Domains** → masukin domain kamu (misal `saltoria.com`) → ikutin instruksi DNS (CNAME/A record) dari Vercel.
+
+⚠️ **Penting:** kalau pakai custom domain, update `ALLOWED_ORIGINS` di `api/upload-asset.js` dan `api/youtube-fetch.js` (saat ini isinya `https://saltoria.site`, `https://www.saltoria.site`, dan `http://localhost:3000`) — kalau ganti/nambah domain, tambahin di sini, kalau nggak request dari domain itu bakal ke-block CORS. Domain `*.vercel.app` sudah tidak diizinkan; tambahkan lagi kalau mau tes di URL preview Vercel.
+
+### 3.6 Cek deployment berhasil
+- Buka domain production, test command palette (`Ctrl+K`), test filter kategori di tools grid.
+- Test 1 tool yang butuh API (Audio Optimizer) buat mastiin `api/youtube-fetch.js` jalan dan `YTDLP_API_URL` ke-set bener.
+
+---
+
+## 4. Cara Upload Asset
+
+Fitur upload asset (dipakai Audio Optimizer & tool lain yang perlu push file ke Roblox) jalan lewat `api/upload-asset.js`, yang jadi proxy ke **Roblox Open Cloud API** (`https://apis.roblox.com/assets/v1/assets`). Ini perlu karena Roblox nggak ngizinin request langsung dari browser (CORS diblokir di sisi Roblox).
+
+### 4.1 Dapetin API Key Roblox Open Cloud
+1. Buka [Roblox Creator Dashboard](https://create.roblox.com/dashboard/credentials).
+2. Klik **API Keys** → **Create API Key**.
+3. Kasih nama key (misal `saltoria-upload`).
+4. Di bagian **Permissions**, tambahin scope **Assets** dengan akses **Write** (Create), dan pilih Experience/Creator yang jadi owner asset-nya.
+5. Set **Security** → boleh restrict ke IP tertentu, tapi kalau upload dari browser user (IP dinamis), biarin **Allow all IP addresses**.
+6. Copy API key yang muncul — **key ini cuma ditampilin sekali**, simpan baik-baik. Ini yang dipakai sebagai header `x-api-key`.
+
+⚠️ API key ini punya akses ke akun Roblox user, dan Saltoria **tidak menyimpan** key ini di server manapun — dia cuma lewat (relay) di `upload-asset.js`, langsung dari browser ke Roblox. Pastiin user paham ini pas dipakai di tool.
+
+### 4.2 Format request ke endpoint
+**Endpoint:** `POST /api/upload-asset`
+**Headers:**
+```
+x-api-key: <API key Roblox Open Cloud milik user>
+Content-Type: multipart/form-data
+```
+**Body (multipart/form-data), 2 field:**
+- `request` — JSON string berisi metadata asset:
+  ```json
+  {
+    "assetType": "Audio",
+    "displayName": "Nama Audio",
+    "description": "Diupload lewat Saltoria Audio Optimizer",
+    "creationContext": {
+      "creator": { "userId": "9197728639" }
+    }
+  }
+  ```
+- `fileContent` — file binary asset-nya (mp3/ogg/dll, sesuai `assetType`).
+
+### 4.3 Contoh kode (client-side, dari browser)
+```javascript
+async function uploadAsset(apiKey, file, displayName, userId) {
+  const formData = new FormData();
+  formData.append('request', JSON.stringify({
+    assetType: 'Audio',
+    displayName,
+    description: 'Diupload lewat Saltoria Audio Optimizer',
+    creationContext: { creator: { userId: String(userId) } }
+  }));
+  formData.append('fileContent', file);
+
+  const res = await fetch('/api/upload-asset', {
+    method: 'POST',
+    headers: { 'x-api-key': apiKey },
+    body: formData
+  });
+
+  const data = await res.json();
+  if (!res.ok) throw new Error(data.error || 'Upload gagal');
+  return data; // { path: "operations/xxx", ... } — operation yang perlu di-poll
+}
+```
+
+### 4.4 Polling status upload
+Upload asset Roblox itu **async** — response awal cuma ngasih `operation path`, bukan hasil final. Perlu di-poll:
+
+```javascript
+async function pollOperation(apiKey, operationPath) {
+  const res = await fetch(`/api/upload-asset?path=${encodeURIComponent(operationPath)}`, {
+    headers: { 'x-api-key': apiKey }
+  });
+  const data = await res.json();
+  return data; // { done: true, response: { assetId: "..." } } kalau udah selesai
+}
+
+// Contoh pakai: polling tiap 2 detik sampai done
+async function waitForAsset(apiKey, operationPath) {
+  while (true) {
+    const status = await pollOperation(apiKey, operationPath);
+    if (status.done) return status.response.assetId;
+    await new Promise(r => setTimeout(r, 2000));
+  }
+}
+```
+
+### 4.5 Batasan penting
+- **Ukuran file:** max **20MB** per request (dibatasi manual di `upload-asset.js`, sesuaikan sama batas asset Roblox sendiri per tipe).
+- **Vercel body limit:** hosting Vercel sendiri punya hard-cap ~4.5MB untuk serverless function biasa — kalau butuh file lebih besar dari itu, perlu pindah ke Edge Function atau upload langsung client → Roblox pakai signed URL (arsitektur beda, belum diimplementasi di sini).
+- **Rate limit:** Roblox Open Cloud API punya rate limit sendiri per API key — kalau kena `429`, response `upload-asset.js` bakal nerusin error itu apa adanya, handle di UI (retry with backoff).
+- **CORS:** endpoint ini cuma nerima request dari origin yang ada di `ALLOWED_ORIGINS` (lihat §3.5) — kalau testing dari domain lain, bakal keblok browser sebelum sempat manggil Roblox.
+
+### 4.6 Troubleshooting umum
+| Error | Kemungkinan penyebab |
+|---|---|
+| `401 Missing x-api-key header` | Header `x-api-key` nggak kekirim dari frontend. |
+| `Non-JSON response from Roblox API` | API key salah/expired, atau scope permission-nya kurang (cek §4.1 langkah 4). |
+| CORS error di console browser | Domain kamu belum ada di `ALLOWED_ORIGINS` — tambahin di `api/upload-asset.js`. |
+| `413 File too large` | File lebih dari 20MB — kompres dulu atau cek §4.5. |
+
+---
+
+**Dibuat & di-maintain oleh Slyfaugts / Saltoria Community.**
+
+
+---
+
+## Asset Permission (tool ke-6)
+
+Tool `tools/asset-permission.html` memberi izin pakai (`Use`) banyak aset Roblox sekaligus ke akun, grup, atau experience.
+- Proxy: `api/asset-permission-proxy.js` (hanya endpoint Roblox yang diizinkan; API key hanya diteruskan, tidak disimpan).
+- API key Roblox: scope `asset-permissions` → Write (opsional `asset:read` untuk isi nama otomatis), IP `0.0.0.0/0`.
+- Izin yang sudah diberikan tidak bisa dicabut lewat API.
+- Audio Optimizer menulis Asset ID hasil upload ke `localStorage` key `saltoria-uploaded-assets`; Asset Permission membacanya lewat tombol "Ambil dari Audio Optimizer" (satu origin: saltoria.site).
+- Deteksi aset otomatis bersifat eksperimental (endpoint Roblox belum terverifikasi menerima API key).
+
+---
+
+## DataStore Manager (tool ke-7)
+
+Tool `tools/datastore-manager.html` (Beta) mengelola DataStore & OrderedDataStore Roblox lewat Open Cloud: explorer, editor JSON (dry run, verifikasi, cegah edit bersamaan), riwayat versi, backup/restore `.jsonl` (checksum SHA-256), hapus data, pemain per User ID, migrasi antar-experience (dry run, jeda/lanjut, rename, konflik, verifikasi), leaderboard, edit massal (reconcile & remap ID), cek izin key, dan log audit lokal.
+- Proxy: `api/datastore-proxy.js` (allowlist rute; API key hanya diteruskan, tidak disimpan/dicatat; tanpa database). Opsional env `ALLOWED_ORIGINS`.
+- API key hanya di memori tab. Checkpoint migrasi & log audit disimpan lokal (IndexedDB) tanpa API key.
+- Mode Demo: ketik `demo` sebagai API key untuk mencoba tanpa Roblox.
+- Izin API key: DataStore (list/read, + create/update/delete untuk menulis), OrderedDataStore, dan opsional Game Pass / Developer Product (read). Nama izin persis: cek di Creator Hub.
+- Belum diuji terhadap Roblox sungguhan: uji dulu di universe percobaan sebelum dipakai di game utama.
+
+## 3D Studio (tool ke-9)
+
+Halaman: `tools/3d-studio.html` (URL `/tools/3d-studio`). Mengubah logo/gambar/teks jadi model 3D siap import ke Roblox Studio (GLB, OBJ + texture, STL), plus modeler ringan (sculpt, cat, lathe/sweep, UV). Semua diproses di browser.
+
+- **Kode** ada di `studio/`. Halaman tool mengatur `window.SALTORIA_STUDIO_BASE='../studio/'` supaya path font dan logo benar dari `/tools/`.
+- **UI** memakai token `shared.css` lewat "jembatan" variabel di bagian atas `studio/css/studio.css`. Tema terang/gelap ikut navbar (`saltoria-theme`). Panggung 3D sengaja selalu gelap.
+- **Ctrl+K** di halaman ini = palet perintah studio (sudah memuat daftar tool lain, ditandai `data-own-palette` di `<html>`). Pencarian tool lewat tombol "Cari tool".
+- **Tes**: `studio/tests/` (Node; `test-core.js` butuh dump RGBA, lihat `studio/README.md`) dan `studio/tests-browser/` (Playwright, jalankan dari root repo; target `/tools/3d-studio.html`). Folder tes tidak ikut deploy (`.vercelignore`).
+- Catatan lama: `test-core.js` melaporkan 1 GAGAL (bevel: tepi ganjil=6) — sudah ada sebelum digabung.
