@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Free Assets — Saltoria Community</title>
+<meta name="description" content="Aset Roblox gratis dari Saltoria Community: model, script, UI, template, dan resource lain untuk developer Roblox Indonesia.">
+<meta name="theme-color" content="#0E0E16">
+<meta property="og:title" content="Free Assets — Saltoria Community">
+<meta property="og:description" content="Aset Roblox gratis: model, script, UI, template, dan resource lain.">
+<meta property="og:image" content="https://saltoria.site/assets/og-image.png">
+<meta property="og:url" content="https://saltoria.site/free-assets">
+<meta property="og:type" content="website">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="canonical" href="https://saltoria.site/free-assets">
+<link rel="icon" type="image/png" href="assets/favicon.png">
+<link rel="apple-touch-icon" href="assets/favicon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700;800&family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<script>try{if(localStorage.getItem('saltoria-theme')==='light')document.documentElement.classList.add('light-mode')}catch(e){}</script>
+<link rel="stylesheet" href="shared.css">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Inter',sans-serif;font-size:15px;line-height:1.7;overflow-x:hidden;-webkit-font-smoothing:antialiased;min-height:100vh}
+a{text-decoration:none;color:inherit}
+.fa-top{position:sticky;top:0;z-index:50;display:flex;align-items:center;justify-content:space-between;gap:1rem;padding:.9rem 1.5rem;background:color-mix(in srgb,var(--surface) 88%,transparent);backdrop-filter:blur(14px);border-bottom:1px solid var(--border)}
+.fa-logo{font-family:'Space Grotesk',sans-serif;font-weight:800;letter-spacing:2px;font-size:16px}
+.fa-logo span{color:var(--accent2)}
+.fa-links{display:flex;gap:1.2rem;align-items:center;font-size:13px;font-weight:500;color:var(--muted);flex-wrap:wrap}
+.fa-links a:hover{color:var(--text)}
+.fa-links .join{background:linear-gradient(135deg,var(--accent),var(--accent-deep));color:#fff;padding:7px 16px;border-radius:8px;font-weight:600}
+@media(max-width:640px){.fa-links a:not(.join){display:none}}
+.fa-hero{text-align:center;padding:3.8rem 1.5rem 2.2rem;position:relative;overflow:hidden}
+.fa-hero::before{content:'';position:absolute;top:0;left:50%;transform:translateX(-50%);width:600px;height:320px;background:radial-gradient(ellipse,rgba(124,92,252,.13),transparent 70%);pointer-events:none}
+.fa-hero .eb{font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:3.5px;color:var(--accent2);text-transform:uppercase;display:block;margin-bottom:.8rem;position:relative}
+.fa-hero h1{font-family:'Space Grotesk',sans-serif;font-size:clamp(30px,5vw,48px);font-weight:700;letter-spacing:-1.4px;line-height:1.08;margin-bottom:.8rem;position:relative}
+.fa-hero h1 em{font-style:normal;color:var(--accent2)}
+.fa-hero p{color:var(--muted);max-width:560px;margin:0 auto;font-size:14.5px;position:relative}
+.fa-wrap{max-width:1080px;margin:0 auto;padding:1rem 1.25rem 5rem}
+.fa-bar{display:flex;gap:.8rem;flex-wrap:wrap;align-items:center;margin-bottom:1.4rem}
+.fa-search{flex:1;min-width:200px;background:var(--surface2);border:1px solid var(--border-strong);color:var(--text);border-radius:10px;padding:10px 14px;font:inherit;font-size:14px}
+.fa-search:focus{outline:none;border-color:var(--accent)}
+.fa-chips{display:flex;gap:6px;flex-wrap:wrap}
+.fa-chip{background:var(--surface);border:1px solid var(--border);color:var(--muted);border-radius:99px;padding:6px 14px;font:600 12px 'Inter',sans-serif;cursor:pointer;transition:all .2s}
+.fa-chip:hover{color:var(--text);border-color:var(--border-strong)}
+.fa-chip.on{background:var(--accent);border-color:var(--accent);color:#fff}
+.fa-count{font:500 11px 'JetBrains Mono',monospace;color:var(--muted);margin-bottom:1rem;letter-spacing:1px}
+.fa-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:1.1rem}
+.fa-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;display:flex;flex-direction:column;transition:transform .25s,border-color .25s}
+.fa-card:hover{transform:translateY(-3px);border-color:rgba(195,180,255,.3)}
+.fa-thumb{aspect-ratio:16/10;background:var(--surface2);display:flex;align-items:center;justify-content:center;font-size:38px;overflow:hidden}
+.fa-thumb img{width:100%;height:100%;object-fit:cover;display:block}
+.fa-body{padding:1.1rem 1.2rem 1.3rem;display:flex;flex-direction:column;gap:.6rem;flex:1}
+.fa-meta{display:flex;gap:6px;flex-wrap:wrap;align-items:center}
+.fa-pill{font:500 10px 'JetBrains Mono',monospace;letter-spacing:1px;padding:3px 9px;border-radius:99px;border:1px solid var(--border);color:var(--muted);text-transform:uppercase}
+.fa-pill.cat{color:var(--accent2);border-color:rgba(195,180,255,.3)}
+.fa-card h3{font-family:'Space Grotesk',sans-serif;font-size:17px;font-weight:700;line-height:1.3}
+.fa-card p{font-size:13.5px;color:var(--muted);line-height:1.65}
+.fa-acts{display:flex;gap:6px;flex-wrap:wrap;margin-top:auto;padding-top:.5rem}
+.fa-btn{font:600 12.5px 'Inter',sans-serif;padding:8px 14px;border-radius:8px;background:linear-gradient(135deg,var(--accent),var(--accent-deep));color:#fff}
+.fa-btn.sec{background:var(--glass2);color:var(--text);border:1px solid var(--border-strong)}
+.fa-empty{text-align:center;padding:3.5rem 1.5rem;border:1px dashed var(--border-strong);border-radius:var(--radius);color:var(--muted);background:var(--glass)}
+.fa-empty h2{font-family:'Space Grotesk',sans-serif;font-size:20px;color:var(--text);margin-bottom:.5rem}
+.fa-empty .fa-btn{display:inline-block;margin-top:1.1rem}
+.fa-note{margin-top:2.5rem;font-size:12.5px;color:var(--muted);line-height:1.8;border-left:3px solid var(--accent);padding:.4rem 0 .4rem 1rem}
+</style>
+</head>
+<body>
+<header class="fa-top">
+  <a href="index.html" class="fa-logo">SALT<span>ORIA</span></a>
+  <div class="fa-links">
+    <a href="index.html#tools">Tools</a><a href="index.html#store">Store</a><a href="index.html#commission">Commission</a><a href="index.html#about">About</a>
+    <a class="join" href="https://discord.gg/VRQFamarnW" target="_blank" rel="noopener">Join Discord</a>
+  </div>
+</header>
+
+<section class="fa-hero">
+  <span class="eb">Gratis untuk komunitas</span>
+  <h1>Free <em>Assets</em></h1>
+  <p>Model, script, UI, template, dan resource lain dari Saltoria yang bisa kamu pakai gratis di project Roblox-mu.</p>
+</section>
+
+<main class="fa-wrap">
+  <div class="fa-bar">
+    <input class="fa-search" id="q" type="search" placeholder="Cari aset…" aria-label="Cari aset">
+    <div class="fa-chips" id="chips" role="group" aria-label="Filter kategori"></div>
+  </div>
+  <div class="fa-count" id="count"></div>
+  <div class="fa-grid" id="grid"></div>
+  <div class="fa-empty" id="empty" hidden>
+    <h2 id="emptyTitle">Belum ada aset gratis</h2>
+    <p id="emptyText">Koleksi sedang disiapkan. Gabung Discord untuk jadi yang pertama tahu saat aset baru dirilis.</p>
+    <a class="fa-btn" href="https://discord.gg/VRQFamarnW" target="_blank" rel="noopener">Gabung Discord</a>
+  </div>
+  <p class="fa-note">Cek lisensi tiap aset sebelum dipakai atau dibagikan ulang. Menemukan masalah atau punya aset yang ingin dibagikan ke komunitas? Hubungi tim lewat Discord.</p>
+</main>
+
+<script>
+/* ════════════════════════════════════════════════════════════
+   DAFTAR ASET — edit bagian ini saja untuk menambah aset.
+   Setiap aset = satu objek. Contoh (hapus tanda komentar & sesuaikan):
+
+   {
+     id: 'obby-kit-basic',                 // unik, huruf kecil + strip
+     title: 'Obby Kit Basic',
+     category: 'Model',                    // Model | Script | UI | Template | Resource
+     description: 'Paket checkpoint, kill brick, dan moving platform siap pakai.',
+     thumb: 'assets/free/obby-kit-basic.jpg',   // opsional (rasio 16:10); kalau kosong tampil ikon
+     tags: ['obby', 'checkpoint'],
+     license: 'Gratis · kredit tidak wajib',
+     links: [ { label: 'Download', url: 'https://…' }, { label: 'Lihat di Roblox', url: 'https://…', secondary: true } ],
+     date: '2026-11-20'
+   },
+   ════════════════════════════════════════════════════════════ */
+var ASSETS = [
+];
+
+var ICON = {Model:'🧊', Script:'📜', UI:'🖼️', Template:'📐', Resource:'📦'};
+var state = {q:'', cat:'Semua'};
+function safeUrl(u){ try { var x = new URL(u, location.href); return (x.protocol==='https:'||x.protocol==='http:') ? x.href : null; } catch(e){ return null; } }
+function el(tag, cls, text){ var e = document.createElement(tag); if(cls) e.className = cls; if(text != null) e.textContent = text; return e; }
+function matches(a){
+  if(state.cat !== 'Semua' && a.category !== state.cat) return false;
+  if(!state.q) return true;
+  var hay = [a.title, a.description, a.category, (a.tags||[]).join(' ')].join(' ').toLowerCase();
+  return state.q.toLowerCase().split(/\s+/).every(function(w){ return hay.indexOf(w) !== -1; });
+}
+function renderChips(){
+  var cats = ['Semua'].concat(ASSETS.map(function(a){return a.category;}).filter(function(c,i,arr){return c && arr.indexOf(c)===i;}));
+  var box = document.getElementById('chips'); box.textContent = '';
+  if(cats.length < 2) return;
+  cats.forEach(function(c){ var b = el('button','fa-chip'+(c===state.cat?' on':''),c); b.type='button'; b.addEventListener('click',function(){ state.cat=c; renderChips(); render(); }); box.appendChild(b); });
+}
+function card(a){
+  var c = el('article','fa-card'), t = el('div','fa-thumb');
+  var th = a.thumb && safeUrl(a.thumb);
+  if(th){ var img = new Image(); img.alt = ''; img.loading = 'lazy'; img.src = th; img.onerror = function(){ t.textContent = ICON[a.category]||'📦'; }; t.appendChild(img); } else t.textContent = ICON[a.category]||'📦';
+  var b = el('div','fa-body'), m = el('div','fa-meta');
+  m.appendChild(el('span','fa-pill cat',a.category||'Resource'));
+  if(a.license) m.appendChild(el('span','fa-pill',a.license));
+  b.appendChild(m); b.appendChild(el('h3','',a.title||'Tanpa judul')); if(a.description) b.appendChild(el('p','',a.description));
+  var acts = el('div','fa-acts');
+  (a.links||[]).forEach(function(l){ var u = safeUrl(l.url); if(!u) return; var x = el('a','fa-btn'+(l.secondary?' sec':''),l.label||'Buka'); x.href = u; x.target = '_blank'; x.rel = 'noopener'; acts.appendChild(x); });
+  if(acts.childNodes.length) b.appendChild(acts);
+  c.appendChild(t); c.appendChild(b); return c;
+}
+function render(){
+  var list = ASSETS.filter(matches).sort(function(a,b){ return String(b.date||'').localeCompare(String(a.date||'')); });
+  var grid = document.getElementById('grid'); grid.textContent = '';
+  list.forEach(function(a){ grid.appendChild(card(a)); });
+  document.getElementById('count').textContent = ASSETS.length ? list.length + ' DARI ' + ASSETS.length + ' ASET' : '';
+  var empty = document.getElementById('empty'); empty.hidden = list.length > 0;
+  if(!list.length && ASSETS.length){ document.getElementById('emptyTitle').textContent = 'Tidak ada hasil'; document.getElementById('emptyText').textContent = 'Coba kata kunci lain atau pilih kategori Semua.'; }
+}
+document.getElementById('q').addEventListener('input', function(e){ state.q = e.target.value.trim(); render(); });
+renderChips(); render();
+</script>
+</body>
+</html>

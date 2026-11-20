@@ -1,0 +1,83 @@
+{
+  "version": 2,
+  "cleanUrls": true,
+  "redirects": [
+    {
+      "source": "/tools/(anim-converter|color-converter|robux-tax-calculator|tween-calculator|roblox-info-lookup|server-status|badge-checker|ds-key-gen|thumbnail-generator|instance-tree-gen|font-preview)(\\.html)?",
+      "destination": "/#tools",
+      "permanent": false
+    }
+  ],
+  "headers": [
+    {
+      "source": "/(.*)",
+      "headers": [
+        {
+          "key": "X-Content-Type-Options",
+          "value": "nosniff"
+        },
+        {
+          "key": "Referrer-Policy",
+          "value": "strict-origin-when-cross-origin"
+        },
+        {
+          "key": "X-Frame-Options",
+          "value": "SAMEORIGIN"
+        },
+        {
+          "key": "Permissions-Policy",
+          "value": "camera=(), microphone=(), geolocation=()"
+        }
+      ]
+    },
+    {
+      "source": "/assets/(.*)",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=86400, stale-while-revalidate=604800"
+        }
+      ]
+    },
+    {
+      "source": "/studio/assets/(.*)",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=86400"
+        }
+      ]
+    },
+    {
+      "source": "/api/(.*)",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "no-store"
+        }
+      ]
+    }
+  ],
+  "functions": {
+    "api/youtube-fetch.js": {
+      "maxDuration": 60,
+      "memory": 1024
+    },
+    "api/upload-asset.js": {
+      "maxDuration": 60,
+      "memory": 512
+    },
+    "api/asset-permission-proxy.js": {
+      "maxDuration": 30,
+      "memory": 256
+    },
+    "api/datastore-proxy.js": {
+      "maxDuration": 30,
+      "memory": 256
+    },
+    "api/commission.js": {
+      "maxDuration": 10,
+      "memory": 256
+    }
+  }
+}

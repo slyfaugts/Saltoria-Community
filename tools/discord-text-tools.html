@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Discord & Text Tools — Saltoria Tools</title>
+<meta name="description" content="Generator font Unicode, formatter Markdown Discord dengan pratinjau, pembuat timestamp, simbol dan emoji, serta template teks komunitas.">
+<meta name="theme-color" content="#0E0E16">
+<meta property="og:title" content="Discord & Text Tools — Saltoria Tools">
+<meta property="og:description" content="Generator font Unicode, formatter Markdown Discord dengan pratinjau, pembuat timestamp, simbol dan emoji, serta template teks komunitas.">
+<meta property="og:image" content="https://saltoria.site/assets/og-image.png">
+<meta property="og:url" content="https://saltoria.site/tools/discord-text-tools">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Saltoria Community">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="canonical" href="https://saltoria.site/tools/discord-text-tools">
+<link rel="icon" type="image/png" href="../assets/favicon.png">
+<link rel="apple-touch-icon" href="../assets/favicon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700;800&family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<script>try{if(localStorage.getItem('saltoria-theme')==='light')document.documentElement.classList.add('light-mode')}catch(e){}</script>
+<link rel="stylesheet" href="../shared.css">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Inter',sans-serif;font-size:15px;line-height:1.7;overflow-x:hidden;-webkit-font-smoothing:antialiased;min-height:100vh}
+a{text-decoration:none;color:inherit}
+
+.dt-tabs{margin-bottom:1.25rem;display:flex}
+.dt-panel{display:none}.dt-panel.on{display:block}
+.dt-out{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:.7rem}
+.dt-item{background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:.65rem .8rem;display:flex;flex-direction:column;gap:6px;min-width:0}
+.dt-item small{font-family:'JetBrains Mono',monospace;font-size:9.5px;letter-spacing:1px;color:var(--muted);text-transform:uppercase}
+.dt-item .v{font-size:15px;word-break:break-word;min-height:1.5em;cursor:pointer;line-height:1.5}
+.dt-item .v:hover{color:var(--accent2)}
+.dt-tools{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:.7rem}
+.dt-prev{background:#313338;color:#dbdee1;border-radius:10px;padding:.9rem 1rem;font-family:'Inter',sans-serif;font-size:14.5px;line-height:1.45;white-space:pre-wrap;word-break:break-word;min-height:80px}
+.dt-prev .dc-h1{font-size:1.6em;font-weight:700;line-height:1.3}.dt-prev .dc-h2{font-size:1.3em;font-weight:700}.dt-prev .dc-h3{font-size:1.1em;font-weight:700}
+.dt-prev .dc-sub{font-size:.8em;color:#949ba4}
+.dt-prev .dc-q{border-left:4px solid #4e5058;padding-left:10px}
+.dt-prev .dc-code{background:#1e1f22;border-radius:4px;padding:1px 5px;font-family:'JetBrains Mono',monospace;font-size:.9em}
+.dt-prev .dc-pre{background:#2b2d31;border:1px solid #1e1f22;border-radius:6px;padding:8px 10px;font-family:'JetBrains Mono',monospace;font-size:.85em;margin:4px 0;white-space:pre-wrap}
+.dt-prev .dc-sp{background:#1e1f22;color:transparent;border-radius:4px;cursor:pointer;padding:0 2px}.dt-prev .dc-sp.show{background:#464950;color:#dbdee1}
+.dt-sym{display:flex;flex-wrap:wrap;gap:4px}
+.dt-sym button{min-width:38px;height:38px;background:var(--surface2);border:1px solid var(--border);border-radius:8px;color:var(--text);font-size:17px;cursor:pointer;transition:all .15s;font-family:'Inter',sans-serif}
+.dt-sym button:hover{border-color:var(--accent);background:rgba(124,92,252,.12);transform:translateY(-1px)}
+.dt-cat{font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:1.5px;color:var(--muted);text-transform:uppercase;margin:1rem 0 .5rem}
+.dt-cat:first-child{margin-top:0}
+.dt-ts{display:flex;align-items:center;gap:.6rem;padding:.5rem .2rem;border-bottom:1px solid var(--border);flex-wrap:wrap}
+.dt-ts code{flex:0 0 auto}.dt-ts span{flex:1;min-width:120px;color:var(--muted);font-size:13px}
+
+</style>
+</head>
+<body>
+<nav id="main-nav" data-tool="DISCORD & TEXT"><a href="../index.html" class="nav-logo-text">SALTORIA</a></nav>
+
+<header class="tk-hero">
+  <div class="tk-badge">💬 COMMUNITY TOOLS</div>
+  <h1>Discord &amp; <em>Text Tools</em></h1>
+  <p>Generator font Unicode, formatter Markdown Discord dengan pratinjau, pembuat timestamp, simbol &amp; emoji, dan template teks komunitas. Semua berjalan di browser.</p>
+</header>
+<main class="tk-wrap">
+  <div class="dt-tabs"><div class="tk-seg" id="tabs" role="tablist">
+    <button type="button" data-tab="font" class="on">Font</button>
+    <button type="button" data-tab="fmt">Format Discord</button>
+    <button type="button" data-tab="sym">Simbol &amp; Emoji</button>
+    <button type="button" data-tab="tpl">Template</button>
+  </div></div>
+
+  <section class="dt-panel on" id="p-font"><div class="tk-card">
+    <h2>Generator font Unicode</h2>
+    <div class="tk-field"><label for="fontIn">Teks</label><input class="tk-input" id="fontIn" value="Saltoria Community" maxlength="200"></div>
+    <div class="tk-note warn" style="margin-bottom:1rem">Klik hasil untuk menyalin. Cocok untuk Discord &amp; media sosial. Di dalam Roblox, sebagian karakter bisa tampil sebagai kotak (□) karena tidak semua font Roblox mendukungnya, jadi tes dulu di game.</div>
+    <div class="dt-out" id="fontOut"></div>
+  </div></section>
+
+  <section class="dt-panel" id="p-fmt"><div class="tk-grid even">
+    <div class="tk-stack">
+      <div class="tk-card"><h2>Editor</h2>
+        <div class="dt-tools" id="fmtTools"></div>
+        <textarea class="tk-textarea" id="fmtIn" rows="9" placeholder="Tulis pesan, blok teks lalu klik tombol format…">Selamat datang di **Saltoria**!
+## Aturan singkat
+- Hormati sesama
+- Dilarang spam
+||spoiler|| dan `kode`</textarea>
+        <div class="tk-row" style="margin-top:.8rem"><button class="tk-btn" type="button" id="fmtCopy">Salin teks</button><button class="tk-btn sec" type="button" id="fmtClear">Kosongkan</button><span class="tk-pill" id="fmtCount">0 / 2000</span></div>
+      </div>
+      <div class="tk-card"><h2>Mention &amp; channel</h2>
+        <div class="tk-cols2"><div class="tk-field"><label for="mId">ID Discord</label><input class="tk-input" id="mId" inputmode="numeric" placeholder="123456789012345678"></div>
+        <div class="tk-field"><label for="mType">Jenis</label><select class="tk-select" id="mType"><option value="@">User &lt;@id&gt;</option><option value="@&amp;">Role &lt;@&amp;id&gt;</option><option value="#">Channel &lt;#id&gt;</option></select></div></div>
+        <div class="tk-row"><button class="tk-btn sec sm" type="button" id="mIns">Sisipkan ke editor</button><span class="tk-pill">Aktifkan Developer Mode di Discord untuk menyalin ID</span></div>
+      </div>
+    </div>
+    <div class="tk-stack">
+      <div class="tk-card"><h2>Pratinjau <small>PERKIRAAN</small></h2><div class="dt-prev" id="fmtPrev"></div></div>
+      <div class="tk-card"><h2>Timestamp Discord</h2>
+        <div class="tk-field"><label for="tsIn">Tanggal &amp; waktu (zona waktu perangkatmu)</label><input class="tk-input" type="datetime-local" id="tsIn"></div>
+        <div id="tsOut"></div>
+      </div>
+    </div>
+  </div></section>
+
+  <section class="dt-panel" id="p-sym"><div class="tk-card">
+    <h2>Simbol, pembatas &amp; emoji</h2>
+    <div class="tk-field"><label for="symQ">Cari emoji (mis. api, game, hadiah)</label><input class="tk-input" id="symQ" placeholder="ketik kata kunci…"></div>
+    <div id="symOut"></div>
+  </div></section>
+
+  <section class="dt-panel" id="p-tpl"><div class="tk-grid even">
+    <div class="tk-card"><h2>Template teks komunitas</h2>
+      <div class="tk-field"><label for="tplSel">Jenis</label><select class="tk-select" id="tplSel"></select></div>
+      <div id="tplFields"></div>
+    </div>
+    <div class="tk-card"><h2>Hasil <small><button class="tk-btn sec sm" type="button" id="tplCopy">Salin</button></small></h2>
+      <div class="dt-prev" id="tplPrev"></div>
+    </div>
+  </div></section>
+</main>
+
+<div class="tk-toast" id="toast" role="status" aria-live="polite"></div>
+<script src="../shared.js" defer></script>
+<script>
+
+/*@pure-start*/
+const esc = s => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+function alpha(str, up, lo, dg, ex) {
+  let out = '';
+  for (const ch of str) {
+    if (ex && ex[ch]) { out += ex[ch]; continue; }
+    const c = ch.charCodeAt(0);
+    if (c >= 65 && c <= 90 && up != null) out += String.fromCodePoint(up + c - 65);
+    else if (c >= 97 && c <= 122 && lo != null) out += String.fromCodePoint(lo + c - 97);
+    else if (c >= 48 && c <= 57 && dg != null) out += String.fromCodePoint(dg + c - 48);
+    else out += ch;
+  }
+  return out;
+}
+const X = (o) => { const r = {}; for (const k in o) r[k] = String.fromCodePoint(o[k]); return r; };
+const EX_ITALIC = X({h:0x210E});
+const EX_SCRIPT = X({B:0x212C,E:0x2130,F:0x2131,H:0x210B,I:0x2110,L:0x2112,M:0x2133,R:0x211B,e:0x212F,g:0x210A,o:0x2134});
+const EX_FRAK = X({C:0x212D,H:0x210C,I:0x2111,R:0x211C,Z:0x2128});
+const EX_DOUBLE = X({C:0x2102,H:0x210D,N:0x2115,P:0x2119,Q:0x211A,R:0x211D,Z:0x2124});
+const SMALLCAPS = {a:'ᴀ',b:'ʙ',c:'ᴄ',d:'ᴅ',e:'ᴇ',f:'ꜰ',g:'ɢ',h:'ʜ',i:'ɪ',j:'ᴊ',k:'ᴋ',l:'ʟ',m:'ᴍ',n:'ɴ',o:'ᴏ',p:'ᴘ',q:'ǫ',r:'ʀ',s:'ꜱ',t:'ᴛ',u:'ᴜ',v:'ᴠ',w:'ᴡ',x:'x',y:'ʏ',z:'ᴢ'};
+const SUPER = {a:'ᵃ',b:'ᵇ',c:'ᶜ',d:'ᵈ',e:'ᵉ',f:'ᶠ',g:'ᵍ',h:'ʰ',i:'ⁱ',j:'ʲ',k:'ᵏ',l:'ˡ',m:'ᵐ',n:'ⁿ',o:'ᵒ',p:'ᵖ',q:'ᵠ',r:'ʳ',s:'ˢ',t:'ᵗ',u:'ᵘ',v:'ᵛ',w:'ʷ',x:'ˣ',y:'ʸ',z:'ᶻ','0':'⁰','1':'¹','2':'²','3':'³','4':'⁴','5':'⁵','6':'⁶','7':'⁷','8':'⁸','9':'⁹'};
+const FLIP = {a:'ɐ',b:'q',c:'ɔ',d:'p',e:'ǝ',f:'ɟ',g:'ƃ',h:'ɥ',i:'ᴉ',j:'ɾ',k:'ʞ',l:'l',m:'ɯ',n:'u',o:'o',p:'d',q:'b',r:'ɹ',s:'s',t:'ʇ',u:'n',v:'ʌ',w:'ʍ',x:'x',y:'ʎ',z:'z','1':'Ɩ','2':'ᄅ','3':'Ɛ','4':'ㄣ','5':'ϛ','6':'9','7':'ㄥ','8':'8','9':'6','0':'0','.':'˙',',':"'",'?':'¿','!':'¡'};
+const mapChars = (str, m, lower) => [...str].map(ch => { const k = lower ? ch.toLowerCase() : ch; return m[k] !== undefined ? m[k] : ch; }).join('');
+const combine = (str, mark) => [...str].map(ch => ch === ' ' ? ch : ch + mark).join('');
+function circled(str) {
+  return [...str].map(ch => { const c = ch.charCodeAt(0);
+    if (c >= 65 && c <= 90) return String.fromCodePoint(0x24B6 + c - 65);
+    if (c >= 97 && c <= 122) return String.fromCodePoint(0x24D0 + c - 97);
+    if (c === 48) return '⓪';
+    if (c >= 49 && c <= 57) return String.fromCodePoint(0x2460 + c - 49);
+    return ch; }).join('');
+}
+const upperBlock = (str, base) => alpha(str.toUpperCase(), base, null, null);
+const FONT_STYLES = [
+  ['Tebal (serif)',         s => alpha(s, 0x1D400, 0x1D41A, 0x1D7CE)],
+  ['Miring (serif)',        s => alpha(s, 0x1D434, 0x1D44E, null, EX_ITALIC)],
+  ['Tebal miring',          s => alpha(s, 0x1D468, 0x1D482, 0x1D7CE)],
+  ['Sans tebal',            s => alpha(s, 0x1D5D4, 0x1D5EE, 0x1D7EC)],
+  ['Sans miring',           s => alpha(s, 0x1D608, 0x1D622, 0x1D7E2)],
+  ['Sans tebal miring',     s => alpha(s, 0x1D63C, 0x1D656, 0x1D7EC)],
+  ['Monospace',             s => alpha(s, 0x1D670, 0x1D68A, 0x1D7F6)],
+  ['Script',                s => alpha(s, 0x1D49C, 0x1D4B6, null, EX_SCRIPT)],
+  ['Script tebal',          s => alpha(s, 0x1D4D0, 0x1D4EA, null)],
+  ['Fraktur',               s => alpha(s, 0x1D504, 0x1D51E, null, EX_FRAK)],
+  ['Fraktur tebal',         s => alpha(s, 0x1D56C, 0x1D586, null)],
+  ['Double-struck',         s => alpha(s, 0x1D538, 0x1D552, 0x1D7D8, EX_DOUBLE)],
+  ['Fullwidth',             s => alpha(s, 0xFF21, 0xFF41, 0xFF10, {' ':'\u3000'})],
+  ['Lingkaran',             circled],
+  ['Kotak',                 s => upperBlock(s, 0x1F130)],
+  ['Kotak hitam',           s => upperBlock(s, 0x1F170)],
+  ['Lingkaran hitam',       s => upperBlock(s, 0x1F150)],
+  ['Small caps',            s => mapChars(s, SMALLCAPS, true)],
+  ['Superscript',           s => mapChars(s, SUPER, true)],
+  ['Terbalik',              s => [...mapChars(s, FLIP, true)].reverse().join('')],
+  ['Coret',                 s => combine(s, '\u0336')],
+  ['Garis bawah',           s => combine(s, '\u0332')],
+  ['Renggang',              s => [...s].join(' ')],
+];
+function discordTs(date, style) { return '<t:' + Math.floor(date.getTime() / 1000) + ':' + style + '>'; }
+const INLINE = {bold:['**','**'], italic:['*','*'], underline:['__','__'], strike:['~~','~~'], spoiler:['||','||'], code:['`','`'], block:['```\n','\n```']};
+const PREFIX = {h1:'# ', h2:'## ', h3:'### ', sub:'-# ', quote:'> ', list:'- '};
+function applyFormat(text, start, end, type) {
+  if (INLINE[type]) {
+    const [l, r] = INLINE[type];
+    const sel = text.slice(start, end);
+    return {text:text.slice(0, start) + l + sel + r + text.slice(end), selStart:start + l.length, selEnd:start + l.length + sel.length};
+  }
+  const p = PREFIX[type]; if (p === undefined) return {text, selStart:start, selEnd:end};
+  const ls = text.lastIndexOf('\n', start - 1) + 1; let le = text.indexOf('\n', end); if (le === -1) le = text.length;
+  const block = text.slice(ls, le).split('\n').map(l => p + l).join('\n');
+  return {text:text.slice(0, ls) + block + text.slice(le), selStart:ls, selEnd:ls + block.length};
+}
+function mdToHtml(src) {
+  let s = esc(src); const hold = []; const put = h => { hold.push(h); return '\u0000' + (hold.length - 1) + '\u0000'; };
+  s = s.replace(/```(?:[a-z0-9+#-]*\n)?([\s\S]*?)```/gi, (m, c) => put('<div class="dc-pre">' + c.replace(/\n$/, '') + '</div>'));
+  s = s.replace(/`([^`\n]+)`/g, (m, c) => put('<span class="dc-code">' + c + '</span>'));
+  s = s.replace(/\*\*([^\n]+?)\*\*/g, '<b>$1</b>').replace(/__([^\n]+?)__/g, '<u>$1</u>')
+       .replace(/(^|[^*])\*([^*\s][^*\n]*?)\*(?!\*)/g, '$1<i>$2</i>').replace(/~~([^\n]+?)~~/g, '<s>$1</s>')
+       .replace(/\|\|([^\n]+?)\|\|/g, '<span class="dc-sp">$1</span>');
+  s = s.split('\n').map(l => { let m;
+    if ((m = /^### (.*)$/.exec(l))) return '<div class="dc-h3">' + m[1] + '</div>';
+    if ((m = /^## (.*)$/.exec(l))) return '<div class="dc-h2">' + m[1] + '</div>';
+    if ((m = /^# (.*)$/.exec(l))) return '<div class="dc-h1">' + m[1] + '</div>';
+    if ((m = /^-# (.*)$/.exec(l))) return '<div class="dc-sub">' + m[1] + '</div>';
+    if ((m = /^&gt; (.*)$/.exec(l))) return '<div class="dc-q">' + m[1] + '</div>';
+    if ((m = /^[-*] (.*)$/.exec(l))) return '<div>• ' + m[1] + '</div>';
+    return l; }).join('\n').replace(/<\/div>\n/g, '</div>');
+  return s.replace(/\u0000(\d+)\u0000/g, (m, i) => hold[+i]);
+}
+const lines = v => String(v || '').split('\n').map(x => x.trim()).filter(Boolean);
+const TEMPLATES = {
+  pengumuman: {name:'Pengumuman', fields:[['judul','Judul','text','Update Besar Saltoria'],['isi','Isi pengumuman','area','Halo semua! Kami baru saja merilis…'],['when','Tanggal berlaku (opsional)','dt',''],['everyone','Tambahkan @everyone','check','']],
+    make:v => (v.everyone ? '@everyone\n' : '') + '# 📢 ' + (v.judul || 'Pengumuman') + '\n' + (v.isi || '') + (v.when ? '\n\n⏰ Berlaku: ' + discordTs(new Date(v.when), 'F') + ' (' + discordTs(new Date(v.when), 'R') + ')' : '') + '\n\n-# Tim Saltoria Community'},
+  event: {name:'Event', fields:[['judul','Nama event','text','Obby Night'],['when','Mulai','dt',''],['lokasi','Lokasi / link game','text','Saltoria Roblox Group'],['hadiah','Hadiah','text','Role eksklusif + Robux'],['isi','Deskripsi','area','Ikuti event seru bareng komunitas!']],
+    make:v => '# 🎉 ' + (v.judul || 'Event') + '\n' + (v.isi || '') + '\n\n' + (v.when ? '🗓️ **Waktu:** ' + discordTs(new Date(v.when), 'F') + ' (' + discordTs(new Date(v.when), 'R') + ')\n' : '') + (v.lokasi ? '📍 **Lokasi:** ' + v.lokasi + '\n' : '') + (v.hadiah ? '🎁 **Hadiah:** ' + v.hadiah + '\n' : '') + '\nReaksi ✅ kalau kamu ikut!'},
+  giveaway: {name:'Giveaway', fields:[['hadiah','Hadiah','text','1.000 Robux'],['menang','Jumlah pemenang','text','1'],['when','Berakhir','dt',''],['syarat','Syarat (satu per baris)','area','Join Discord\nFollow grup Roblox']],
+    make:v => '# 🎁 GIVEAWAY: ' + (v.hadiah || '-') + '\n**Pemenang:** ' + (v.menang || '1') + (v.when ? '\n**Berakhir:** ' + discordTs(new Date(v.when), 'F') + ' (' + discordTs(new Date(v.when), 'R') + ')' : '') + '\n\n**Syarat:**\n' + (lines(v.syarat).map(x => '- ' + x).join('\n') || '- -') + '\n\nReaksi 🎉 untuk ikut. Semoga beruntung!'},
+  aturan: {name:'Aturan server', fields:[['judul','Judul','text','Aturan Saltoria'],['aturan','Aturan (satu per baris)','area','Hormati semua member\nDilarang spam & iklan\nGunakan channel sesuai topik']],
+    make:v => '# 📜 ' + (v.judul || 'Aturan') + '\n' + (lines(v.aturan).map((x, i) => '**' + (i + 1) + '.** ' + x).join('\n') || '-') + '\n\n-# Pelanggaran dapat berujung peringatan atau ban.'},
+  changelog: {name:'Changelog / update log', fields:[['versi','Versi','text','v1.2.0'],['judul','Judul','text','Update Musim Dingin'],['baru','Fitur baru (satu per baris)','area','Map baru\nShop diperbarui'],['fix','Perbaikan (satu per baris)','area','Bug teleport\nLag di lobby']],
+    make:v => '# 🛠️ ' + (v.versi || 'v1.0.0') + ' — ' + (v.judul || 'Update') + '\n' + (lines(v.baru).length ? '\n**✨ Baru**\n' + lines(v.baru).map(x => '- ' + x).join('\n') : '') + (lines(v.fix).length ? '\n\n**🐞 Perbaikan**\n' + lines(v.fix).map(x => '- ' + x).join('\n') : '')},
+};
+const SYMBOLS = {
+  'Pembatas': ['━━━━━━━━━━━━━━━━━━━━','─── ⋆⋅☆⋅⋆ ───','▬▬▬▬▬▬▬ ✦ ▬▬▬▬▬▬▬','• • • ━━━ • • •','╔═══════ ≪ ✦ ≫ ═══════╗','◤━━━━━━━━━━━━━◥','﹌﹌﹌﹌﹌﹌﹌﹌','· · ─────── · ·'],
+  'Panah': '→ ← ↑ ↓ ↔ ↕ ⇒ ⇐ ⇑ ⇓ ➜ ➤ ➔ ➥ ↩ ↪ ⟶ ⟵ » « › ‹'.split(' '),
+  'Bintang & hiasan': '★ ☆ ✦ ✧ ✪ ✯ ✰ ❖ ✿ ❀ ❁ ✺ ✹ ❂ ⚝ ⁂ ✱ ✲ ※ ❝ ❞'.split(' '),
+  'Garis & kotak': '━ ─ ═ ║ ┃ │ ┌ ┐ └ ┘ ├ ┤ ┬ ┴ ┼ ╔ ╗ ╚ ╝ ╠ ╣ ╦ ╩ ╬ ▬ ▭ ▮ ▯ ▰ ▱ ◢ ◣ ◤ ◥'.split(' '),
+  'Bentuk': '● ○ ◉ ◎ ◆ ◇ ■ □ ▲ △ ▼ ▽ ◀ ▶ ◐ ◑ ♦ ♥ ♠ ♣'.split(' '),
+  'Umum & matematika': '± × ÷ ≠ ≈ ≤ ≥ ∞ √ ∑ π ∆ ° ² ³ ½ ¼ ¾ © ® ™ § ¶ † ‡ • … ‰ € £ ¥ ¢'.split(' '),
+  'Ikon': '♪ ♫ ♬ ☀ ☁ ☂ ☃ ⚡ ❄ ☾ ☽ ⚔ ⚙ ☠ ✈ ✉ ☎ ✂ ✔ ✘ ✖ ✚'.split(' '),
+};
+const EMOJI = [['🎮','game main'],['🕹️','joystick game'],['🧱','brick blok build'],['🔧','alat tool'],['🛠️','tools perbaikan'],['💻','laptop kode code'],['⚙️','pengaturan setting'],['🏆','trofi juara menang'],['🎁','hadiah gift'],['🎉','pesta event party'],['🔥','api fire panas'],['✨','kilau sparkle'],['⭐','bintang star'],['💎','berlian diamond gem'],['👑','mahkota raja crown'],['🚀','roket launch'],['💡','ide lampu'],['📢','pengumuman'],['📌','pin'],['📅','jadwal tanggal'],['⏰','waktu alarm'],['✅','ceklis benar'],['❌','silang salah'],['⚠️','peringatan warning'],['🔒','kunci lock'],['🔑','kunci key'],['🔔','notifikasi bell'],['💬','chat obrolan'],['📝','catatan note'],['📦','paket box'],['🗺️','peta map'],['🏗️','konstruksi build'],['🌲','pohon hutan'],['🏔️','gunung'],['🌊','ombak laut'],['🏰','kastil'],['⚔️','pedang sword'],['🛡️','perisai shield'],['🧩','puzzle'],['🎨','desain seni art'],['🎵','musik'],['🎧','audio headphone'],['📷','foto kamera'],['🎬','video film'],['❤️','cinta love'],['💜','ungu hati'],['👍','jempol setuju'],['🙏','terima kasih'],['😀','senyum'],['😂','tertawa'],['😎','keren'],['🤔','berpikir'],['😭','nangis'],['🥳','pesta'],['🤝','kerja sama'],['👀','lihat mata'],['💪','kuat semangat'],['🇮🇩','indonesia'],['🌟','bintang berkilau'],['🆕','baru new'],['🔜','segera soon'],['💰','uang money robux'],['🛒','belanja toko shop'],['🧪','uji test lab'],['🐞','bug serangga']];
+/*@pure-end*/
+
+const $ = id => document.getElementById(id);
+function toast(msg) { const t = $('toast'); t.textContent = msg; t.classList.add('show'); clearTimeout(toast._t); toast._t = setTimeout(() => t.classList.remove('show'), 1800); }
+function copy(text, label) { navigator.clipboard.writeText(text).then(() => toast((label || 'Teks') + ' disalin'), () => toast('Gagal menyalin — salin manual')); }
+
+// ── Tabs
+$('tabs').addEventListener('click', e => {
+  const b = e.target.closest('button'); if (!b) return;
+  [...$('tabs').children].forEach(x => x.classList.toggle('on', x === b));
+  document.querySelectorAll('.dt-panel').forEach(p => p.classList.toggle('on', p.id === 'p-' + b.dataset.tab));
+});
+
+// ── Font
+function renderFonts() {
+  const src = $('fontIn').value || 'Saltoria';
+  $('fontOut').innerHTML = FONT_STYLES.map((f, i) => '<div class="dt-item"><small>' + esc(f[0]) + '</small><div class="v" data-i="' + i + '" title="Klik untuk menyalin">' + esc(f[1](src)) + '</div></div>').join('');
+}
+$('fontIn').addEventListener('input', renderFonts);
+$('fontOut').addEventListener('click', e => { const v = e.target.closest('.v'); if (v) copy(v.textContent, 'Font'); });
+
+// ── Format Discord
+const TOOLS = [['bold','B'],['italic','I'],['underline','U'],['strike','S'],['spoiler','Spoiler'],['code','`kode`'],['block','Blok kode'],['h1','H1'],['h2','H2'],['h3','H3'],['sub','Kecil'],['quote','Kutipan'],['list','List']];
+$('fmtTools').innerHTML = TOOLS.map(t => '<button type="button" class="tk-btn sec sm" data-f="' + t[0] + '">' + esc(t[1]) + '</button>').join('');
+function fmtUpdate() {
+  const v = $('fmtIn').value; $('fmtPrev').innerHTML = mdToHtml(v) || '<span style="color:#949ba4">Pratinjau muncul di sini…</span>';
+  const c = $('fmtCount'); c.textContent = v.length + ' / 2000'; c.className = 'tk-pill' + (v.length > 2000 ? ' err' : '');
+}
+$('fmtTools').addEventListener('click', e => {
+  const b = e.target.closest('button'); if (!b) return; const ta = $('fmtIn');
+  const r = applyFormat(ta.value, ta.selectionStart, ta.selectionEnd, b.dataset.f);
+  ta.value = r.text; ta.focus(); ta.setSelectionRange(r.selStart, r.selEnd); fmtUpdate();
+});
+$('fmtIn').addEventListener('input', fmtUpdate);
+$('fmtCopy').addEventListener('click', () => copy($('fmtIn').value, 'Pesan'));
+$('fmtClear').addEventListener('click', () => { $('fmtIn').value = ''; fmtUpdate(); });
+$('fmtPrev').addEventListener('click', e => { const s = e.target.closest('.dc-sp'); if (s) s.classList.toggle('show'); });
+$('mIns').addEventListener('click', () => {
+  const id = $('mId').value.trim(); if (!/^\d{15,22}$/.test(id)) { toast('ID Discord harus angka 15–22 digit'); return; }
+  const t = $('mType').value, ta = $('fmtIn'), ins = '<' + t + id + '>', p = ta.selectionStart;
+  ta.value = ta.value.slice(0, p) + ins + ta.value.slice(ta.selectionEnd); ta.focus(); ta.setSelectionRange(p + ins.length, p + ins.length); fmtUpdate();
+});
+function pad(n) { return String(n).padStart(2, '0'); }
+function tsRender() {
+  const d = new Date($('tsIn').value); if (isNaN(d)) { $('tsOut').innerHTML = ''; return; }
+  const diffSec = Math.round((d - Date.now()) / 1000), rtf = new Intl.RelativeTimeFormat('id', {numeric:'auto'});
+  const units = [['year', 31536000], ['month', 2592000], ['day', 86400], ['hour', 3600], ['minute', 60], ['second', 1]];
+  const u = units.find(x => Math.abs(diffSec) >= x[1]) || units[5];
+  const fmt = (o) => new Intl.DateTimeFormat('id-ID', o).format(d);
+  const rows = [['t', fmt({timeStyle:'short'})], ['T', fmt({timeStyle:'medium'})], ['d', fmt({dateStyle:'short'})], ['D', fmt({dateStyle:'long'})], ['f', fmt({dateStyle:'long', timeStyle:'short'})], ['F', fmt({dateStyle:'full', timeStyle:'short'})], ['R', rtf.format(Math.round(diffSec / u[1]), u[0])]];
+  $('tsOut').innerHTML = rows.map(r => '<div class="dt-ts"><code>' + esc(discordTs(d, r[0])) + '</code><span>' + esc(r[1]) + '</span><button type="button" class="tk-btn sec sm" data-c="' + esc(discordTs(d, r[0])) + '">Salin</button></div>').join('');
+}
+$('tsIn').addEventListener('input', tsRender);
+$('tsOut').addEventListener('click', e => { const b = e.target.closest('button'); if (b) copy(b.dataset.c, 'Timestamp'); });
+(() => { const d = new Date(Date.now() + 3600e3); $('tsIn').value = d.getFullYear() + '-' + pad(d.getMonth() + 1) + '-' + pad(d.getDate()) + 'T' + pad(d.getHours()) + ':' + pad(d.getMinutes()); })();
+
+// ── Simbol & emoji
+function renderSym() {
+  const q = $('symQ').value.trim().toLowerCase();
+  let h = '';
+  if (!q) for (const [cat, arr] of Object.entries(SYMBOLS)) h += '<div class="dt-cat">' + esc(cat) + '</div><div class="dt-sym"' + (cat === 'Pembatas' ? ' style="flex-direction:column;align-items:flex-start"' : '') + '>' + arr.map(s => '<button type="button" data-c="' + esc(s) + '" title="Salin">' + esc(s) + '</button>').join('') + '</div>';
+  const em = EMOJI.filter(e => !q || e[1].includes(q));
+  h += '<div class="dt-cat">Emoji' + (q ? ' (' + em.length + ' hasil)' : '') + '</div><div class="dt-sym">' + (em.map(e => '<button type="button" data-c="' + e[0] + '" title="' + esc(e[1]) + '">' + e[0] + '</button>').join('') || '<span style="color:var(--muted);font-size:13px">Tidak ada emoji yang cocok.</span>') + '</div>';
+  $('symOut').innerHTML = h;
+}
+$('symQ').addEventListener('input', renderSym);
+$('symOut').addEventListener('click', e => { const b = e.target.closest('button'); if (b) copy(b.dataset.c, 'Karakter'); });
+
+// ── Template
+$('tplSel').innerHTML = Object.entries(TEMPLATES).map(([k, t]) => '<option value="' + k + '">' + esc(t.name) + '</option>').join('');
+function tplBuild() {
+  const t = TEMPLATES[$('tplSel').value];
+  $('tplFields').innerHTML = t.fields.map(f => {
+    const id = 'tf-' + f[0];
+    if (f[2] === 'check') return '<label class="tk-check"><input type="checkbox" id="' + id + '"> ' + esc(f[1]) + '</label>';
+    const input = f[2] === 'area' ? '<textarea class="tk-textarea" id="' + id + '" rows="3" style="min-height:70px">' + esc(f[3]) + '</textarea>'
+      : f[2] === 'dt' ? '<input class="tk-input" type="datetime-local" id="' + id + '">' : '<input class="tk-input" id="' + id + '" value="' + esc(f[3]) + '">';
+    return '<div class="tk-field"><label for="' + id + '">' + esc(f[1]) + '</label>' + input + '</div>';
+  }).join('');
+  tplRender();
+}
+function tplRender() {
+  const t = TEMPLATES[$('tplSel').value], v = {};
+  t.fields.forEach(f => { const el = $('tf-' + f[0]); v[f[0]] = el ? (f[2] === 'check' ? el.checked : el.value) : ''; });
+  const out = t.make(v); $('tplPrev').dataset.raw = out; $('tplPrev').innerHTML = mdToHtml(out);
+}
+$('tplSel').addEventListener('change', tplBuild);
+$('tplFields').addEventListener('input', tplRender); $('tplFields').addEventListener('change', tplRender);
+$('tplCopy').addEventListener('click', () => copy($('tplPrev').dataset.raw || '', 'Template'));
+$('tplPrev').addEventListener('click', e => { const s = e.target.closest('.dc-sp'); if (s) s.classList.toggle('show'); });
+
+renderFonts(); fmtUpdate(); tsRender(); renderSym(); tplBuild();
+
+</script>
+</body>
+</html>

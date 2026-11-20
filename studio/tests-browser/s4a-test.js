@@ -1,0 +1,57 @@
+const { chromium } = require('playwright');
+const http = require('http'), fs = require('fs'), path = require('path');
+const root = path.join(__dirname, '..', '..');
+const mime = { '.html':'text/html','.js':'text/javascript','.css':'text/css','.json':'application/json','.png':'image/png','.svg':'image/svg+xml' };
+const srv = http.createServer((q, r) => { let p = decodeURIComponent(q.url.split('?')[0]); if (p === '/') p = '/index.html';
+  fs.readFile(path.join(root, p), (e, d) => { if (e) { r.writeHead(404); r.end(); } else { r.writeHead(200, { 'content-type': mime[path.extname(p)] || 'application/octet-stream' }); r.end(d); } }); }).listen(8776);
+(async () => {
+  const b = await chromium.launch({ args: ['--use-gl=angle','--use-angle=swiftshader','--enable-unsafe-swiftshader','--ignore-gpu-blocklist'] });
+  const pg = await b.newPage({ viewport: { width: 1400, height: 900 } });
+  const errs = []; pg.on('pageerror', e => errs.push('PAGE ' + e.message)); pg.on('console', m => { if (m.type()==='error' && !/fonts.g|ERR_|Failed to load resource/.test(m.text())) errs.push('CON ' + m.text()); });
+  await pg.goto('http://localhost:8776/tools/3d-studio.html'); await pg.evaluate(() => { try { localStorage.setItem('s3d-guide-done-v6','1'); } catch(e){} }); await pg.reload(); await pg.waitForTimeout(2000);
+  const ok = (n, c, x) => console.log((c ? 'OK   ' : 'GAGAL') + ' ' + n + (x ? '  ' + x : ''));
+  await pg.evaluate(() => [...document.querySelectorAll('button')].find(x => /Modeler/.test(x.textContent)).click()); await pg.waitForTimeout(1500);
+  const A = () => window.S3DApp.maker._api;
+  await pg.evaluate(() => { const a = window.S3DApp.maker._api; const it = window.S3DShapes.CATALOG[0].items.find(i => i.type === 'box') || window.S3DShapes.CATALOG[0].items[0]; a.addShape(it); });
+  await pg.waitForTimeout(600);
+  const n0 = await pg.evaluate(() => { const a = window.S3DApp.maker._api; return [a.objects().length, a.selected() && a.selected().type]; });
+  ok('objek ditambah', n0[0] >= 1, n0.join());
+  await pg.keyboard.press('Tab'); await pg.waitForTimeout(500);
+  const e1 = await pg.evaluate(() => { const a = window.S3DApp.maker._api; return [a.edit.active, document.querySelector('.mb-mode').textContent]; });
+  ok('Tab masuk Edit Mode', e1[0] && e1[1] === 'Edit Mode', e1.join());
+  const info = await pg.evaluate(() => { const s = window.S3DApp.maker._api.edit._state(); return [s.pm.V.length, s.pm.F.length]; });
+  ok('poligon termuat', info[1] > 0, info.join());
+  // ekstrusi muka
+  const r = await pg.evaluate(() => { const E = window.S3DApp.maker._api.edit; const s = E._state(); const f0 = s.pm.F.length; E._select('f', [0]); E._ops.extrude(); return [f0, E._state().pm.F.length]; });
+  ok('extrude menambah muka', r[1] > r[0], r.join());
+  const r2 = await pg.evaluate(() => { const E = window.S3DApp.maker._api.edit; const f=E._state().pm.F.length; E.undo(); return [f, E._state().pm.F.length]; });
+  ok('undo Edit Mode', r2[1] < r2[0], r2.join());
+  await pg.evaluate(() => { const E = window.S3DApp.maker._api.edit; E._select('f', [0]); E._ops.inset(); E._ops.extrude(); E._ops.smooth(); });
+  const tri = await pg.evaluate(() => window.S3DApp.maker._api.edit._state().pm.F.length);
+  ok('operasi berurutan + subdivisi', tri > 20, String(tri));
+  await pg.screenshot({ path: '/tmp/s3d/s4a-edit.png' });
+  // Ctrl+Z di Edit Mode tidak menyentuh riwayat objek
+  await pg.keyboard.press('Control+z'); await pg.waitForTimeout(200);
+  await pg.keyboard.press('Tab'); await pg.waitForTimeout(600);
+  const x1 = await pg.evaluate(() => { const a = window.S3DApp.maker._api; return [a.edit.active, a.selected().type, a.buildMerged ? 1 : 0, document.querySelector('.mb-mode').textContent]; });
+  ok('keluar: objek jadi mesh', !x1[0] && x1[1] === 'mesh' && x1[3] === 'Object Mode', x1.join());
+  const d = await pg.evaluate(() => window.S3DApp.maker.exportData().mesh.triangles);
+  ok('ekspor memuat hasil edit', d > 12, String(d));
+  await pg.keyboard.press('Control+z'); await pg.waitForTimeout(400);
+  const u = await pg.evaluate(() => window.S3DApp.maker._api.selected() && window.S3DApp.maker._api.selected().type);
+  ok('undo objek mengembalikan bentuk parametrik', u !== 'mesh', String(u));
+  await pg.keyboard.press('Control+y'); await pg.waitForTimeout(400);
+  await pg.waitForTimeout(1200); await pg.reload(); await pg.waitForTimeout(2500);
+  await pg.evaluate(() => [...document.querySelectorAll('button')].find(x => /Modeler/.test(x.textContent)).click()); await pg.waitForTimeout(2000);
+  const d2 = await pg.evaluate(() => { const e = window.S3DApp.maker.exportData(); return e ? e.mesh.triangles : 0; });
+  ok('hasil edit pulih setelah muat ulang', d2 === d, d + ' vs ' + d2);
+  // masuk lagi pada mesh
+  await pg.evaluate(() => { const a = window.S3DApp.maker._api; a.select(a.objects()[0].id); });
+  await pg.keyboard.press('Tab'); await pg.waitForTimeout(400);
+  const again = await pg.evaluate(() => { const E = window.S3DApp.maker._api.edit; const ok = E.active; if (ok) { E._select('f', [0, 1]); E._ops.del(); } const f = ok ? E._state().pm.F.length : 0; return [ok, f]; });
+  ok('edit ulang mesh + hapus muka', again[0], again.join());
+  await pg.evaluate(() => window.S3DApp.maker._api.edit.exit(false)); await pg.waitForTimeout(300);
+  ok('batal keluar tanpa commit', !(await pg.evaluate(() => window.S3DApp.maker._api.edit.active)));
+  ok('tanpa error', errs.length === 0, errs.join(';'));
+  await b.close(); srv.close();
+})();

@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html lang="id" data-own-palette>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>3D Studio — Saltoria Tools</title>
+<meta name="description" content="Ubah logo, teks, atau gambar jadi model 3D siap import ke Roblox Studio, atau susun sendiri di modeler ringan. Unduh GLB, OBJ, atau STL. Gratis, jalan di browser.">
+<meta name="theme-color" content="#06060A">
+<meta property="og:title" content="3D Studio — Saltoria Tools">
+<meta property="og:description" content="Logo, teks, atau gambar jadi model 3D siap import ke Roblox Studio.">
+<meta property="og:image" content="https://saltoria.site/assets/og-image.png">
+<meta property="og:url" content="https://saltoria.site/tools/3d-studio">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Saltoria Community">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="canonical" href="https://saltoria.site/tools/3d-studio">
+<link rel="icon" type="image/png" href="../assets/favicon.png">
+<link rel="apple-touch-icon" href="../assets/favicon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700;800&family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<!-- font untuk fitur Teks 3D (dipakai pratinjau teks) -->
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Audiowide&family=Bebas+Neue&family=Chakra+Petch:wght@500;600;700&family=Exo+2:wght@800&family=Orbitron:wght@800&family=Poppins:wght@800&family=Rajdhani:wght@700&family=Righteous&family=Russo+One&family=Sora:wght@400;500;600&display=swap">
+<script>try{if(localStorage.getItem('saltoria-theme')==='light')document.documentElement.classList.add('light-mode')}catch(e){}</script>
+<link rel="stylesheet" href="../shared.css">
+<link rel="stylesheet" href="../studio/css/studio.css">
+</head>
+<body data-tab="logo">
+
+<nav id="main-nav" data-tool="3D STUDIO"><a href="../index.html" class="nav-logo-text">SALTORIA</a></nav>
+
+<header class="studio-hero">
+  <div>
+    <div class="tool-hero-badge">🧊 3D MODEL TOOL</div>
+    <h1>Saltoria <em>3D Studio</em></h1>
+    <p>Ubah logo, teks, atau gambar jadi model 3D siap import ke Roblox Studio. Atau bangun sendiri di modeler ringan. Semua diproses di browser kamu, tidak ada yang diunggah.</p>
+  </div>
+  <div class="top-tools">
+    <button type="button" id="btn-palette" class="chip" aria-haspopup="dialog" title="Cari perintah (Ctrl+K)">Perintah <kbd>Ctrl K</kbd></button>
+    <label class="theme-pick"><span class="sr">Target segitiga</span>
+      <select id="target" aria-label="Target jumlah segitiga">
+        <option value="roblox">Target: Roblox (20.000)</option>
+        <option value="umum">Target: Umum (100.000)</option>
+        <option value="bebas">Tanpa batas (maks 400.000)</option>
+      </select></label>
+    <button type="button" id="btn-full" class="chip" aria-pressed="false" title="Layar penuh">Layar penuh</button>
+  </div>
+</header>
+
+  <main class="studio">
+    <section class="stage" aria-label="Pratinjau model 3D">
+      <div class="viewer">
+        <div class="vbar" role="toolbar" aria-label="Kontrol pratinjau">
+          <div class="vgroup" role="group" aria-label="Arah pandang">
+            <button type="button" class="chip" data-view="front">Depan</button>
+            <button type="button" class="chip" data-view="right">Kanan</button>
+            <button type="button" class="chip" data-view="top">Atas</button>
+            <button type="button" class="chip" data-view="iso">Iso</button>
+          </div>
+          <button type="button" id="btn-proj" class="chip" aria-pressed="false" title="Pandangan ortografis (tanpa perspektif)">Ortho</button>
+          <label class="vsel"><span class="sr">Mode tampilan</span>
+            <select id="shading" aria-label="Mode tampilan">
+              <option value="material">Material</option>
+              <option value="solid">Solid</option>
+              <option value="solidwire">Solid + kerangka</option>
+            </select></label>
+          <button type="button" id="btn-auto" class="chip" aria-pressed="true">Putar otomatis</button>
+          <button type="button" id="btn-reset" class="chip">Reset</button>
+        </div>
+        <div class="vstage">
+          <canvas id="view" tabindex="0" aria-label="Pratinjau model 3D. Seret untuk memutar, cubit atau gulir untuk zoom."></canvas>
+          <canvas id="axis" width="168" height="168" aria-label="Penunjuk sumbu. Klik sumbu untuk mengubah arah pandang."></canvas>
+          <div class="busy" id="busy" hidden>Memuat…</div>
+          <p class="view-hint">Geser untuk memutar. Dua jari atau Shift+geser untuk menggeser, cubit untuk zoom.</p>
+        </div>
+      </div>
+      <dl class="stats" aria-label="Ringkasan model">
+        <div class="stat tri">
+          <dt>Segitiga</dt>
+          <dd><span id="st-tri">0</span> <small id="st-of">dari 20.000</small></dd>
+          <div class="meter" aria-hidden="true"><i id="st-meter"></i></div>
+        </div>
+        <div class="stat"><dt>Bagian</dt><dd id="st-parts">0</dd></div>
+        <div class="stat"><dt>Ukuran (studs)</dt><dd id="st-size">0</dd></div>
+      </dl>
+    </section>
+
+    <section class="panel" aria-label="Pengaturan">
+      <div class="tabs" role="tablist" aria-label="Sumber bentuk">
+        <button type="button" role="tab" id="tab-logo" aria-selected="true" aria-controls="card-logo" data-tab="logo">Logo / gambar</button>
+        <button type="button" role="tab" id="tab-text" aria-selected="false" aria-controls="card-text" data-tab="text">Teks 3D</button>
+        <button type="button" role="tab" id="tab-draw" aria-selected="false" aria-controls="draw-ui" data-tab="draw">Desain sendiri</button>
+        <button type="button" role="tab" id="tab-maker" aria-selected="false" aria-controls="maker-ui" data-tab="maker">Modeler 3D</button>
+      </div>
+
+      <div id="notice" class="notice" role="status" aria-live="polite"></div>
+
+      <!-- Editor bentuk 3D (dibangun oleh js/maker.js) -->
+      <div id="maker-ui" class="maker-ui" data-only="maker"></div>
+
+      <!-- Kanvas gambar (dibangun oleh js/draw.js) -->
+      <div id="draw-ui" class="maker-ui" data-only="draw"></div>
+
+      <!-- Sumber: logo -->
+      <section class="card" id="card-logo" data-only="logo" aria-labelledby="h-logo">
+        <h2 id="h-logo">Logo atau gambar</h2>
+        <label class="drop" id="drop" for="file">
+          <input id="file" type="file" accept="image/png,image/jpeg,image/webp,image/svg+xml">
+          <span class="drop-main">Tarik gambar ke sini atau klik untuk memilih</span>
+          <span class="drop-sub">PNG transparan memberi hasil terbaik. Bisa juga ditempel dengan Ctrl+V.</span>
+          <span class="drop-name" id="file-name">Logo Saltoria Community</span>
+        </label>
+        <div class="row-actions">
+          <button type="button" class="link" id="use-default">Pakai logo Saltoria</button>
+        </div>
+
+        <figure class="detect">
+          <canvas id="detect" aria-label="Area gambar yang akan jadi 3D"></canvas>
+          <figcaption>Area yang jadi 3D</figcaption>
+        </figure>
+
+        <div class="ctl"><label for="sens">Sensitivitas deteksi</label><output for="sens"></output>
+          <input id="sens" data-key="sens" type="range" min="1" max="100" step="1" value="18"></div>
+        <div class="ctl"><label for="fill">Isi lubang kecil</label><output for="fill"></output>
+          <input id="fill" data-key="fill" type="range" min="0" max="400" step="5" value="0"></div>
+        <div class="ctl"><label for="specks">Buang bintik kecil</label><output for="specks"></output>
+          <input id="specks" data-key="specks" type="range" min="0" max="400" step="5" value="20"></div>
+        <div class="ctl"><label for="detailLogo">Detail bentuk</label><output for="detailLogo"></output>
+          <input id="detailLogo" data-key="detailLogo" type="range" min="256" max="2048" step="64" value="1024"></div>
+        <label class="check"><input type="checkbox" id="invert" data-key="invert"> Balik area logo (bagian latar jadi 3D)</label>
+        <p class="hint">Kontur subpiksel menjaga tepi tetap rapi. Detail di dalam gambar tetap berupa tekstur. PNG transparan beresolusi tinggi memberi hasil terbaik.</p>
+      </section>
+
+      <!-- Sumber: teks -->
+      <section class="card" id="card-text" data-only="text" aria-labelledby="h-text">
+        <h2 id="h-text">Teks 3D</h2>
+        <label class="field-label" for="text">Isi teks</label>
+        <textarea id="text" data-key="text" rows="2" spellcheck="false">SALTORIA</textarea>
+
+        <div class="two">
+          <div>
+            <label class="field-label" for="font">Font <small id="font-count"></small></label>
+            <input id="font-q" type="search" class="txt" placeholder="Cari font…" aria-label="Cari font" autocomplete="off">
+            <select id="font-cat" aria-label="Kategori font"></select>
+            <select id="font" data-key="font" size="1"></select>
+          </div>
+          <div>
+            <span class="field-label" id="align-label">Rata teks</span>
+            <div class="seg" role="radiogroup" aria-labelledby="align-label">
+              <label><input type="radio" name="align" value="left" data-key="align"><span>Kiri</span></label>
+              <label><input type="radio" name="align" value="center" data-key="align" checked><span>Tengah</span></label>
+              <label><input type="radio" name="align" value="right" data-key="align"><span>Kanan</span></label>
+            </div>
+          </div>
+        </div>
+        <div class="row-actions">
+          <label class="link" for="font-file">Pakai font sendiri (.ttf, .otf, .woff)</label>
+          <input id="font-file" type="file" accept=".ttf,.otf,.woff,.woff2" hidden>
+        </div>
+
+        <div class="ctl"><label for="spacing">Jarak huruf</label><output for="spacing"></output>
+          <input id="spacing" data-key="spacing" type="range" min="-10" max="60" step="1" value="0"></div>
+        <div class="ctl"><label for="lineGap">Jarak baris</label><output for="lineGap"></output>
+          <input id="lineGap" data-key="lineGap" type="range" min="70" max="200" step="1" value="110"></div>
+        <div class="ctl"><label for="boldText">Tebalkan huruf</label><output for="boldText"></output>
+          <input id="boldText" data-key="boldText" type="range" min="0" max="30" step="1" value="0"></div>
+        <div class="ctl"><label for="detailText">Detail bentuk</label><output for="detailText"></output>
+          <input id="detailText" data-key="detailText" type="range" min="256" max="1600" step="32" value="640"></div>
+        <p class="hint">Detail lebih rendah berarti segitiga lebih sedikit dan lebih ringan untuk Roblox. Font dengan banyak lengkungan butuh detail lebih tinggi.</p>
+
+        <h3 class="sub">Efek teks</h3>
+        <div class="ctl"><label for="curve">Lengkung teks</label><output for="curve"></output>
+          <input id="curve" data-key="curve" type="range" min="-100" max="100" step="1" value="0"></div>
+        <p class="hint">Positif melengkung seperti pelangi, negatif seperti senyum. Berlaku per baris.</p>
+        <label class="field-label" for="fx">Efek tambahan</label>
+        <select id="fx" data-key="fx">
+          <option value="none" selected>Tanpa efek</option>
+          <option value="plate">Alas dengan garis tepi</option>
+          <option value="shadow">Bayangan 3D di belakang</option>
+          <option value="ring">Garis tepi ganda</option>
+        </select>
+        <div id="fx-wrap" hidden>
+          <div class="ctl"><label for="fxSize">Jarak / lebar efek</label><output for="fxSize"></output>
+            <input id="fxSize" data-key="fxSize" type="range" min="2" max="30" step="1" value="8"></div>
+          <div class="ctl"><label for="fxThick">Tebal efek (% dari teks)</label><output for="fxThick"></output>
+            <input id="fxThick" data-key="fxThick" type="range" min="20" max="150" step="5" value="60"></div>
+          <label class="field-label" for="fxColor">Warna efek</label>
+          <input type="color" id="fxColor" data-key="fxColor" value="#f2c14e" aria-label="Warna efek teks">
+        </div>
+      </section>
+
+      <!-- Warna -->
+      <section class="card" data-only="logo text draw" aria-labelledby="h-color">
+        <h2 id="h-color">Warna</h2>
+        <label class="field-label" for="colorMode">Mode warna</label>
+        <select id="colorMode" data-key="colorMode"></select>
+
+        <div class="two" id="color-pickers">
+          <div><label class="field-label" for="colorA" id="colorA-label">Warna</label>
+            <input type="color" id="colorA" data-key="colorA" value="#9fc4ff"></div>
+          <div id="colorB-wrap"><label class="field-label" for="colorB">Warna kedua</label>
+            <input type="color" id="colorB" data-key="colorB" value="#a98bff"></div>
+        </div>
+        <div id="proc-wrap" hidden>
+          <label class="field-label" for="texPat">Motif</label>
+          <select id="texPat" data-key="texPat"></select>
+        </div>
+        <div id="img-wrap" hidden>
+          <label class="field-label" for="texImg">Gambar untuk tekstur</label>
+          <input type="file" id="texImg" accept="image/*">
+          <p class="hint">Gambar dipotong persegi dari tengah. Dipasang otomatis ke seluruh permukaan (UV otomatis dari proyeksi depan).</p>
+        </div>
+        <div id="proc-wrap2">
+          <div class="ctl" id="texScale-wrap"><label for="texScale">Kerapatan motif</label><output for="texScale"></output>
+            <input id="texScale" data-key="texScale" type="range" min="0.5" max="4" step="0.1" value="1"></div>
+        </div>
+        <div class="ctl" id="grad-wrap"><label for="gradAngle">Arah gradient</label><output for="gradAngle"></output>
+          <input id="gradAngle" data-key="gradAngle" type="range" min="0" max="360" step="5" value="90"></div>
+
+        <div class="ctl"><label for="metal">Metalik</label><output for="metal"></output>
+          <input id="metal" data-key="metal" type="range" min="0" max="1" step="0.05" value="0"></div>
+        <div class="ctl"><label for="rough">Kekasaran</label><output for="rough"></output>
+          <input id="rough" data-key="rough" type="range" min="0" max="1" step="0.05" value="0.7"></div>
+
+        <label class="check"><input type="checkbox" id="sideOn" data-key="sideOn"> Warna sisi samping khusus</label>
+        <div id="side-wrap"><input type="color" id="sideColor" data-key="sideColor" value="#2a3566" aria-label="Warna sisi samping"></div>
+        <p class="hint">Warna dan gradient mengikuti seluruh permukaan, termasuk sisi samping. Aktifkan opsi di atas jika sisi samping ingin memakai satu warna khusus.</p>
+      </section>
+
+      <!-- Preset material (semua tab) -->
+      <section class="card" data-only="logo text draw maker" aria-labelledby="h-preset">
+        <h2 id="h-preset">Preset material</h2>
+        <div class="chips" id="presets" role="group" aria-label="Preset material"></div>
+        <div class="ctl" data-only="logo text draw"><label for="glow">Cahaya neon (pratinjau)</label><output for="glow"></output>
+          <input id="glow" data-key="glow" type="range" min="0" max="1" step="0.05" value="0"></div>
+        <p class="hint">Preset mengatur metalik dan kekasaran, dan untuk teks serta gambar bisa ikut mengatur warna. Roblox hanya membawa tekstur warna dari GLB, jadi cahaya neon cuma tampil di pratinjau. Untuk efek neon sungguhan, set <strong>Material = Neon</strong> pada MeshPart.</p>
+      </section>
+
+      <!-- Relief / timbul -->
+      <section class="card" data-only="logo draw" aria-labelledby="h-relief">
+        <h2 id="h-relief">Relief (permukaan timbul)</h2>
+        <label class="field-label" for="relief">Gaya relief</label>
+        <select id="relief" data-key="relief">
+          <option value="flat">Rata (hanya tebal)</option>
+          <option value="bright">Bertingkat: terang menonjol</option>
+          <option value="dark">Bertingkat: gelap menonjol</option>
+          <option value="dome">Menggembung ke tengah</option>
+          <option value="hbright">Halus (heightmap): terang menonjol</option>
+          <option value="hdark">Halus (heightmap): gelap menonjol</option>
+          <option value="hdome">Halus (heightmap): menggembung</option>
+        </select>
+        <div id="relief-wrap">
+          <div class="ctl" id="relief-levels"><label for="levels">Jumlah tingkat</label><output for="levels"></output>
+            <input id="levels" data-key="levels" type="range" min="2" max="6" step="1" value="4"></div>
+          <div id="relief-smooth" hidden>
+            <div class="ctl"><label for="reliefQ">Kehalusan (kerapatan kisi)</label><output for="reliefQ"></output>
+              <input id="reliefQ" data-key="reliefQ" type="range" min="20" max="300" step="5" value="140"></div>
+            <div class="ctl"><label for="reliefBlur">Pelunakan permukaan</label><output for="reliefBlur"></output>
+              <input id="reliefBlur" data-key="reliefBlur" type="range" min="0" max="6" step="1" value="2"></div>
+          </div>
+          <div class="ctl"><label for="reliefH">Tinggi relief (studs)</label><output for="reliefH"></output>
+            <input id="reliefH" data-key="reliefH" type="range" min="0.1" max="3" step="0.05" value="0.8"></div>
+        </div>
+        <p class="hint">Gaya bertingkat dibuat dari lapisan bertumpuk (berundak). Gaya halus membuat permukaan heightmap: makin rapat kisi, makin halus dan makin banyak segitiga (dibatasi otomatis oleh target). Relief halus mengikuti tonjolan secara landai dan menyatu dengan dasar di tepinya.</p>
+      </section>
+
+      <!-- Bentuk -->
+      <section class="card" data-only="logo text draw" aria-labelledby="h-shape">
+        <h2 id="h-shape">Bentuk</h2>
+        <div class="ctl"><label for="width">Lebar (studs)</label><output for="width"></output>
+          <input id="width" data-key="width" type="range" min="1" max="60" step="0.5" value="12"></div>
+        <div class="ctl"><label for="thick">Ketebalan (studs)</label><output for="thick"></output>
+          <input id="thick" data-key="thick" type="range" min="0.05" max="5" step="0.05" value="0.3"></div>
+        <div class="ctl"><label for="smooth">Kehalusan outline</label><output for="smooth"></output>
+          <input id="smooth" data-key="smooth" type="range" min="0" max="6" step="1" value="2"></div>
+        <div class="ctl"><label for="bevel">Radius tepi (sudut ketebalan)</label><output for="bevel"></output>
+          <input id="bevel" data-key="bevel" type="range" min="0" max="1" step="0.01" value="0"></div>
+        <div class="ctl"><label for="bevelSeg">Kebulatan tepi</label><output for="bevelSeg"></output>
+          <input id="bevelSeg" data-key="bevelSeg" type="range" min="1" max="6" step="1" value="1"></div>
+        <div class="ctl"><label for="maxTri">Batas segitiga</label><output for="maxTri"></output>
+          <input id="maxTri" data-key="maxTri" type="range" min="2000" max="20000" step="500" value="18000"></div>
+        <label class="check"><input type="checkbox" id="flip" data-key="flip"> Hadapkan ke arah sebaliknya saat diekspor (putar 180°)</label>
+        <p class="hint">Radius mengatur seberapa besar tepi ketebalan dibulatkan; Kebulatan 1 = potongan miring, 3 sampai 6 = membulat halus (segitiga bertambah). Jika batas segitiga terlampaui, outline disederhanakan otomatis. Tepi di bagian yang terlalu tipis dikecilkan sendiri.</p>
+      </section>
+
+      <!-- Panduan -->
+      <details class="card guide">
+        <summary>Cara import ke Roblox Studio</summary>
+        <h3>Lewat GLB (disarankan)</h3>
+        <ol>
+          <li>Klik <strong>Unduh .glb</strong> di bar bawah.</li>
+          <li>Di Studio buka <strong>Home → Import 3D</strong>, pilih file .glb, lalu Import.</li>
+          <li>Kalau ukurannya terlalu besar atau kecil, ubah <strong>Size</strong> pada MeshPart.</li>
+          <li>Atur <strong>Material</strong> ke SmoothPlastic dan <strong>Reflectance</strong> ke 0 supaya warna lebih bersih.</li>
+          <li>Jaga model di bawah 20.000 segitiga.</li>
+        </ol>
+        <h3>Lewat OBJ</h3>
+        <ol>
+          <li>Klik <strong>Unduh .obj + texture</strong> dan ekstrak file zip-nya.</li>
+          <li>Import <code>model.obj</code> lewat Import 3D.</li>
+          <li>Unggah <code>logo_texture.png</code> di Asset Manager, lalu isi <strong>TextureID</strong> pada MeshPart.</li>
+        </ol>
+      </details>
+
+      <footer class="foot">Dibuat untuk Saltoria Community.</footer>
+    </section>
+  </main>
+
+  <div class="dock" role="group" aria-label="Unduh model">
+    <button type="button" id="dl-glb" class="btn primary" disabled>Unduh .glb</button>
+    <button type="button" id="dl-obj" class="btn" disabled>Unduh .obj + texture</button>
+    <button type="button" id="dl-stl" class="btn" disabled>Unduh .stl</button>
+    <button type="button" id="dl-png" class="btn" disabled>Gambar .png</button>
+    <button type="button" id="dl-webm" class="btn" disabled>Rekam putar .webm</button>
+    <button type="button" id="copy-obj" class="btn" disabled>Salin teks OBJ</button>
+    <button type="button" id="dl-pbr" class="btn" disabled title="Zip: albedo, normal, roughness, metalness">Peta PBR (.zip)</button>
+    <button type="button" id="dl-check" class="btn" disabled>Periksa mesh</button>
+    <span class="dock-msg" id="dock-msg" role="status" aria-live="polite"></span>
+  </div>
+
+  <dialog id="checker" class="checker" aria-labelledby="checker-h">
+    <form method="dialog" class="checker-box">
+      <h2 id="checker-h">Pemeriksa mesh</h2>
+      <div id="checker-body"></div>
+      <div class="btnrow"><button class="chip" value="close">Tutup</button></div>
+    </form>
+  </dialog>
+
+  <dialog id="palette" class="palette" aria-label="Palet perintah">
+    <input id="palette-q" type="search" placeholder="Ketik perintah: tab, unduh, tema, tampilan..." aria-label="Cari perintah" autocomplete="off">
+    <ul id="palette-list" role="listbox" aria-label="Hasil perintah"></ul>
+  </dialog>
+
+<script>window.SALTORIA_STUDIO_BASE='../studio/';</script>
+<script src="../studio/js/core.js"></script>
+<script src="../studio/js/viewer.js"></script>
+<script src="../studio/js/fonts.js"></script>
+<script src="../studio/js/shapes.js"></script>
+<script src="../studio/js/textures.js"></script>
+<script src="../studio/js/meshops.js"></script>
+<script src="../studio/js/polymesh.js"></script>
+<script src="../studio/js/editmode.js"></script>
+<script src="../studio/js/sculptops.js"></script>
+<script src="../studio/js/sculpt.js"></script>
+<script src="../studio/js/uv.js"></script>
+<script src="../studio/js/csg.js"></script>
+<script src="../studio/js/mods.js"></script>
+<script src="../studio/js/lathe.js"></script>
+<script src="../studio/js/shapelab.js"></script>
+<script src="../studio/js/guide.js"></script>
+<script src="../studio/js/paintmode.js"></script>
+<script src="../studio/js/library.js"></script>
+<script src="../studio/js/maker.js"></script>
+<script src="../studio/js/draw.js"></script>
+<script src="../studio/js/app.js"></script>
+<script src="../shared.js" defer></script>
+</body>
+</html>

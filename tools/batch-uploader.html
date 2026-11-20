@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Batch Uploader — Saltoria Tools</title>
+<meta name="description" content="Upload banyak gambar, audio, dan model ke Roblox sekaligus lewat Open Cloud, lalu ekspor semua Asset ID sebagai tabel Luau, CSV, atau JSON.">
+<meta name="theme-color" content="#0E0E16">
+<meta property="og:title" content="Batch Uploader — Saltoria Tools">
+<meta property="og:description" content="Upload banyak gambar, audio, dan model ke Roblox sekaligus lewat Open Cloud, lalu ekspor semua Asset ID sebagai tabel Luau, CSV, atau JSON.">
+<meta property="og:image" content="https://saltoria.site/assets/og-image.png">
+<meta property="og:url" content="https://saltoria.site/tools/batch-uploader">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Saltoria Community">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="canonical" href="https://saltoria.site/tools/batch-uploader">
+<link rel="icon" type="image/png" href="../assets/favicon.png">
+<link rel="apple-touch-icon" href="../assets/favicon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700;800&family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<script>try{if(localStorage.getItem('saltoria-theme')==='light')document.documentElement.classList.add('light-mode')}catch(e){}</script>
+<link rel="stylesheet" href="../shared.css">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Inter',sans-serif;font-size:15px;line-height:1.7;overflow-x:hidden;-webkit-font-smoothing:antialiased;min-height:100vh}
+a{text-decoration:none;color:inherit}
+
+.bu-name{min-width:170px}
+.bu-name input{padding:6px 9px;font-size:12.5px}
+.bu-id{font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--accent2);cursor:pointer;word-break:break-all}
+.bu-msg{font-size:11.5px;color:var(--muted);max-width:260px;line-height:1.4}
+.bu-ico{font-size:18px;text-align:center}
+.bu-count{display:flex;gap:.6rem;flex-wrap:wrap;margin-bottom:.8rem}
+.bu-x{background:none;border:none;color:var(--muted);cursor:pointer;font-size:16px;padding:2px 6px;border-radius:6px}.bu-x:hover{color:var(--red);background:var(--glass2)}
+
+</style>
+</head>
+<body>
+<nav id="main-nav" data-tool="BATCH UPLOADER"><a href="../index.html" class="nav-logo-text">SALTORIA</a></nav>
+
+<header class="tk-hero">
+  <div class="tk-badge">📤 UPLOAD TOOL</div>
+  <h1>Batch <em>Uploader</em></h1>
+  <p>Upload banyak gambar, audio, atau model ke Roblox sekaligus lewat Open Cloud. Lihat status tiap file, lalu ekspor semua Asset ID sebagai tabel Luau, CSV, atau JSON.</p>
+</header>
+<main class="tk-wrap">
+  <div class="tk-grid even" style="margin-bottom:1.25rem">
+    <div class="tk-card">
+      <h2>1 · Kredensial</h2>
+      <div class="tk-field"><label for="key">Open Cloud API Key</label><input class="tk-input" type="password" id="key" autocomplete="off" spellcheck="false" placeholder="Tempel API key…"></div>
+      <div class="tk-cols2">
+        <div class="tk-field"><label for="ctype">Upload ke</label><select class="tk-select" id="ctype"><option value="userId">Akun (User ID)</option><option value="groupId">Grup (Group ID)</option></select></div>
+        <div class="tk-field"><label for="cid" id="cidLbl">User ID</label><input class="tk-input" id="cid" inputmode="numeric" placeholder="mis. 123456789"></div>
+      </div>
+      <div class="tk-note">API key hanya dikirim lewat proxy Saltoria ke Roblox pada saat upload dan <b>tidak disimpan</b> di browser maupun server. Key harus punya izin <code>asset:read</code> dan <code>asset:write</code>, dan IP/akun pembuat harus sesuai izin key.</div>
+    </div>
+    <div class="tk-card">
+      <h2>Yang didukung</h2>
+      <table class="tk-table"><tbody>
+        <tr><td><b>Gambar</b> → Decal</td><td><code>.png .jpg .jpeg .bmp .tga</code></td></tr>
+        <tr><td><b>Audio</b></td><td><code>.mp3 .ogg .wav .flac</code></td></tr>
+        <tr><td><b>Model</b></td><td><code>.fbx .gltf .glb .rbxm .rbxmx</code></td></tr>
+      </tbody></table>
+      <div class="tk-note warn" style="margin-top:.8rem">Batas <b>±4,3 MB per file</b> karena request lewat proxy serverless. File lebih besar ditandai dan dilewati. <b>Animasi tidak didukung</b> oleh Open Cloud Assets API; upload lewat Animation Editor.</div>
+    </div>
+  </div>
+
+  <div class="tk-card" style="margin-bottom:1.25rem">
+    <h2>2 · Antrian upload</h2>
+    <input type="file" id="files" class="tk-sr" multiple accept=".png,.jpg,.jpeg,.bmp,.tga,.mp3,.ogg,.wav,.flac,.fbx,.gltf,.glb,.rbxm,.rbxmx" aria-label="Pilih file">
+    <div class="tk-drop" id="drop" tabindex="0" role="button" aria-label="Pilih atau jatuhkan file"><b>Klik atau jatuhkan banyak file</b> di sini</div>
+    <div class="tk-field" style="margin-top:1rem"><label for="desc">Deskripsi (dipakai untuk semua asset)</label><input class="tk-input" id="desc" maxlength="1000" value="Uploaded via Saltoria Batch Uploader"></div>
+    <div class="bu-count" id="counts"></div>
+    <div class="tk-bar" style="margin-bottom:1rem"><i id="bar"></i></div>
+    <div class="tk-tablewrap"><table class="tk-table">
+      <thead><tr><th></th><th>Nama asset</th><th>Tipe</th><th>Ukuran</th><th>Status</th><th>Asset ID</th><th></th></tr></thead>
+      <tbody id="rows"><tr><td colspan="7" style="color:var(--muted);text-align:center;padding:1.4rem">Belum ada file.</td></tr></tbody>
+    </table></div>
+    <div class="tk-row" style="margin-top:1rem">
+      <button class="tk-btn" type="button" id="start" disabled>▶ Mulai upload</button>
+      <button class="tk-btn sec" type="button" id="stop" disabled>Berhenti</button>
+      <button class="tk-btn sec" type="button" id="clearDone">Bersihkan yang selesai</button>
+      <button class="tk-btn sec" type="button" id="clearAll">Kosongkan semua</button>
+    </div>
+  </div>
+
+  <div class="tk-card">
+    <h2>3 · Hasil ekspor <small id="resCount">0 ASSET</small></h2>
+    <div class="tk-row" style="margin-bottom:.8rem">
+      <div class="tk-seg" id="fmt"><button type="button" data-f="lua" class="on">Luau</button><button type="button" data-f="csv">CSV</button><button type="button" data-f="json">JSON</button></div>
+      <button class="tk-btn sec sm" type="button" id="cpRes">Salin</button>
+      <button class="tk-btn sec sm" type="button" id="dlRes">Unduh</button>
+    </div>
+    <pre class="tk-pre" id="res">-- Belum ada asset yang berhasil diupload.</pre>
+    <p class="tk-lbl" style="text-transform:none;letter-spacing:0;margin-top:.7rem">Jika sebuah gambar tidak muncul di <code>ImageLabel</code>, cek ID Image-nya di Creator Dashboard (Decal dan Image bisa punya ID berbeda).</p>
+  </div>
+</main>
+
+<div class="tk-toast" id="toast" role="status" aria-live="polite"></div>
+<script src="../shared.js" defer></script>
+<script>
+
+/*@pure-start*/
+const MAX_FILE = 4300000;
+const TYPES = {
+  png:['Decal','image/png'], jpg:['Decal','image/jpeg'], jpeg:['Decal','image/jpeg'], bmp:['Decal','image/bmp'], tga:['Decal','image/tga'],
+  mp3:['Audio','audio/mpeg'], ogg:['Audio','audio/ogg'], wav:['Audio','audio/wav'], flac:['Audio','audio/flac'],
+  fbx:['Model','model/fbx'], gltf:['Model','model/gltf+json'], glb:['Model','model/gltf-binary'], rbxm:['Model','model/x-rbxm'], rbxmx:['Model','model/x-rbxm'],
+};
+function classify(filename) {
+  const m = /\.([A-Za-z0-9]+)$/.exec(filename || ''); if (!m) return null;
+  const t = TYPES[m[1].toLowerCase()]; return t ? {assetType:t[0], mime:t[1], ext:m[1].toLowerCase()} : null;
+}
+function cleanName(filename, max) {
+  let n = String(filename || '').replace(/\.[A-Za-z0-9]+$/, '').replace(/[\u0000-\u001F\u007F]/g, '').replace(/\s+/g, ' ').trim();
+  return (n || 'Asset').slice(0, max || 50);
+}
+function fmtBytes(b) { return b < 1024 ? b + ' B' : b < 1048576 ? (b / 1024).toFixed(1) + ' KB' : (b / 1048576).toFixed(2) + ' MB'; }
+function buildRequest(it, who, desc) {
+  return {assetType:it.assetType, displayName:cleanName(it.name, 50), description:String(desc || '').slice(0, 1000), creationContext:{creator:{[who.kind]:String(who.id)}}};
+}
+function parseOp(j) {
+  if (!j || typeof j !== 'object') return {done:false};
+  if (j.error) return {done:true, error:(j.error.message || j.error.code || JSON.stringify(j.error))};
+  if (j.done && j.response) return {done:true, assetId:String(j.response.assetId || ''), moderation:(j.response.moderationResult && j.response.moderationResult.moderationState) || ''};
+  if (j.done) return {done:true, error:'Operasi selesai tanpa assetId'};
+  return {done:false, path:j.path};
+}
+function uniqueNames(items) {
+  const seen = {}; return items.map(it => { const base = cleanName(it.name, 50); const k = base.toLowerCase(); seen[k] = (seen[k] || 0) + 1; return seen[k] === 1 ? base : base + '_' + seen[k]; });
+}
+const luaStr = s => '"' + String(s).replace(/\\/g, '\\\\').replace(/"/g, '\\"').replace(/[\r\n]+/g, ' ') + '"';
+function toLua(items) {
+  const names = uniqueNames(items);
+  return '-- Saltoria Batch Uploader · ' + items.length + ' asset\nreturn {\n' + items.map((it, i) => '\t[' + luaStr(names[i]) + '] = "rbxassetid://' + it.assetId + '",').join('\n') + '\n}';
+}
+const csvCell = s => { s = String(s == null ? '' : s); if (/^[=+\-@\t\r]/.test(s)) s = "'" + s; return /[",\n\r]/.test(s) ? '"' + s.replace(/"/g, '""') + '"' : s; };
+function toCsv(items) {
+  const names = uniqueNames(items);
+  return 'name,type,assetId,moderation\n' + items.map((it, i) => [names[i], it.assetType, it.assetId, it.moderation || ''].map(csvCell).join(',')).join('\n');
+}
+function toJson(items) { const names = uniqueNames(items); return JSON.stringify(items.map((it, i) => ({name:names[i], type:it.assetType, assetId:it.assetId, moderation:it.moderation || ''})), null, 2); }
+/*@pure-end*/
+
+const $ = id => document.getElementById(id);
+const S = {items:[], running:false, stop:false, nextId:1, fmt:'lua'};
+function toast(msg) { const t = $('toast'); t.textContent = msg; t.classList.add('show'); clearTimeout(toast._t); toast._t = setTimeout(() => t.classList.remove('show'), 2600); }
+const sleep = ms => new Promise(r => setTimeout(r, ms));
+const ICON = {Decal:'🖼️', Audio:'🎵', Model:'🧊'};
+const STATUS = {ready:['Siap', ''], queued:['Antri', ''], uploading:['Mengunggah…', 'warn'], processing:['Diproses Roblox…', 'warn'], done:['Selesai', 'ok'], error:['Gagal', 'err'], skipped:['Dilewati', 'err']};
+
+function addFiles(list) {
+  let added = 0, bad = 0;
+  for (const f of list) {
+    const c = classify(f.name);
+    if (!c) { bad++; continue; }
+    if (S.items.some(i => i.file.name === f.name && i.file.size === f.size)) continue;
+    const it = {id:S.nextId++, file:f, name:cleanName(f.name), assetType:c.assetType, mime:c.mime, status:'ready', assetId:'', msg:'', moderation:''};
+    if (f.size === 0) { it.status = 'skipped'; it.msg = 'File kosong'; }
+    else if (f.size > MAX_FILE) { it.status = 'skipped'; it.msg = 'Lebih dari ±4,3 MB (batas proxy)'; }
+    S.items.push(it); added++;
+  }
+  if (bad) toast(bad + ' file dilewati: format tidak didukung');
+  else if (added) toast(added + ' file ditambahkan');
+  render();
+}
+function render() {
+  const tb = $('rows');
+  tb.innerHTML = S.items.length ? S.items.map(it => {
+    const st = STATUS[it.status];
+    return '<tr data-id="' + it.id + '"><td class="bu-ico">' + ICON[it.assetType] + '</td>' +
+      '<td class="bu-name"><input class="tk-input" data-name value="' + it.name.replace(/&/g, '&amp;').replace(/"/g, '&quot;') + '" maxlength="50"' + (it.status === 'done' || it.status === 'uploading' || it.status === 'processing' ? ' disabled' : '') + ' aria-label="Nama asset"></td>' +
+      '<td><span class="tk-pill">' + it.assetType + '</span></td><td>' + fmtBytes(it.file.size) + '</td>' +
+      '<td><span class="tk-pill ' + st[1] + '">' + st[0] + '</span>' + (it.msg ? '<div class="bu-msg">' + it.msg.replace(/</g, '&lt;') + '</div>' : '') + (it.moderation ? '<div class="bu-msg">Moderasi: ' + it.moderation.replace(/</g, '&lt;') + '</div>' : '') + '</td>' +
+      '<td>' + (it.assetId ? '<span class="bu-id" data-copy="' + it.assetId + '" title="Klik untuk menyalin">' + it.assetId + '</span>' : '—') + '</td>' +
+      '<td><button class="bu-x" type="button" data-rm aria-label="Hapus dari daftar"' + (it.status === 'uploading' || it.status === 'processing' ? ' disabled' : '') + '>✕</button></td></tr>';
+  }).join('') : '<tr><td colspan="7" style="color:var(--muted);text-align:center;padding:1.4rem">Belum ada file.</td></tr>';
+  const n = k => S.items.filter(i => i.status === k).length, total = S.items.filter(i => i.status !== 'skipped').length, fin = n('done') + n('error');
+  $('counts').innerHTML = [['Total', S.items.length, ''], ['Selesai', n('done'), 'ok'], ['Gagal', n('error'), n('error') ? 'err' : ''], ['Dilewati', n('skipped'), n('skipped') ? 'warn' : '']].map(x => '<span class="tk-pill ' + x[2] + '">' + x[0] + ': ' + x[1] + '</span>').join('');
+  $('bar').style.width = (total ? fin / total * 100 : 0) + '%';
+  $('start').disabled = S.running || !S.items.some(i => i.status === 'ready' || i.status === 'error');
+  $('stop').disabled = !S.running;
+  renderResult();
+}
+function doneItems() { return S.items.filter(i => i.status === 'done' && i.assetId); }
+function renderResult() {
+  const d = doneItems(); $('resCount').textContent = d.length + ' ASSET';
+  $('res').textContent = !d.length ? '-- Belum ada asset yang berhasil diupload.' : S.fmt === 'lua' ? toLua(d) : S.fmt === 'csv' ? toCsv(d) : toJson(d);
+}
+
+async function postAsset(it, key, who, desc) {
+  for (let attempt = 0; attempt < 4; attempt++) {
+    const fd = new FormData();
+    fd.append('request', JSON.stringify(buildRequest(it, who, desc)));
+    fd.append('fileContent', new Blob([it.file], {type:it.mime}), it.file.name);
+    const r = await fetch('/api/upload-asset', {method:'POST', headers:{'x-api-key':key}, body:fd});
+    let data = {}; try { data = await r.json(); } catch {}
+    if (r.status === 429) { const ra = parseInt(r.headers.get('retry-after')) || (4 * (attempt + 1)); it.msg = 'Terkena rate limit, menunggu ' + ra + ' dtk…'; render(); await sleep(ra * 1000); continue; }
+    if (r.status === 401 || r.status === 403) { const e = new Error(data.message || data.error || 'API key ditolak / tidak punya izin'); e.fatal = true; throw e; }
+    if (!r.ok) throw new Error(data.message || (data.error && data.error.message) || data.error || ('HTTP ' + r.status));
+    return data;
+  }
+  throw new Error('Rate limit berulang, coba lagi nanti');
+}
+async function pollOp(path, key) {
+  for (let i = 0; i < 40; i++) {
+    await sleep(i < 3 ? 1000 : 2000);
+    const r = await fetch('/api/upload-asset?path=' + encodeURIComponent(path), {headers:{'x-api-key':key}});
+    let j = {}; try { j = await r.json(); } catch {}
+    if (!r.ok) throw new Error(j.message || j.error || ('HTTP ' + r.status));
+    const p = parseOp(j); if (p.done) return p;
+  }
+  throw new Error('Timeout menunggu Roblox memproses asset');
+}
+async function runQueue() {
+  const key = $('key').value.trim(), id = $('cid').value.trim(), kind = $('ctype').value;
+  if (!key) { toast('Isi API key dulu'); return; }
+  if (!/^\d{1,20}$/.test(id)) { toast('ID harus berupa angka'); return; }
+  const who = {kind, id}, desc = $('desc').value;
+  const queue = S.items.filter(i => i.status === 'ready' || i.status === 'error');
+  S.running = true; S.stop = false; queue.forEach(i => { i.status = 'queued'; i.msg = ''; }); render();
+  for (const it of queue) {
+    if (S.stop) { it.status = 'ready'; continue; }
+    it.status = 'uploading'; it.msg = ''; render();
+    try {
+      const data = await postAsset(it, key, who, desc);
+      let p = parseOp(data);
+      if (!p.done && data.path) { it.status = 'processing'; render(); p = await pollOp(data.path, key); }
+      if (p.error) throw new Error(p.error);
+      if (!p.done) throw new Error('Respons tidak dikenali dari Roblox');
+      it.status = 'done'; it.assetId = p.assetId; it.moderation = p.moderation || ''; it.msg = '';
+    } catch (e) {
+      it.status = 'error'; it.msg = e.message || String(e); render();
+      if (e.fatal) { S.stop = true; toast('Berhenti: ' + it.msg); }
+    }
+    render(); await sleep(500);
+  }
+  queue.forEach(i => { if (i.status === 'queued') i.status = 'ready'; });
+  S.running = false; render();
+  const ok = doneItems().length; if (ok) toast('Selesai. ' + ok + ' asset berhasil.');
+}
+
+const drop = $('drop');
+drop.addEventListener('click', () => $('files').click());
+drop.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); $('files').click(); } });
+['dragenter', 'dragover'].forEach(ev => drop.addEventListener(ev, e => { e.preventDefault(); drop.classList.add('over'); }));
+['dragleave', 'drop'].forEach(ev => drop.addEventListener(ev, e => { e.preventDefault(); drop.classList.remove('over'); }));
+drop.addEventListener('drop', e => addFiles(e.dataTransfer.files));
+$('files').addEventListener('change', e => { addFiles(e.target.files); e.target.value = ''; });
+$('ctype').addEventListener('change', e => { $('cidLbl').textContent = e.target.value === 'groupId' ? 'Group ID' : 'User ID'; });
+$('rows').addEventListener('input', e => { if (!e.target.matches('[data-name]')) return; const it = S.items.find(i => i.id === +e.target.closest('tr').dataset.id); if (it) { it.name = e.target.value; renderResult(); } });
+$('rows').addEventListener('click', e => {
+  const tr = e.target.closest('tr'); if (!tr) return;
+  if (e.target.closest('[data-rm]')) { S.items = S.items.filter(i => i.id !== +tr.dataset.id); render(); }
+  const c = e.target.closest('[data-copy]'); if (c) navigator.clipboard.writeText(c.dataset.copy).then(() => toast('Asset ID disalin'), () => {});
+});
+$('start').addEventListener('click', runQueue);
+$('stop').addEventListener('click', () => { S.stop = true; toast('Akan berhenti setelah file saat ini selesai'); });
+$('clearDone').addEventListener('click', () => { S.items = S.items.filter(i => i.status !== 'done' && i.status !== 'skipped'); render(); });
+$('clearAll').addEventListener('click', () => { if (S.running) { toast('Tunggu upload selesai atau tekan Berhenti'); return; } S.items = []; render(); });
+$('fmt').addEventListener('click', e => { const b = e.target.closest('button'); if (!b) return; S.fmt = b.dataset.f; [...$('fmt').children].forEach(x => x.classList.toggle('on', x === b)); renderResult(); });
+$('cpRes').addEventListener('click', () => { if (!doneItems().length) return; navigator.clipboard.writeText($('res').textContent).then(() => toast('Hasil disalin'), () => toast('Gagal menyalin')); });
+$('dlRes').addEventListener('click', () => {
+  if (!doneItems().length) return; const ext = {lua:'lua', csv:'csv', json:'json'}[S.fmt];
+  const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([$('res').textContent], {type:'text/plain'})); a.download = 'asset-ids.' + ext; document.body.appendChild(a); a.click(); a.remove();
+});
+render();
+
+</script>
+</body>
+</html>
