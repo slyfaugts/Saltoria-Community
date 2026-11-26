@@ -1,0 +1,1246 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Animation Studio — Saltoria Tools</title>
+<meta name="description" content="Buat, edit, konversi R6/R15, preview 3D, ekspor, dan upload animasi karakter Roblox langsung dari browser.">
+<meta name="theme-color" content="#0E0E16">
+<meta property="og:title" content="Animation Studio — Saltoria Tools">
+<meta property="og:description" content="Editor animasi Roblox di browser: keyframe, R6/R15, preview 3D, ekspor .rbxmx, dan upload ke Roblox.">
+<meta property="og:image" content="https://saltoria.site/assets/og-image.png">
+<meta property="og:url" content="https://saltoria.site/tools/animation-studio">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Saltoria Community">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="canonical" href="https://saltoria.site/tools/animation-studio">
+<link rel="icon" type="image/png" href="../assets/favicon.png">
+<link rel="apple-touch-icon" href="../assets/favicon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<script>try{if(localStorage.getItem('saltoria-theme')==='light')document.documentElement.classList.add('light-mode')}catch(e){}</script>
+<link rel="stylesheet" href="../shared.css">
+<style>
+
+:root{--panel:var(--surface);--panel2:var(--surface2);--line:var(--border-strong);--sub:var(--muted);--good:var(--green);--bad:var(--red);--gold:var(--gold,#ffd24a)}
+*{box-sizing:border-box}
+.as-app{color:var(--text);font:14px/1.45 'Inter',system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;min-height:calc(100vh - 68px)}
+.as-app button,.as-app select,.as-app input{font:inherit;color:var(--text)}
+.as-app button{background:var(--panel2);border:1px solid var(--line);border-radius:8px;padding:6px 12px;cursor:pointer;transition:.15s}
+.as-app button:hover{border-color:var(--accent);background:var(--surface3)}
+.as-app button.primary{background:var(--accent);border-color:var(--accent);font-weight:600}
+.as-app button.primary:hover{background:var(--accent-deep);border-color:var(--accent-deep)}
+.as-app button.sel{background:var(--accent);border-color:var(--accent)}
+.as-app button:disabled{opacity:.4;cursor:not-allowed}
+.as-app input,.as-app select,.as-app textarea{background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:6px 8px;width:100%}
+.as-app input[type=range]{padding:0;accent-color:var(--accent)}
+.as-app input[type=checkbox]{width:auto}
+.as-app textarea{font:12px/1.4 ui-monospace,Menlo,Consolas,monospace;resize:vertical;min-height:90px}
+.as-main{display:grid;grid-template-columns:minmax(0,1.5fr) minmax(330px,1fr);gap:14px;padding:14px;max-width:1500px;margin:0 auto}
+@media(max-width:1000px){.as-main{grid-template-columns:1fr}}
+.left,.right{display:flex;flex-direction:column;gap:12px;min-width:0}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:12px}
+.card h3{margin:0 0 10px;font-size:13px;letter-spacing:.04em;text-transform:uppercase;color:var(--accent2)}
+.viewport{position:relative;height:430px;border-radius:12px;overflow:hidden;border:1px solid var(--line);background:#14141c}
+.viewport canvas{width:100%;height:100%;display:block;touch-action:none}
+#vpHint{position:absolute;left:10px;bottom:8px;font-size:11px;color:var(--sub);pointer-events:none}
+.vp-badge{position:absolute;left:10px;top:10px;background:#000a;border:1px solid var(--line);border-radius:999px;padding:3px 10px;font-size:12px}
+.vp-tools{position:absolute;right:10px;top:10px;display:flex;gap:6px}
+.vp-tools button{padding:3px 9px;font-size:12px;background:#000a}
+.vp-tools button.sel{background:var(--accent)}
+.transport{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.transport select{width:auto}
+.transport .grow{flex:1}
+#timeLbl{font-variant-numeric:tabular-nums;color:var(--sub);min-width:120px;text-align:right}
+.tl{position:relative;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:10px 14px;user-select:none;-webkit-user-select:none}
+.tl-inner{position:relative;height:66px;touch-action:none;cursor:pointer}
+.tl-ruler{position:absolute;left:0;right:0;top:0;height:20px}
+.tick{position:absolute;top:0;height:100%;border-left:1px solid var(--line);font-size:10px;color:var(--sub);padding-left:3px;pointer-events:none}
+.tl-track{position:absolute;left:0;right:0;top:24px;height:38px;background:var(--panel2);border-radius:8px}
+.kf{position:absolute;top:50%;width:14px;height:14px;background:var(--accent);transform:translate(-50%,-50%) rotate(45deg);cursor:ew-resize;border-radius:3px;border:1px solid #0006}
+.kf.sel{background:var(--gold)}
+.tl-head{position:absolute;top:0;bottom:0;width:2px;background:#ff5a5a;pointer-events:none;margin-left:-1px}
+.row{display:flex;gap:6px;align-items:center;margin-bottom:8px;flex-wrap:wrap}
+.row>label{color:var(--sub);font-size:12px;min-width:64px}
+.row .f{flex:1;min-width:90px}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.btns{display:flex;gap:6px;flex-wrap:wrap}
+#jointList{display:grid;grid-template-columns:1fr 1fr;gap:5px;margin-bottom:10px}
+#jointList button{font-size:12px;padding:5px 6px;text-align:left;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.chan{display:grid;grid-template-columns:48px 1fr 74px;gap:8px;align-items:center;margin-bottom:5px}
+.chan label{font-size:12px;color:var(--sub)}
+.note{font-size:12px;color:var(--sub);margin:6px 0 0}
+.note b{color:var(--text)}
+.status{font-size:12px;margin-top:8px;min-height:16px}
+.status.bad{color:var(--bad)}.status.good{color:var(--good)}
+.hist{display:flex;flex-direction:column;gap:5px;margin-top:8px}
+.hist div{display:flex;justify-content:space-between;gap:8px;background:var(--panel2);border-radius:8px;padding:5px 8px;font-size:12px;align-items:center}
+.hist span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+#toast{position:fixed;left:50%;bottom:22px;transform:translateX(-50%) translateY(20px);background:var(--panel2);border:1px solid var(--accent);padding:9px 16px;border-radius:10px;opacity:0;pointer-events:none;transition:.25s;z-index:50;max-width:90vw}
+#toast.show{opacity:1;transform:translateX(-50%)}
+#toast.bad{border-color:var(--bad)}
+
+body{margin:0;font-family:'Inter',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+a{text-decoration:none;color:inherit}
+/* viewport 3D selalu gelap → teks overlay harus tetap terang di mode terang */
+.viewport,.viewport .vp-badge,.viewport .vp-tools button,.viewport .vp-hint{color:#e8e8f0}
+.viewport .vp-badge,.as-app .viewport .vp-tools button{background:rgba(10,10,18,.72);border-color:rgba(255,255,255,.18)}
+.as-app .viewport .vp-tools button.sel{background:var(--accent);color:#fff}
+.as-bar{display:flex;align-items:center;gap:8px;flex-wrap:wrap;padding:10px 16px;border-bottom:1px solid var(--line);background:var(--panel)}
+.as-bar .as-title{font:700 14px 'Space Grotesk',sans-serif;margin-right:auto;display:flex;align-items:center;gap:8px}
+.as-bar .as-title small{font:500 10px 'JetBrains Mono',monospace;letter-spacing:1.5px;color:var(--sub);text-transform:uppercase}
+.as-app button.primary{color:#fff}
+.as-app :focus-visible{outline:2px solid var(--accent2);outline-offset:2px}
+.as-warn{border-left:3px solid var(--gold);padding:.5rem .8rem;background:var(--surface2);border-radius:8px}
+</style>
+</head>
+<body>
+<nav id="main-nav" data-tool="ANIMATION STUDIO"><a href="../index.html" class="nav-logo-text">SALTORIA</a></nav>
+<div class="as-app">
+<div class="as-bar" role="toolbar" aria-label="Berkas dan riwayat">
+  <div class="as-title">Animation Studio <small>R6 · R15 · .rbxmx</small></div>
+  <button id="btnUndo" title="Ctrl+Z">↶ Undo</button>
+  <button id="btnRedo" title="Ctrl+Y">↷ Redo</button>
+  <button id="btnNew">Baru</button>
+  <button id="btnOpen">Buka (.json / .rbxmx)</button>
+  <button id="btnSave">Simpan JSON</button>
+  <input type="file" id="fileIn" accept=".json,.rbxmx,.xml" hidden>
+</div>
+<main class="as-main">
+  <section class="left">
+    <div class="viewport">
+      <canvas id="view" role="img" aria-label="Viewport 3D rig animasi. Seret untuk memutar kamera, scroll untuk zoom."></canvas>
+      <div class="vp-badge" id="rigBadge">R15</div>
+      <div class="vp-tools"><button id="gmRot" class="sel" title="E">Rotasi (E)</button><button id="gmMov" title="W">Posisi (W)</button><button id="btnCam">Reset kamera</button><button id="btnGrid">Grid</button></div>
+      <div id="vpHint">Drag kosong: putar kamera · Scroll: zoom · Klik tubuh: pilih joint · Drag ring/panah: rotasi/posisi (Shift = snap) · E/W ganti mode</div>
+    </div>
+
+    <div class="card transport">
+      <button id="btnPlay" class="primary" style="min-width:92px">▶ Play</button>
+      <button id="btnStop">■ Stop</button>
+      <button id="btnPrev" title="Frame sebelumnya (←)">◀</button>
+      <button id="btnNext" title="Frame berikutnya (→)">▶</button>
+      <label><input type="checkbox" id="chkLoop" checked> Loop</label>
+      <select id="selSpeed"><option value="0.25">0.25x</option><option value="0.5">0.5x</option><option value="1" selected>1x</option><option value="2">2x</option></select>
+      <span class="grow"></span>
+      <span id="timeLbl">0.00 / 1.00s</span>
+    </div>
+
+    <div class="tl">
+      <div class="tl-inner" id="tlInner">
+        <div class="tl-ruler" id="tlRuler"></div>
+        <div class="tl-track" id="tlTrack"></div>
+        <div class="tl-head" id="tlHead"></div>
+      </div>
+      <p class="note">Klik/drag area timeline untuk scrub. Drag ◆ untuk memindah keyframe. Spasi = play, K = tambah keyframe, Delete = hapus.</p>
+    </div>
+  </section>
+
+  <aside class="right">
+    <div class="card">
+      <h3>Animasi</h3>
+      <div class="row"><label>Nama</label><input class="f" id="animName" maxlength="50" value="NewAnimation"></div>
+      <div class="row"><label>Priority</label><select class="f" id="animPrio"></select><label style="min-width:50px">Durasi</label><input id="animLen" type="number" min="0.1" step="0.1" style="width:80px"></div>
+    </div>
+
+    <div class="card">
+      <h3>Keyframe</h3>
+      <div class="btns" style="margin-bottom:8px">
+        <button id="kfAdd" class="primary">+ Tambah (K)</button>
+        <button id="kfDel">Hapus</button>
+        <button id="kfCopy">Salin</button>
+        <button id="kfPaste">Tempel</button>
+        <button id="kfMirror" title="Cerminkan pose kiri↔kanan">Mirror L↔R</button>
+      </div>
+      <div class="grid2">
+        <div class="row" style="margin:0"><label style="min-width:40px">Style</label><select class="f" id="kfStyle"></select></div>
+        <div class="row" style="margin:0"><label style="min-width:40px">Arah</label><select class="f" id="kfDir"></select></div>
+      </div>
+      <div class="row" style="margin-top:8px"><label>Waktu key</label><input class="f" id="kfTime" type="number" step="0.01"></div>
+      <p class="note" id="kfInfo"></p>
+    </div>
+
+    <div class="card">
+      <h3>Joint Editor</h3>
+      <div id="jointList"></div>
+      <div id="channels"></div>
+      <div class="btns"><button id="jReset">Reset joint</button><button id="jResetAll">Reset semua joint</button></div>
+      <p class="note">Mengedit joint di waktu tanpa keyframe otomatis membuat keyframe baru. Rotasi dalam derajat (urutan XYZ), posisi dalam studs.</p>
+    </div>
+
+    <div class="card">
+      <h3>Konversi R6 ↔ R15</h3>
+      <button id="btnConvert" class="primary" style="width:100%">Convert</button>
+      <p class="note">R6→R15: rotasi Torso/Neck/Shoulder/Hip dipetakan ke joint R15, joint lain (Waist, Elbow, Knee, dst.) diisi netral. R15→R6: Waist digabung ke Torso; Elbow/Knee/Wrist/Ankle <b>tidak punya padanan</b> dan hilang.</p>
+    </div>
+
+    <div class="card">
+      <h3>Preset Pose / Animasi</h3>
+      <div class="row"><select class="f" id="presetSel"></select><button id="btnPreset" class="primary">Terapkan</button></div>
+      <p class="note">Preset otomatis menyesuaikan rig (R6/R15). Menggantikan keyframe yang ada, bisa di-Undo.</p>
+    </div>
+
+    <div class="card">
+      <h3>Export Keyframe Animation</h3>
+      <div class="btns">
+        <button id="btnExpRbx" class="primary">Download .rbxmx (KeyframeSequence)</button>
+        <button id="btnExpJson">Download .json</button>
+      </div>
+      <p class="note">.rbxmx bisa di-drag ke Roblox Studio (jadi KeyframeSequence) lalu di-publish lewat Animation Editor. Keyframe di detik 0 otomatis ditambahkan saat ekspor bila belum ada, supaya hasil di Roblox sama dengan preview.</p>
+    </div>
+
+    <div class="card">
+      <h3>Upload ke Roblox</h3>
+      <div class="row"><label>API Key</label><input class="f" id="upKey" type="password" placeholder="Open Cloud API key" autocomplete="off"></div>
+      <div class="row"><label>Creator</label><select id="upType" style="width:100px"><option value="User">User</option><option value="Group">Group</option></select><input class="f" id="upId" placeholder="User ID / Group ID (angka)" inputmode="numeric"></div>
+      <button id="btnUpload" class="primary" style="width:100%">Upload animasi</button>
+      <div class="status" id="upStatus"></div>
+      <p class="note">API key dibuat di Creator Hub → Open Cloud → API Keys: tambah <b>Assets</b> (read &amp; write) dan set IP ke <b>0.0.0.0/0</b>. Key hanya dikirim ke server saltoria.site untuk diteruskan ke Roblox, tidak disimpan. Karena IP dibuka lebar, pakai key khusus dengan masa berlaku singkat dan hapus setelah selesai.</p>
+      <p class="note as-warn"><b>Penting:</b> animasi yang diupload hanya bisa dipakai di experience milik creator yang sama (akun atau grup). Roblox juga bisa menolak file <code>.rbxmx</code> yang dibuat di luar Studio; kalau upload gagal, download .rbxmx, buka di Studio, lalu publish lewat Animation Editor.</p>
+    </div>
+
+    <div class="card">
+      <h3>Generate Animation ID</h3>
+      <div class="row"><label>Asset ID</label><input class="f" id="idIn" placeholder="angka dari upload / Studio" inputmode="numeric"><button id="btnGenId">Generate</button></div>
+      <div class="row"><input class="f" id="idOut" readonly placeholder="rbxassetid://..."><button id="btnCopyId">Salin</button></div>
+      <textarea id="luaOut" readonly placeholder="Snippet Lua akan muncul di sini"></textarea>
+      <div class="btns" style="margin-top:6px"><button id="btnCopyLua">Salin Lua</button></div>
+      <div class="hist" id="hist"></div>
+    </div>
+  </aside>
+</main>
+</div>
+<noscript><p style="padding:2rem;text-align:center">Animation Studio membutuhkan JavaScript.</p></noscript>
+<div id="toast" role="status" aria-live="polite"></div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script>
+// <CORE>
+const D2R = Math.PI / 180;
+const FPS = 30;
+const EPS = 0.0005;
+const clamp = (v, a, b) => Math.min(b, Math.max(a, v));
+
+/* ---------- CFrame mini lib: {p:[x,y,z], r:[9 row-major]} ---------- */
+const CF = {
+  id() { return { p: [0, 0, 0], r: [1, 0, 0, 0, 1, 0, 0, 0, 1] }; },
+  mulR(a, b) {
+    const o = new Array(9);
+    for (let i = 0; i < 3; i++) for (let j = 0; j < 3; j++)
+      o[i * 3 + j] = a[i * 3] * b[j] + a[i * 3 + 1] * b[3 + j] + a[i * 3 + 2] * b[6 + j];
+    return o;
+  },
+  mulV(r, v) {
+    return [r[0] * v[0] + r[1] * v[1] + r[2] * v[2], r[3] * v[0] + r[4] * v[1] + r[5] * v[2], r[6] * v[0] + r[7] * v[1] + r[8] * v[2]];
+  },
+  mul(a, b) {
+    const rp = CF.mulV(a.r, b.p);
+    return { p: [a.p[0] + rp[0], a.p[1] + rp[1], a.p[2] + rp[2]], r: CF.mulR(a.r, b.r) };
+  },
+  inv(a) {
+    const t = [a.r[0], a.r[3], a.r[6], a.r[1], a.r[4], a.r[7], a.r[2], a.r[5], a.r[8]];
+    const p = CF.mulV(t, a.p);
+    return { p: [-p[0], -p[1], -p[2]], r: t };
+  }
+};
+const rotOnly = cf => ({ p: [0, 0, 0], r: cf.r });
+
+function eulerMat(e) { // derajat, urutan XYZ (sama dengan CFrame.Angles)
+  const x = e[0] * D2R, y = e[1] * D2R, z = e[2] * D2R;
+  const cx = Math.cos(x), sx = Math.sin(x), cy = Math.cos(y), sy = Math.sin(y), cz = Math.cos(z), sz = Math.sin(z);
+  return CF.mulR(CF.mulR([1, 0, 0, 0, cx, -sx, 0, sx, cx], [cy, 0, sy, 0, 1, 0, -sy, 0, cy]), [cz, -sz, 0, sz, cz, 0, 0, 0, 1]);
+}
+function toEuler(cf) {
+  const r = cf.r;
+  const y = Math.asin(clamp(r[2], -1, 1));
+  let x, z;
+  if (Math.abs(r[2]) < 0.9999999) { x = Math.atan2(-r[5], r[8]); z = Math.atan2(-r[1], r[0]); }
+  else if (r[2] > 0) { x = Math.atan2(r[3], r[4]); z = 0; }
+  else { x = -Math.atan2(r[3], r[4]); z = 0; }
+  return [x / D2R, y / D2R, z / D2R];
+}
+function matToQuat(r) {
+  const t = r[0] + r[4] + r[8];
+  let w, x, y, z, s;
+  if (t > 0) { s = Math.sqrt(t + 1) * 2; w = s / 4; x = (r[7] - r[5]) / s; y = (r[2] - r[6]) / s; z = (r[3] - r[1]) / s; }
+  else if (r[0] > r[4] && r[0] > r[8]) { s = Math.sqrt(1 + r[0] - r[4] - r[8]) * 2; w = (r[7] - r[5]) / s; x = s / 4; y = (r[1] + r[3]) / s; z = (r[2] + r[6]) / s; }
+  else if (r[4] > r[8]) { s = Math.sqrt(1 + r[4] - r[0] - r[8]) * 2; w = (r[2] - r[6]) / s; x = (r[1] + r[3]) / s; y = s / 4; z = (r[5] + r[7]) / s; }
+  else { s = Math.sqrt(1 + r[8] - r[0] - r[4]) * 2; w = (r[3] - r[1]) / s; x = (r[2] + r[6]) / s; y = (r[5] + r[7]) / s; z = s / 4; }
+  return [w, x, y, z];
+}
+function quatToMat(q) {
+  const w = q[0], x = q[1], y = q[2], z = q[3];
+  return [1 - 2 * (y * y + z * z), 2 * (x * y - z * w), 2 * (x * z + y * w),
+          2 * (x * y + z * w), 1 - 2 * (x * x + z * z), 2 * (y * z - x * w),
+          2 * (x * z - y * w), 2 * (y * z + x * w), 1 - 2 * (x * x + y * y)];
+}
+function slerp(a, b, t) {
+  let d = a[0] * b[0] + a[1] * b[1] + a[2] * b[2] + a[3] * b[3];
+  if (d < 0) { b = b.map(v => -v); d = -d; }
+  if (d > 0.9995) {
+    const o = a.map((v, i) => v + (b[i] - v) * t);
+    const n = Math.hypot(o[0], o[1], o[2], o[3]);
+    return o.map(v => v / n);
+  }
+  const th = Math.acos(d), s = Math.sin(th);
+  const w1 = Math.sin((1 - t) * th) / s, w2 = Math.sin(t * th) / s;
+  return a.map((v, i) => v * w1 + b[i] * w2);
+}
+function lerpCF(a, b, t) {
+  return { p: a.p.map((v, i) => v + (b.p[i] - v) * t), r: quatToMat(slerp(matToQuat(a.r), matToQuat(b.r), t)) };
+}
+const jp2cf = jp => ({ p: jp.p.slice(), r: eulerMat(jp.e) });
+const cf2jp = cf => ({ p: cf.p.slice(), e: toEuler(cf) });
+
+/* ---------- Definisi rig ---------- */
+const ROOTF = [-1, 0, 0, 0, 0, 1, 0, 1, 0];
+const RSHF = [0, 0, 1, 0, 1, 0, -1, 0, 0];
+const LSHF = [0, 0, -1, 0, 1, 0, 1, 0, 0];
+const IDR = [1, 0, 0, 0, 1, 0, 0, 0, 1];
+
+function mkRig(parts, joints) {
+  const rig = { parts, joints: [], C0: {}, C1: {}, F: {}, byChild: {} };
+  for (const [n, p0, p1, J, F] of joints) {
+    const c0 = parts[p0].c, c1 = parts[p1].c;
+    rig.joints.push({ n, p0, p1, J });
+    rig.F[n] = { p: [0, 0, 0], r: F };
+    rig.C0[n] = { p: [J[0] - c0[0], J[1] - c0[1], J[2] - c0[2]], r: F };
+    rig.C1[n] = { p: [J[0] - c1[0], J[1] - c1[1], J[2] - c1[2]], r: F };
+    rig.byChild[p1] = n;
+  }
+  return rig;
+}
+const RIGS = {
+  R6: mkRig({
+    HumanoidRootPart: { size: [2, 2, 1], c: [0, 0, 0] },
+    Torso: { size: [2, 2, 1], c: [0, 0, 0] },
+    Head: { size: [1, 1, 1], c: [0, 1.5, 0] },
+    'Right Arm': { size: [1, 2, 1], c: [1.5, 0, 0] },
+    'Left Arm': { size: [1, 2, 1], c: [-1.5, 0, 0] },
+    'Right Leg': { size: [1, 2, 1], c: [0.5, -2, 0] },
+    'Left Leg': { size: [1, 2, 1], c: [-0.5, -2, 0] }
+  }, [
+    ['RootJoint', 'HumanoidRootPart', 'Torso', [0, 0, 0], ROOTF],
+    ['Neck', 'Torso', 'Head', [0, 1, 0], ROOTF],
+    ['Right Shoulder', 'Torso', 'Right Arm', [1, 0.5, 0], RSHF],
+    ['Left Shoulder', 'Torso', 'Left Arm', [-1, 0.5, 0], LSHF],
+    ['Right Hip', 'Torso', 'Right Leg', [1, -1, 0], RSHF],
+    ['Left Hip', 'Torso', 'Left Leg', [-1, -1, 0], LSHF]
+  ]),
+  // Catatan: frame (rotasi C0/C1) R15 diasumsikan identitas. Kalau rig R15 custom beda, ubah IDR di bawah.
+  R15: mkRig({
+    HumanoidRootPart: { size: [2, 2, 1], c: [0, 0, 0] },
+    LowerTorso: { size: [2, 0.4, 1], c: [0, 0, 0] },
+    UpperTorso: { size: [2, 1.6, 1], c: [0, 1, 0] },
+    Head: { size: [1.2, 1.2, 1.2], c: [0, 2.4, 0] },
+    RightUpperArm: { size: [1, 1.2, 1], c: [1.5, 1.1, 0] },
+    RightLowerArm: { size: [1, 1.1, 1], c: [1.5, -0.05, 0] },
+    RightHand: { size: [1, 0.3, 1], c: [1.5, -0.75, 0] },
+    LeftUpperArm: { size: [1, 1.2, 1], c: [-1.5, 1.1, 0] },
+    LeftLowerArm: { size: [1, 1.1, 1], c: [-1.5, -0.05, 0] },
+    LeftHand: { size: [1, 0.3, 1], c: [-1.5, -0.75, 0] },
+    RightUpperLeg: { size: [1, 1.2, 1], c: [0.5, -0.8, 0] },
+    RightLowerLeg: { size: [1, 1.2, 1], c: [0.5, -2, 0] },
+    RightFoot: { size: [1, 0.3, 1], c: [0.5, -2.75, 0] },
+    LeftUpperLeg: { size: [1, 1.2, 1], c: [-0.5, -0.8, 0] },
+    LeftLowerLeg: { size: [1, 1.2, 1], c: [-0.5, -2, 0] },
+    LeftFoot: { size: [1, 0.3, 1], c: [-0.5, -2.75, 0] }
+  }, [
+    ['RootRig', 'HumanoidRootPart', 'LowerTorso', [0, 0, 0], IDR],
+    ['Waist', 'LowerTorso', 'UpperTorso', [0, 0.2, 0], IDR],
+    ['Neck', 'UpperTorso', 'Head', [0, 1.8, 0], IDR],
+    ['RightShoulder', 'UpperTorso', 'RightUpperArm', [1.5, 1.7, 0], IDR],
+    ['RightElbow', 'RightUpperArm', 'RightLowerArm', [1.5, 0.5, 0], IDR],
+    ['RightWrist', 'RightLowerArm', 'RightHand', [1.5, -0.6, 0], IDR],
+    ['LeftShoulder', 'UpperTorso', 'LeftUpperArm', [-1.5, 1.7, 0], IDR],
+    ['LeftElbow', 'LeftUpperArm', 'LeftLowerArm', [-1.5, 0.5, 0], IDR],
+    ['LeftWrist', 'LeftLowerArm', 'LeftHand', [-1.5, -0.6, 0], IDR],
+    ['RightHip', 'LowerTorso', 'RightUpperLeg', [0.5, -0.2, 0], IDR],
+    ['RightKnee', 'RightUpperLeg', 'RightLowerLeg', [0.5, -1.4, 0], IDR],
+    ['RightAnkle', 'RightLowerLeg', 'RightFoot', [0.5, -2.6, 0], IDR],
+    ['LeftHip', 'LowerTorso', 'LeftUpperLeg', [-0.5, -0.2, 0], IDR],
+    ['LeftKnee', 'LeftUpperLeg', 'LeftLowerLeg', [-0.5, -1.4, 0], IDR],
+    ['LeftAnkle', 'LeftLowerLeg', 'LeftFoot', [-0.5, -2.6, 0], IDR]
+  ])
+};
+const jointNames = rigName => RIGS[rigName].joints.map(j => j.n);
+
+/* ---------- Easing ---------- */
+const bounceOut = t => {
+  const n = 7.5625, d = 2.75;
+  if (t < 1 / d) return n * t * t;
+  if (t < 2 / d) { t -= 1.5 / d; return n * t * t + 0.75; }
+  if (t < 2.5 / d) { t -= 2.25 / d; return n * t * t + 0.9375; }
+  t -= 2.625 / d; return n * t * t + 0.984375;
+};
+const OUTS = {
+  Cubic: t => 1 - Math.pow(1 - t, 3),
+  Elastic: t => (t <= 0 ? 0 : t >= 1 ? 1 : Math.pow(2, -10 * t) * Math.sin((t * 10 - 0.75) * (2 * Math.PI / 3)) + 1),
+  Bounce: bounceOut
+};
+function ease(t, style, dir) {
+  t = clamp(t, 0, 1);
+  if (style === 'Linear') return t;
+  if (style === 'Constant') return t >= 1 ? 1 : 0;
+  const o = OUTS[style] || (x => x);
+  if (dir === 'In') return 1 - o(1 - t);
+  if (dir === 'InOut') return t < 0.5 ? (1 - o(1 - 2 * t)) / 2 : (1 + o(2 * t - 1)) / 2;
+  return o(t);
+}
+const STYLES = ['Linear', 'Constant', 'Cubic', 'Elastic', 'Bounce'];
+const DIRS = ['In', 'Out', 'InOut'];
+const PRIOS = ['Core', 'Idle', 'Movement', 'Action', 'Action2', 'Action3', 'Action4'];
+
+/* ---------- Animasi ---------- */
+function newAnim(rig) { return { name: 'NewAnimation', rig, length: 1, loop: true, priority: 'Core', keys: [] }; }
+
+// Easing key tujuan (b) dipakai untuk transisi a -> b
+function evalPose(anim, t) {
+  const out = {};
+  const names = jointNames(anim.rig);
+  const ks = anim.keys;
+  if (!ks.length) { for (const n of names) out[n] = CF.id(); return out; }
+  let a = null, b = null;
+  for (const k of ks) {
+    if (k.time <= t + EPS) a = k; else if (!b) b = k;
+  }
+  if (!a) { a = ks[0]; b = null; }
+  const al = b ? ease((t - a.time) / (b.time - a.time), b.style, b.dir) : 0;
+  for (const n of names) {
+    const ca = a.pose[n] ? jp2cf(a.pose[n]) : CF.id();
+    out[n] = b ? lerpCF(ca, b.pose[n] ? jp2cf(b.pose[n]) : CF.id(), al) : ca;
+  }
+  return out;
+}
+
+function solveFK(rigName, pose) {
+  const rig = RIGS[rigName];
+  const world = { HumanoidRootPart: CF.id() };
+  for (const j of rig.joints) {
+    const T = pose[j.n] || CF.id();
+    world[j.p1] = CF.mul(CF.mul(CF.mul(world[j.p0], rig.C0[j.n]), T), CF.inv(rig.C1[j.n]));
+  }
+  return world;
+}
+
+/* ---------- Konversi R6 <-> R15 ---------- */
+const R6_TO_R15 = {
+  'RootJoint': 'RootRig', 'Neck': 'Neck',
+  'Right Shoulder': 'RightShoulder', 'Left Shoulder': 'LeftShoulder',
+  'Right Hip': 'RightHip', 'Left Hip': 'LeftHip'
+};
+const toDelta = (rig, j, T) => { const f = RIGS[rig].F[j]; return CF.mul(CF.mul(f, rotOnly(T)), CF.inv(f)); };
+const fromDelta = (rig, j, D) => { const f = RIGS[rig].F[j]; return CF.mul(CF.mul(CF.inv(f), D), f); };
+const addPos = (cf, p) => ({ p: [cf.p[0] + p[0], cf.p[1] + p[1], cf.p[2] + p[2]], r: cf.r });
+
+// pose: {joint: CF}  ->  {joint: CF} pada rig target
+function convertPose(from, pose) {
+  const out = {};
+  const g = n => pose[n] || CF.id();
+  if (from === 'R6') {
+    for (const a of Object.keys(R6_TO_R15)) {
+      const b = R6_TO_R15[a], T = g(a);
+      let nt = fromDelta('R15', b, toDelta('R6', a, T));
+      if (a === 'RootJoint') nt = addPos(nt, T.p);
+      out[b] = nt;
+    }
+    for (const n of jointNames('R15')) if (!out[n]) out[n] = CF.id();
+  } else {
+    const dRoot = toDelta('R15', 'RootRig', g('RootRig'));
+    const dWaist = toDelta('R15', 'Waist', g('Waist'));
+    const dWaistInv = CF.inv(dWaist);
+    out['RootJoint'] = addPos(fromDelta('R6', 'RootJoint', CF.mul(dRoot, dWaist)), g('RootRig').p);
+    out['Neck'] = fromDelta('R6', 'Neck', toDelta('R15', 'Neck', g('Neck')));
+    out['Right Shoulder'] = fromDelta('R6', 'Right Shoulder', toDelta('R15', 'RightShoulder', g('RightShoulder')));
+    out['Left Shoulder'] = fromDelta('R6', 'Left Shoulder', toDelta('R15', 'LeftShoulder', g('LeftShoulder')));
+    out['Right Hip'] = fromDelta('R6', 'Right Hip', CF.mul(dWaistInv, toDelta('R15', 'RightHip', g('RightHip'))));
+    out['Left Hip'] = fromDelta('R6', 'Left Hip', CF.mul(dWaistInv, toDelta('R15', 'LeftHip', g('LeftHip'))));
+  }
+  return out;
+}
+function convertAnimData(anim) {
+  const from = anim.rig, to = from === 'R6' ? 'R15' : 'R6';
+  for (const k of anim.keys) {
+    const cfp = {};
+    for (const j of Object.keys(k.pose)) cfp[j] = jp2cf(k.pose[j]);
+    const out = convertPose(from, cfp);
+    k.pose = {};
+    for (const j of Object.keys(out)) k.pose[j] = cf2jp(out[j]);
+  }
+  anim.rig = to;
+  return anim;
+}
+
+/* ---------- RBXMX export / import ---------- */
+const STYLE_TOK = { Linear: 0, Constant: 1, Elastic: 2, Cubic: 3, Bounce: 4 };
+const DIR_TOK = { In: 0, Out: 1, InOut: 2 };
+const PRIO_TOK = { Idle: 0, Movement: 1, Action: 2, Action2: 3, Action3: 4, Action4: 5, Core: 1000 };
+const esc = s => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+const num = n => { const s = (Math.abs(n) < 1e-9 ? 0 : n).toFixed(6).replace(/\.?0+$/, ''); return s === '' || s === '-0' ? '0' : s; };
+
+function buildRBXMX(anim) {
+  const rig = RIGS[anim.rig];
+  const kids = {};
+  for (const j of rig.joints) (kids[j.p0] = kids[j.p0] || []).push(j);
+  let ref = 0;
+  const R = () => 'RBX' + (ref++);
+  const keys = anim.keys.slice().sort((a, b) => a.time - b.time);
+  if (keys.length && keys[0].time > EPS) keys.unshift({ time: 0, style: keys[0].style, dir: keys[0].dir, pose: keys[0].pose });   // sama dengan preview: pose pertama ditahan sebelum key pertama
+  if (keys.length && keys[keys.length - 1].time < anim.length - EPS) {
+    const l = keys[keys.length - 1];
+    keys.push({ time: anim.length, style: l.style, dir: l.dir, pose: l.pose });
+  }
+  const cfXml = cf => '<CoordinateFrame name="CFrame"><X>' + num(cf.p[0]) + '</X><Y>' + num(cf.p[1]) + '</Y><Z>' + num(cf.p[2]) + '</Z>' +
+    ['R00', 'R01', 'R02', 'R10', 'R11', 'R12', 'R20', 'R21', 'R22'].map((n, i) => '<' + n + '>' + num(cf.r[i]) + '</' + n + '>').join('') + '</CoordinateFrame>';
+  const poseXml = (name, cf, style, dir, weight, inner) =>
+    '<Item class="Pose" referent="' + R() + '"><Properties>' + cfXml(cf) +
+    '<token name="EasingDirection">' + DIR_TOK[dir] + '</token><token name="EasingStyle">' + STYLE_TOK[style] + '</token>' +
+    '<string name="Name">' + esc(name) + '</string><float name="Weight">' + weight + '</float></Properties>' + inner + '</Item>';
+  const build = (partName, k) => (kids[partName] || []).map(j =>
+    poseXml(j.p1, k.pose[j.n] ? jp2cf(k.pose[j.n]) : CF.id(), k.style, k.dir, 1, build(j.p1, k))).join('');
+  let xml = '<roblox xmlns:xmime="http://www.w3.org/2005/05/xmlmime" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://www.roblox.com/roblox.xsd" version="4">\n';
+  xml += '<Item class="KeyframeSequence" referent="' + R() + '"><Properties><bool name="Loop">' + (anim.loop ? 'true' : 'false') + '</bool>' +
+    '<string name="Name">' + esc(anim.name || 'NewAnimation') + '</string><token name="Priority">' + PRIO_TOK[anim.priority] + '</token></Properties>\n';
+  for (const k of keys) {
+    xml += '<Item class="Keyframe" referent="' + R() + '"><Properties><string name="Name">Keyframe</string><float name="Time">' + num(k.time) + '</float></Properties>' +
+      poseXml('HumanoidRootPart', CF.id(), k.style, k.dir, 0, build('HumanoidRootPart', k)) + '</Item>\n';
+  }
+  return xml + '</Item>\n</roblox>';
+}
+
+function parseRBXMX(text) {
+  const doc = new DOMParser().parseFromString(text, 'text/xml');
+  if (doc.getElementsByTagName('parsererror').length) throw new Error('File XML tidak valid (binary .rbxm belum didukung, pakai .rbxmx).');
+  const ks = Array.from(doc.getElementsByTagName('Item')).find(i => i.getAttribute('class') === 'KeyframeSequence');
+  if (!ks) throw new Error('KeyframeSequence tidak ditemukan di file.');
+  const kids = (el, cls) => Array.from(el.children).filter(c => c.tagName === 'Item' && (!cls || c.getAttribute('class') === cls));
+  const prop = (el, tag, name) => {
+    const p = Array.from(el.children).find(c => c.tagName === 'Properties');
+    return p ? (Array.from(p.children).find(c => c.tagName === tag && c.getAttribute('name') === name) || null) : null;
+  };
+  const txt = (el, tag, name, def) => { const n = prop(el, tag, name); return n ? n.textContent.trim() : def; };
+  const styleNames = ['Linear', 'Constant', 'Elastic', 'Cubic', 'Bounce'];
+  const prioByTok = {}; for (const k of Object.keys(PRIO_TOK)) prioByTok[PRIO_TOK[k]] = k;
+
+  const collect = (el, arr) => {
+    for (const p of kids(el, 'Pose')) {
+      const c = prop(p, 'CoordinateFrame', 'CFrame');
+      let cf = CF.id();
+      if (c) {
+        const g = t => { const n = c.getElementsByTagName(t)[0]; return n ? parseFloat(n.textContent) : 0; };
+        cf = { p: [g('X'), g('Y'), g('Z')], r: [g('R00'), g('R01'), g('R02'), g('R10'), g('R11'), g('R12'), g('R20'), g('R21'), g('R22')] };
+        if (c.getElementsByTagName('R00').length === 0) cf.r = IDR.slice();
+      }
+      arr.push({ name: txt(p, 'string', 'Name', ''), cf, style: styleNames[parseInt(txt(p, 'token', 'EasingStyle', '0'), 10)] || 'Linear', dir: DIRS[parseInt(txt(p, 'token', 'EasingDirection', '1'), 10)] || 'Out' });
+      collect(p, arr);
+    }
+  };
+  const keyframes = kids(ks, 'Keyframe').map(kf => { const poses = []; collect(kf, poses); return { time: parseFloat(txt(kf, 'float', 'Time', '0')), poses }; });
+  const allNames = new Set(); keyframes.forEach(k => k.poses.forEach(p => allNames.add(p.name)));
+  const rigName = (allNames.has('LowerTorso') || allNames.has('UpperTorso')) ? 'R15' : 'R6';
+  const byPart = {}; for (const j of RIGS[rigName].joints) byPart[j.p1] = j.n;
+  const anim = newAnim(rigName);
+  anim.name = txt(ks, 'string', 'Name', 'ImportedAnimation');
+  anim.loop = txt(ks, 'bool', 'Loop', 'true') !== 'false';
+  anim.priority = prioByTok[parseInt(txt(ks, 'token', 'Priority', '1000'), 10)] || 'Core';
+  for (const kf of keyframes) {
+    const pose = {}; let style = null, dir = null;
+    for (const p of kf.poses) if (byPart[p.name]) { pose[byPart[p.name]] = cf2jp(p.cf); style = style || p.style; dir = dir || p.dir; }
+    anim.keys.push({ time: kf.time, style: style || 'Linear', dir: dir || 'Out', pose });
+    anim.length = Math.max(anim.length, kf.time);
+  }
+  anim.keys.sort((a, b) => a.time - b.time);
+  const last = anim.keys.length ? anim.keys[anim.keys.length - 1].time : 1;
+  anim.length = Math.max(last, 0.1);
+  return anim;
+}
+
+function luaSnippet(id) {
+  return 'local animation = Instance.new("Animation")\nanimation.AnimationId = "rbxassetid://' + id + '"\n\n' +
+    'local humanoid = character:WaitForChild("Humanoid")\nlocal animator = humanoid:WaitForChild("Animator")\n' +
+    'local track = animator:LoadAnimation(animation)\ntrack:Play()';
+}
+
+/* ---------- Mirror kiri <-> kanan ---------- */
+const MIRROR_NAME = n => n.replace(/^Right( ?)/, 'L\u0000$1').replace(/^Left( ?)/, 'Right$1').replace(/^L\u0000( ?)/, 'Left$1');
+function mirrorPoseMap(rigName, pose) {
+  const rig = RIGS[rigName];
+  const S = [-1, 0, 0, 0, 1, 0, 0, 0, 1];
+  const out = {};
+  for (const j of rig.joints) {
+    const tn = MIRROR_NAME(j.n);
+    if (!rig.F[tn]) continue;
+    const T = pose[j.n] || CF.id();
+    const D = toDelta(rigName, j.n, T);
+    const Dm = { p: [0, 0, 0], r: CF.mulR(CF.mulR(S, D.r), S) };
+    const pv = CF.mulV(rig.F[j.n].r, T.p);
+    const pm = [-pv[0], pv[1], pv[2]];
+    out[tn] = { p: CF.mulV(CF.inv(rig.F[tn]).r, pm), r: fromDelta(rigName, tn, Dm).r };
+  }
+  return out;
+}
+
+/* ---------- Preset (didefinisikan di ruang parent, otomatis disesuaikan ke frame rig) ---------- */
+const PJ = {
+  R6: { RS: 'Right Shoulder', LS: 'Left Shoulder', RH: 'Right Hip', LH: 'Left Hip', NK: 'Neck', RT: 'RootJoint' },
+  R15: { RS: 'RightShoulder', LS: 'LeftShoulder', RH: 'RightHip', LH: 'LeftHip', NK: 'Neck', RT: 'RootRig' }
+};
+const PRESETS = {
+  tpose: { label: 'T-Pose', length: 1, loop: true, keys: [{ t: 0, d: { RS: [0, 0, 90], LS: [0, 0, -90] } }] },
+  apose: { label: 'A-Pose', length: 1, loop: true, keys: [{ t: 0, d: { RS: [0, 0, 40], LS: [0, 0, -40] } }] },
+  idle: {
+    label: 'Idle (bernapas)', length: 2, loop: true, keys: [
+      { t: 0, d: { RS: [0, 0, 3], LS: [0, 0, -3] }, pos: { RT: [0, 0, 0] } },
+      { t: 1, d: { RS: [0, 0, 7], LS: [0, 0, -7], NK: [4, 0, 0] }, pos: { RT: [0, 0.07, 0] } },
+      { t: 2, d: { RS: [0, 0, 3], LS: [0, 0, -3] }, pos: { RT: [0, 0, 0] } }]
+  },
+  wave: {
+    label: 'Lambaikan tangan', length: 1.8, loop: false, keys: [
+      { t: 0, d: {} }, { t: 0.3, d: { RS: [0, 0, 150] } }, { t: 0.6, d: { RS: [0, 0, 175] } },
+      { t: 0.9, d: { RS: [0, 0, 150] } }, { t: 1.2, d: { RS: [0, 0, 175] } }, { t: 1.8, d: {} }]
+  },
+  walk: {
+    label: 'Walk cycle', length: 1, loop: true, keys: [
+      { t: 0, d: { RH: [32, 0, 0], LH: [-32, 0, 0], RS: [-28, 0, 0], LS: [28, 0, 0] }, pos: { RT: [0, -0.12, 0] } },
+      { t: 0.25, d: { RS: [0, 0, 4], LS: [0, 0, -4] }, pos: { RT: [0, 0.06, 0] } },
+      { t: 0.5, d: { RH: [-32, 0, 0], LH: [32, 0, 0], RS: [28, 0, 0], LS: [-28, 0, 0] }, pos: { RT: [0, -0.12, 0] } },
+      { t: 0.75, d: { RS: [0, 0, 4], LS: [0, 0, -4] }, pos: { RT: [0, 0.06, 0] } },
+      { t: 1, d: { RH: [32, 0, 0], LH: [-32, 0, 0], RS: [-28, 0, 0], LS: [28, 0, 0] }, pos: { RT: [0, -0.12, 0] } }]
+  }
+};
+function presetData(rigName, id) {
+  const P = PRESETS[id], names = PJ[rigName], rig = RIGS[rigName], keys = [];
+  for (const k of P.keys) {
+    const pose = {};
+    for (const n of jointNames(rigName)) pose[n] = { p: [0, 0, 0], e: [0, 0, 0] };
+    for (const code of Object.keys(k.d || {})) {
+      const jn = names[code]; if (!jn) continue;
+      pose[jn] = cf2jp(fromDelta(rigName, jn, { p: [0, 0, 0], r: eulerMat(k.d[code]) }));
+    }
+    for (const code of Object.keys(k.pos || {})) {
+      const jn = names[code]; if (!jn) continue;
+      pose[jn].p = CF.mulV(CF.inv(rig.F[jn]).r, k.pos[code]);
+    }
+    keys.push({ time: k.t, style: 'Cubic', dir: 'InOut', pose });
+  }
+  return { label: P.label, length: P.length, loop: P.loop, keys };
+}
+// </CORE>
+
+/* =====================  UI  ===================== */
+const $ = s => document.querySelector(s);
+let anim = newAnim('R15');
+let cur = 0, playing = false, speed = 1, sel = 'RootRig', clip = null;
+const rigDef = () => RIGS[anim.rig];
+const keyAt = t => anim.keys.find(k => Math.abs(k.time - t) < EPS);
+const sortKeys = () => anim.keys.sort((a, b) => a.time - b.time);
+const snap = t => Math.round(t * FPS) / FPS;
+
+/* ---------- Undo / Redo ---------- */
+let undoS = [], redoS = [], lastSnap = { tag: null, t: 0 };
+function snapshot(tag) {
+  const now = performance.now();
+  if (tag && tag === lastSnap.tag && now - lastSnap.t < 900) { lastSnap.t = now; return; }
+  lastSnap = { tag: tag || null, t: now };
+  undoS.push(JSON.stringify(anim)); if (undoS.length > 100) undoS.shift();
+  redoS = [];
+}
+function restoreState(str) {
+  const a = JSON.parse(str), changed = a.rig !== anim.rig;
+  anim = a; playing = false;
+  if (changed) { sel = rigDef().joints[0].n; rebuildRig(); }
+  renderAll();
+}
+function undo() { if (!undoS.length) return toast('Tidak ada yang bisa di-undo.', true); redoS.push(JSON.stringify(anim)); lastSnap.tag = null; restoreState(undoS.pop()); }
+function redo() { if (!redoS.length) return toast('Tidak ada yang bisa di-redo.', true); undoS.push(JSON.stringify(anim)); lastSnap.tag = null; restoreState(redoS.pop()); }
+
+function toast(msg, bad) {
+  const t = $('#toast'); t.textContent = msg; t.className = 'show' + (bad ? ' bad' : '');
+  clearTimeout(toast._t); toast._t = setTimeout(() => { t.className = ''; }, 3200);
+}
+function ensureKey(t) {
+  let k = keyAt(t);
+  if (k) return k;
+  const ev = evalPose(anim, t), pose = {};
+  for (const n of jointNames(anim.rig)) pose[n] = cf2jp(ev[n]);
+  k = { time: t, style: 'Linear', dir: 'Out', pose };
+  anim.keys.push(k); sortKeys();
+  return k;
+}
+function displayJoint(t, j) {
+  const k = keyAt(t);
+  if (k && k.pose[j]) return k.pose[j];
+  return cf2jp(evalPose(anim, t)[j] || CF.id());
+}
+
+/* ---------- 3D viewport ---------- */
+const canvas = $('#view');
+const renderer = new THREE.WebGLRenderer({ canvas, antialias: true });
+renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+const scene = new THREE.Scene();
+scene.background = new THREE.Color(0x14141c);
+const camera = new THREE.PerspectiveCamera(40, 1, 0.1, 300);
+scene.add(new THREE.AmbientLight(0xffffff, 0.7));
+const dl = new THREE.DirectionalLight(0xffffff, 0.75); dl.position.set(6, 12, 8); scene.add(dl);
+const grid = new THREE.GridHelper(24, 24, 0x7c5cff, 0x2a2a3c); grid.position.y = -3; scene.add(grid);
+const rigGroup = new THREE.Group(); scene.add(rigGroup);
+let meshes = {}, dots = {};
+const orbit = { yaw: Math.PI + 0.55, pitch: 0.22, dist: 15 };
+
+function partColor(n) {
+  if (n === 'Head') return 0xf1c27d;
+  if (/Torso/.test(n)) return 0x7c5cff;
+  if (/Hand|Foot/.test(n)) return 0xd9c7ff;
+  if (/Arm/.test(n)) return 0xa78bff;
+  return 0x4b3fb5;
+}
+function rebuildRig() {
+  while (rigGroup.children.length) rigGroup.remove(rigGroup.children[0]);
+  meshes = {}; dots = {};
+  const parts = rigDef().parts;
+  for (const n of Object.keys(parts)) {
+    const s = parts[n].size;
+    const geo = new THREE.BoxGeometry(s[0], s[1], s[2]);
+    let mat;
+    if (n === 'HumanoidRootPart') mat = new THREE.MeshBasicMaterial({ color: 0x8888aa, wireframe: true, transparent: true, opacity: 0.25 });
+    else mat = new THREE.MeshStandardMaterial({ color: partColor(n), roughness: 0.6, metalness: 0.05 });
+    const m = new THREE.Mesh(geo, mat);
+    m.matrixAutoUpdate = false;
+    m.userData.joint = rigDef().byChild[n] || null;
+    rigGroup.add(m); meshes[n] = m;
+  }
+  for (const j of rigDef().joints) {
+    const d = new THREE.Mesh(new THREE.SphereGeometry(0.16, 12, 12), new THREE.MeshBasicMaterial({ color: 0xffffff, depthTest: false, transparent: true, opacity: 0.85 }));
+    d.renderOrder = 10; d.userData.joint = j.n;
+    rigGroup.add(d); dots[j.n] = d;
+  }
+  highlight();
+}
+function highlight() {
+  for (const n of Object.keys(meshes)) {
+    const m = meshes[n];
+    if (m.material.emissive) m.material.emissive.setHex(m.userData.joint === sel ? 0x553399 : 0x000000);
+  }
+  for (const j of Object.keys(dots)) dots[j].material.color.setHex(j === sel ? 0xffd24a : 0xffffff);
+  document.querySelectorAll('#jointList button').forEach(b => b.classList.toggle('sel', b.dataset.j === sel));
+}
+function setMat(mesh, cf) {
+  const r = cf.r, p = cf.p;
+  mesh.matrix.set(r[0], r[1], r[2], p[0], r[3], r[4], r[5], p[1], r[6], r[7], r[8], p[2], 0, 0, 0, 1);
+  mesh.matrixWorldNeedsUpdate = true;
+}
+function updateScene() {
+  const pose = evalPose(anim, cur);
+  const world = solveFK(anim.rig, pose);
+  for (const n of Object.keys(meshes)) if (world[n]) setMat(meshes[n], world[n]);
+  for (const j of rigDef().joints) {
+    const wp = CF.mul(world[j.p0], rigDef().C0[j.n]);
+    dots[j.n].position.set(wp.p[0], wp.p[1], wp.p[2]);
+  }
+  updateGizmo(world);
+  const cp = Math.cos(orbit.pitch);
+  camera.position.set(orbit.dist * cp * Math.sin(orbit.yaw), -0.3 + orbit.dist * Math.sin(orbit.pitch), orbit.dist * cp * Math.cos(orbit.yaw));
+  camera.lookAt(0, -0.3, 0);
+}
+function resize() {
+  const w = canvas.clientWidth, h = canvas.clientHeight;
+  if (!w || !h) return;
+  renderer.setSize(w, h, false); camera.aspect = w / h; camera.updateProjectionMatrix();
+}
+new ResizeObserver(resize).observe(canvas.parentElement);
+
+// orbit + picking
+/* ---------- Gizmo (handle rotasi / posisi) ---------- */
+let gizmoMode = 'rotate';
+const gizmo = { rot: new THREE.Group(), mov: new THREE.Group() };
+let gBase = null, gd = null;
+(function buildGizmo() {
+  const cols = [0xff4d4d, 0x4dff7a, 0x4d8dff];
+  for (let i = 0; i < 3; i++) {
+    const mk = () => new THREE.MeshBasicMaterial({ color: cols[i], depthTest: false, transparent: true, opacity: 0.92 });
+    const ring = new THREE.Mesh(new THREE.TorusGeometry(1.5, 0.09, 8, 56), mk());
+    if (i === 0) ring.rotation.y = Math.PI / 2; else if (i === 1) ring.rotation.x = Math.PI / 2;
+    ring.renderOrder = 30; ring.userData = { type: 'rot', axis: i };
+    gizmo.rot.add(ring);
+    const arrow = new THREE.Group();
+    const shaft = new THREE.Mesh(new THREE.CylinderGeometry(0.09, 0.09, 1.7, 8), mk()); shaft.position.y = 0.85;
+    const head = new THREE.Mesh(new THREE.ConeGeometry(0.24, 0.5, 14), mk()); head.position.y = 1.95;
+    shaft.renderOrder = head.renderOrder = 30;
+    shaft.userData = { type: 'move', axis: i }; head.userData = { type: 'move', axis: i };
+    arrow.add(shaft); arrow.add(head);
+    if (i === 0) arrow.rotation.z = -Math.PI / 2; else if (i === 2) arrow.rotation.x = Math.PI / 2;
+    gizmo.mov.add(arrow);
+  }
+  for (const g of [gizmo.rot, gizmo.mov]) { g.matrixAutoUpdate = false; g.visible = false; scene.add(g); }
+})();
+function setGizmo(m) {
+  gizmoMode = m;
+  $('#gmRot').classList.toggle('sel', m === 'rotate');
+  $('#gmMov').classList.toggle('sel', m === 'move');
+}
+$('#gmRot').onclick = () => setGizmo('rotate');
+$('#gmMov').onclick = () => setGizmo('move');
+function updateGizmo(world) {
+  const j = rigDef().joints.find(x => x.n === sel);
+  const on = !!j && !playing;
+  gizmo.rot.visible = on && gizmoMode === 'rotate';
+  gizmo.mov.visible = on && gizmoMode === 'move';
+  if (!on) { gBase = null; return; }
+  const b = CF.mul(world[j.p0], rigDef().C0[j.n]);
+  gBase = { c: new THREE.Vector3(b.p[0], b.p[1], b.p[2]), F: b.r };
+  const s = orbit.dist / 15, r = b.r;
+  for (const g of [gizmo.rot, gizmo.mov]) {
+    g.matrix.set(r[0], r[1], r[2], b.p[0], r[3], r[4], r[5], b.p[1], r[6], r[7], r[8], b.p[2], 0, 0, 0, 1);
+    g.matrix.scale(new THREE.Vector3(s, s, s));
+    g.matrixWorldNeedsUpdate = true;
+    g.updateMatrixWorld(true);
+  }
+}
+function rayOf(e) {
+  const r = canvas.getBoundingClientRect();
+  const rc = new THREE.Raycaster();
+  rc.setFromCamera(new THREE.Vector2(((e.clientX - r.left) / r.width) * 2 - 1, -((e.clientY - r.top) / r.height) * 2 + 1), camera);
+  return rc;
+}
+function gizmoHit(e) {
+  const g = gizmoMode === 'rotate' ? gizmo.rot : gizmo.mov;
+  if (!g.visible) return null;
+  const h = rayOf(e).intersectObject(g, true).find(x => x.object.userData.type);
+  return h ? h.object.userData : null;
+}
+function planeAngle(rc) {
+  const plane = new THREE.Plane(gd.n.clone(), -gd.n.dot(gd.c));
+  const out = new THREE.Vector3();
+  if (!rc.ray.intersectPlane(plane, out)) return null;
+  out.sub(gd.c);
+  return Math.atan2(out.dot(gd.vv), out.dot(gd.uu));
+}
+function lineParam(rc) {
+  const d = rc.ray.direction, w = rc.ray.origin.clone().sub(gd.c);
+  const b = d.dot(gd.n), dd = d.dot(w), ee = gd.n.dot(w), den = 1 - b * b;
+  return den < 1e-4 ? null : (ee - b * dd) / den;
+}
+function startGizmo(hit, e) {
+  playing = false; syncPlay(); snapshot();
+  const k = ensureKey(cur);
+  if (!k.pose[sel]) k.pose[sel] = { p: [0, 0, 0], e: [0, 0, 0] };
+  const jp = k.pose[sel];
+  const n = new THREE.Vector3(gBase.F[hit.axis], gBase.F[3 + hit.axis], gBase.F[6 + hit.axis]).normalize();
+  const helper = Math.abs(n.y) < 0.9 ? new THREE.Vector3(0, 1, 0) : new THREE.Vector3(1, 0, 0);
+  const uu = new THREE.Vector3().crossVectors(n, helper).normalize();
+  const vv = new THREE.Vector3().crossVectors(n, uu);
+  gd = { type: hit.type, axis: hit.axis, key: k, T0: jp2cf(jp), p0: jp.p.slice(), e0: jp.e.slice(), n, uu, vv, c: gBase.c.clone(), total: 0, prev: null, s0: null };
+  const rc = rayOf(e);
+  if (gd.type === 'rot') gd.prev = planeAngle(rc); else gd.s0 = lineParam(rc);
+  renderTimeline(); updateKeyInfo();
+}
+function moveGizmo(e) {
+  const rc = rayOf(e);
+  if (gd.type === 'rot') {
+    const a = planeAngle(rc);
+    if (a === null) return;
+    if (gd.prev === null) { gd.prev = a; return; }
+    let d = a - gd.prev;
+    while (d > Math.PI) d -= 2 * Math.PI;
+    while (d < -Math.PI) d += 2 * Math.PI;
+    gd.total += d; gd.prev = a;
+    let deg = gd.total / D2R;
+    if (e.shiftKey) deg = Math.round(deg / 5) * 5;
+    const arr = [0, 0, 0]; arr[gd.axis] = deg;
+    const Tn = { p: gd.T0.p, r: CF.mulR(eulerMat(arr), gd.T0.r) };
+    gd.key.pose[sel] = cf2jp(Tn);
+  } else {
+    const s = lineParam(rc);
+    if (s === null) return;
+    if (gd.s0 === null) { gd.s0 = s; return; }
+    let d = s - gd.s0;
+    if (e.shiftKey) d = Math.round(d * 10) / 10;
+    const p = gd.p0.slice(); p[gd.axis] += d;
+    gd.key.pose[sel] = { p, e: gd.e0.slice() };
+  }
+  updateChannels();
+}
+
+/* ---------- Orbit + picking ---------- */
+let ptr = null;
+canvas.addEventListener('pointerdown', e => {
+  canvas.setPointerCapture(e.pointerId);
+  const hit = gBase ? gizmoHit(e) : null;
+  if (hit) { startGizmo(hit, e); return; }
+  ptr = { x: e.clientX, y: e.clientY, sx: e.clientX, sy: e.clientY, t: performance.now() };
+});
+canvas.addEventListener('pointermove', e => {
+  if (gd) { moveGizmo(e); return; }
+  if (!ptr) return;
+  orbit.yaw -= (e.clientX - ptr.x) * 0.008;
+  orbit.pitch = clamp(orbit.pitch + (e.clientY - ptr.y) * 0.008, -1.3, 1.4);
+  ptr.x = e.clientX; ptr.y = e.clientY;
+});
+canvas.addEventListener('pointerup', e => {
+  if (gd) { gd = null; return; }
+  if (ptr && Math.hypot(e.clientX - ptr.sx, e.clientY - ptr.sy) < 4 && performance.now() - ptr.t < 400) pick(e);
+  ptr = null;
+});
+canvas.addEventListener('pointercancel', () => { gd = null; ptr = null; });
+canvas.addEventListener('wheel', e => { e.preventDefault(); orbit.dist = clamp(orbit.dist * (1 + Math.sign(e.deltaY) * 0.08), 5, 50); }, { passive: false });
+function pick(e) {
+  const rc = rayOf(e);
+  const hits = rc.intersectObjects(Object.values(dots).concat(Object.values(meshes)));
+  const h = hits.find(x => x.object.userData.joint);
+  if (h) { sel = h.object.userData.joint; highlight(); updateChannels(); }
+}
+$('#btnCam').onclick = () => { orbit.yaw = Math.PI + 0.55; orbit.pitch = 0.22; orbit.dist = 15; };
+$('#btnGrid').onclick = () => { grid.visible = !grid.visible; };
+
+/* ---------- Timeline ---------- */
+const tlInner = $('#tlInner'), tlTrack = $('#tlTrack'), tlRuler = $('#tlRuler'), tlHead = $('#tlHead');
+function renderTimeline() {
+  tlTrack.innerHTML = ''; tlRuler.innerHTML = '';
+  const w = tlInner.clientWidth || 600;
+  const steps = [0.05, 0.1, 0.25, 0.5, 1, 2, 5, 10];
+  let st = steps.find(s => (s / anim.length) * w >= 60) || 10;
+  for (let t = 0; t <= anim.length + 1e-6; t += st) {
+    const d = document.createElement('div'); d.className = 'tick';
+    d.style.left = (t / anim.length * 100) + '%'; d.textContent = t.toFixed(2).replace(/\.?0+$/, '') + 's';
+    tlRuler.appendChild(d);
+  }
+  const at = keyAt(cur);
+  anim.keys.forEach((k, i) => {
+    const d = document.createElement('div'); d.className = 'kf' + (k === at ? ' sel' : '');
+    d.style.left = (k.time / anim.length * 100) + '%'; d.dataset.i = i;
+    d.title = k.time.toFixed(2) + 's · ' + k.style + '/' + k.dir;
+    tlTrack.appendChild(d);
+  });
+  updateTime();
+}
+function updateTime() {
+  tlHead.style.left = (anim.length > 0 ? clamp(cur / anim.length, 0, 1) * 100 : 0) + '%';
+  $('#timeLbl').textContent = cur.toFixed(2) + ' / ' + anim.length.toFixed(2) + 's  (f' + Math.round(cur * FPS) + ')';
+}
+const tFromX = x => { const r = tlInner.getBoundingClientRect(); return clamp((x - r.left) / r.width, 0, 1) * anim.length; };
+let drag = null;
+tlInner.addEventListener('pointerdown', e => {
+  tlInner.setPointerCapture(e.pointerId);
+  const m = e.target.closest('.kf');
+  if (m) { snapshot(); drag = { key: anim.keys[+m.dataset.i] }; cur = drag.key.time; }
+  else { drag = { scrub: true }; cur = snap(tFromX(e.clientX)); }
+  playing = false; syncPlay(); renderTimeline(); updateChannels(); updateKeyInfo();
+});
+tlInner.addEventListener('pointermove', e => {
+  if (!drag) return;
+  const t = snap(tFromX(e.clientX));
+  if (drag.scrub) cur = t;
+  else if (!anim.keys.find(k => k !== drag.key && Math.abs(k.time - t) < EPS)) { drag.key.time = t; cur = t; }
+  renderTimeline(); updateChannels();
+});
+const endDrag = () => { if (drag && drag.key) sortKeys(); drag = null; renderTimeline(); updateKeyInfo(); };
+tlInner.addEventListener('pointerup', endDrag);
+tlInner.addEventListener('pointercancel', endDrag);
+window.addEventListener('resize', renderTimeline);
+
+/* ---------- Panel joint ---------- */
+const CH = [
+  { k: 'e', i: 0, l: 'Rot X', min: -180, max: 180, st: 0.5 }, { k: 'e', i: 1, l: 'Rot Y', min: -180, max: 180, st: 0.5 }, { k: 'e', i: 2, l: 'Rot Z', min: -180, max: 180, st: 0.5 },
+  { k: 'p', i: 0, l: 'Pos X', min: -5, max: 5, st: 0.01 }, { k: 'p', i: 1, l: 'Pos Y', min: -5, max: 5, st: 0.01 }, { k: 'p', i: 2, l: 'Pos Z', min: -5, max: 5, st: 0.01 }
+];
+function buildChannels() {
+  const box = $('#channels'); box.innerHTML = '';
+  CH.forEach(c => {
+    const row = document.createElement('div'); row.className = 'chan';
+    row.innerHTML = '<label>' + c.l + '</label><input type="range" min="' + c.min + '" max="' + c.max + '" step="' + c.st + '"><input type="number" step="' + (c.k === 'e' ? 0.5 : 0.01) + '">';
+    c.rng = row.children[1]; c.num = row.children[2];
+    c.rng.oninput = () => setChan(c, parseFloat(c.rng.value));
+    c.num.onchange = () => setChan(c, parseFloat(c.num.value));
+    box.appendChild(row);
+  });
+}
+function buildJointList() {
+  const box = $('#jointList'); box.innerHTML = '';
+  for (const j of rigDef().joints) {
+    const b = document.createElement('button'); b.textContent = j.n; b.dataset.j = j.n;
+    b.onclick = () => { sel = j.n; highlight(); updateChannels(); };
+    box.appendChild(b);
+  }
+  if (!rigDef().joints.some(j => j.n === sel)) sel = rigDef().joints[0].n;
+  highlight();
+}
+function updateChannels() {
+  const jp = displayJoint(cur, sel);
+  for (const c of CH) {
+    const v = jp[c.k][c.i];
+    if (document.activeElement !== c.rng) c.rng.value = v;
+    if (document.activeElement !== c.num) c.num.value = Math.round(v * 1000) / 1000;
+  }
+}
+function setChan(c, v) {
+  if (isNaN(v)) { updateChannels(); return; }
+  playing = false; syncPlay();
+  snapshot('ch' + sel + c.k + c.i);
+  const k = ensureKey(cur);
+  if (!k.pose[sel]) k.pose[sel] = { p: [0, 0, 0], e: [0, 0, 0] };
+  k.pose[sel][c.k][c.i] = v;
+  renderTimeline(); updateChannels(); updateKeyInfo();
+}
+function updateKeyInfo() {
+  const k = keyAt(cur);
+  $('#kfStyle').disabled = $('#kfDir').disabled = $('#kfTime').disabled = !k;
+  if (k) { $('#kfStyle').value = k.style; $('#kfDir').value = k.dir; if (document.activeElement !== $('#kfTime')) $('#kfTime').value = k.time.toFixed(3); }
+  else $('#kfTime').value = '';
+  $('#kfInfo').textContent = k ? 'Keyframe aktif di ' + k.time.toFixed(2) + 's (' + anim.keys.length + ' total).' : 'Tidak ada keyframe di waktu ini (' + anim.keys.length + ' total).';
+}
+function syncPlay() { $('#btnPlay').textContent = playing ? '⏸ Pause' : '▶ Play'; }
+
+function renderAll() {
+  $('#animName').value = anim.name;
+  $('#animPrio').value = anim.priority;
+  $('#animLen').value = anim.length;
+  $('#chkLoop').checked = anim.loop;
+  $('#rigBadge').textContent = anim.rig;
+  $('#btnConvert').textContent = 'Convert ' + anim.rig + ' → ' + (anim.rig === 'R6' ? 'R15' : 'R6');
+  cur = clamp(cur, 0, anim.length);
+  buildJointList(); renderTimeline(); updateChannels(); updateKeyInfo(); syncPlay();
+}
+
+
+/* ---------- Sanitasi data impor (JSON / rbxmx rusak tidak boleh membekukan editor) ---------- */
+const finiteNum = (v, d = 0, lim = 1e4) => (typeof v === 'number' && isFinite(v)) ? Math.max(-lim, Math.min(lim, v)) : d;
+const cleanVec = a => { const o = [0, 0, 0]; if (Array.isArray(a)) for (let i = 0; i < 3; i++) o[i] = finiteNum(+a[i], 0); return o; };
+function dedupeKeys(keys) {   // dua keyframe di waktu yang sama membuat interpolasi 0/0 = NaN
+  const m = new Map(); for (const k of keys) m.set(Math.round(k.time * 1000), k);
+  return Array.from(m.values()).sort((x, y) => x.time - y.time);
+}
+function sanitizeKeys(keys, rigName) {
+  const names = jointNames(rigName), out = [];
+  for (const k of (Array.isArray(keys) ? keys : []).slice(0, 5000)) {
+    if (!k || typeof k !== 'object') continue;
+    const pose = {};
+    for (const n of names) { const v = k.pose && typeof k.pose === 'object' ? k.pose[n] : null; if (v && typeof v === 'object') pose[n] = { p: cleanVec(v.p), e: cleanVec(v.e) }; }
+    out.push({ time: clamp(finiteNum(+k.time, 0, 3600), 0, 3600), style: STYLES.includes(k.style) ? k.style : 'Linear', dir: DIRS.includes(k.dir) ? k.dir : 'Out', pose });
+  }
+  return dedupeKeys(out);
+}
+
+/* ---------- Aksi ---------- */
+function download(name, text, mime) {
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(new Blob([text], { type: mime })); a.download = name; a.click();
+  setTimeout(() => URL.revokeObjectURL(a.href), 1000);
+}
+const safeName = () => (anim.name || 'animation').replace(/[^\w\-]+/g, '_');
+function loadAnim(a) { undoS = []; redoS = []; anim = a; cur = 0; playing = false; sel = rigDef().joints[0].n; rebuildRig(); renderAll(); }
+
+$('#btnPlay').onclick = () => {
+  if (!anim.keys.length) return toast('Belum ada keyframe.', true);
+  playing = !playing; if (playing && cur >= anim.length - EPS) cur = 0; syncPlay();
+};
+$('#btnStop').onclick = () => { playing = false; cur = 0; syncPlay(); renderTimeline(); updateChannels(); updateKeyInfo(); };
+const step = d => { playing = false; cur = clamp(snap(cur + d / FPS), 0, anim.length); syncPlay(); renderTimeline(); updateChannels(); updateKeyInfo(); };
+$('#btnPrev').onclick = () => step(-1); $('#btnNext').onclick = () => step(1);
+$('#chkLoop').onchange = e => { anim.loop = e.target.checked; };
+$('#selSpeed').onchange = e => { speed = parseFloat(e.target.value); };
+
+$('#animName').oninput = e => { anim.name = e.target.value; };
+$('#animPrio').onchange = e => { anim.priority = e.target.value; };
+$('#animLen').onchange = e => {
+  const v = parseFloat(e.target.value), last = anim.keys.length ? anim.keys[anim.keys.length - 1].time : 0;
+  snapshot('len'); anim.length = Math.min(3600, Math.max(isNaN(v) ? anim.length : v, last, 0.1));
+  e.target.value = anim.length; cur = Math.min(cur, anim.length); renderTimeline();
+};
+
+$('#kfAdd').onclick = () => { snapshot(); ensureKey(cur); renderTimeline(); updateKeyInfo(); };
+$('#kfDel').onclick = () => {
+  const k = keyAt(cur); if (!k) return toast('Tidak ada keyframe di waktu ini.', true);
+  snapshot(); anim.keys.splice(anim.keys.indexOf(k), 1); renderTimeline(); updateKeyInfo();
+};
+$('#kfCopy').onclick = () => {
+  const k = keyAt(cur); if (!k) return toast('Tidak ada keyframe di waktu ini.', true);
+  clip = JSON.parse(JSON.stringify(k.pose)); toast('Pose disalin.');
+};
+$('#kfPaste').onclick = () => {
+  if (!clip) return toast('Clipboard kosong.', true);
+  snapshot(); const k = ensureKey(cur); k.pose = JSON.parse(JSON.stringify(clip));
+  renderTimeline(); updateChannels();
+};
+$('#kfStyle').onchange = e => { const k = keyAt(cur); if (k) { snapshot('style'); k.style = e.target.value; renderTimeline(); } };
+$('#kfDir').onchange = e => { const k = keyAt(cur); if (k) { snapshot('dir'); k.dir = e.target.value; renderTimeline(); } };
+$('#kfTime').onchange = e => {
+  const k = keyAt(cur), v = parseFloat(e.target.value);
+  if (!k || isNaN(v)) return updateKeyInfo();
+  const t = clamp(v, 0, 3600);
+  if (anim.keys.find(o => o !== k && Math.abs(o.time - t) < EPS)) { toast('Sudah ada keyframe di waktu itu.', true); return updateKeyInfo(); }
+  snapshot(); k.time = t; anim.length = Math.max(anim.length, t); sortKeys(); cur = t;
+  $('#animLen').value = anim.length; renderTimeline(); updateKeyInfo();
+};
+$('#jReset').onclick = () => { snapshot(); const k = ensureKey(cur); k.pose[sel] = { p: [0, 0, 0], e: [0, 0, 0] }; renderTimeline(); updateChannels(); };
+$('#jResetAll').onclick = () => { snapshot(); const k = ensureKey(cur); for (const n of jointNames(anim.rig)) k.pose[n] = { p: [0, 0, 0], e: [0, 0, 0] }; renderTimeline(); updateChannels(); };
+
+$('#kfMirror').onclick = () => {
+  snapshot(); const k = ensureKey(cur);
+  const cfp = {}; for (const n of Object.keys(k.pose)) cfp[n] = jp2cf(k.pose[n]);
+  const out = mirrorPoseMap(anim.rig, cfp);
+  for (const n of Object.keys(out)) k.pose[n] = cf2jp(out[n]);
+  renderTimeline(); updateChannels(); toast('Pose di-mirror kiri↔kanan.');
+};
+$('#btnPreset').onclick = () => {
+  if (anim.keys.length && !confirm('Ganti keyframe saat ini dengan preset?')) return;
+  snapshot();
+  const P = presetData(anim.rig, $('#presetSel').value);
+  anim.keys = P.keys; anim.length = P.length; anim.loop = P.loop; cur = 0; playing = false;
+  renderAll(); toast('Preset "' + P.label + '" diterapkan.');
+};
+$('#btnUndo').onclick = undo;
+$('#btnRedo').onclick = redo;
+
+$('#btnConvert').onclick = () => {
+  const to = anim.rig === 'R6' ? 'R15' : 'R6';
+  snapshot(); convertAnimData(anim);
+  sel = rigDef().joints[0].n; rebuildRig(); renderAll();
+  toast('Dikonversi ke ' + to + (to === 'R6' ? ' (Elbow/Knee/Wrist/Ankle R15 tidak ikut).' : '.'));
+};
+
+$('#btnNew').onclick = () => { if (!anim.keys.length || confirm('Buang animasi saat ini dan mulai baru?')) loadAnim(newAnim(anim.rig)); };
+$('#btnOpen').onclick = () => $('#fileIn').click();
+$('#fileIn').onchange = e => {
+  const f = e.target.files[0]; if (!f) return;
+  const rd = new FileReader();
+  rd.onload = () => {
+    try {
+      let a;
+      if (/\.json$/i.test(f.name)) {
+        const d = JSON.parse(rd.result);
+        if (d.format !== 'saltoria-animation' || !RIGS[d.rig] || !Array.isArray(d.keys)) throw new Error('Format JSON tidak dikenali.');
+        a = { name: String(d.name || 'Animation').slice(0, 50), rig: d.rig, length: Math.min(3600, Math.max(0.1, +d.length || 1)), loop: d.loop !== false, priority: PRIOS.includes(d.priority) ? d.priority : 'Core', keys: sanitizeKeys(d.keys, d.rig) };
+        a.keys.sort((x, y) => x.time - y.time);
+      } else { a = parseRBXMX(rd.result); a.keys = sanitizeKeys(a.keys, a.rig); a.length = Math.max(a.length, a.keys.length ? a.keys[a.keys.length - 1].time : 0.1, 0.1); }
+      loadAnim(a); toast('Berhasil dibuka: ' + a.keys.length + ' keyframe (' + a.rig + ').');
+    } catch (err) { toast(err.message, true); }
+    e.target.value = '';
+  };
+  rd.readAsText(f);
+};
+const toJSON = () => JSON.stringify({ format: 'saltoria-animation', version: 1, name: anim.name, rig: anim.rig, length: anim.length, loop: anim.loop, priority: anim.priority, keys: anim.keys }, null, 1);
+$('#btnSave').onclick = $('#btnExpJson').onclick = () => download(safeName() + '.json', toJSON(), 'application/json');
+$('#btnExpRbx').onclick = () => {
+  if (!anim.keys.length) return toast('Belum ada keyframe.', true);
+  download(safeName() + '.rbxmx', buildRBXMX(anim), 'application/xml');
+};
+
+/* ---------- Upload & ID ---------- */
+const sleep = ms => new Promise(r => setTimeout(r, ms));
+function setUp(msg, bad) { const s = $('#upStatus'); s.textContent = msg; s.className = 'status ' + (bad === true ? 'bad' : bad === false ? 'good' : ''); }
+async function api(body) {
+  let res;
+  try { res = await fetch('/api/upload-animation', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body), signal: AbortSignal.timeout(30000) }); }
+  catch (e) { return { error: e && e.name === 'TimeoutError' ? 'Server tidak merespons (timeout). Coba lagi.' : 'Tidak bisa terhubung ke server. Periksa koneksi internet.', _status: 0 }; }
+  const data = await res.json().catch(() => ({ error: 'Respon server tidak valid (HTTP ' + res.status + ').' }));
+  if (!res.ok && !data.error) data.error = 'HTTP ' + res.status;
+  data._status = res.status; data._retry = parseInt(res.headers.get('retry-after'), 10) || 0;
+  return data;
+}
+function friendlyError(r) {
+  if (r._status === 401 || r._status === 403) return 'API key ditolak: salah, kedaluwarsa, atau tidak punya izin Assets (read & write).';
+  if (r._status === 429) return 'Terlalu banyak permintaan. Tunggu sebentar lalu coba lagi.';
+  if (r._status === 400 || r._status === 502) return (r.error || 'Roblox menolak file.') + ' Kalau file ditolak, download .rbxmx lalu buka di Studio dan publish lewat Animation Editor.';
+  return r.error || 'Upload gagal.';
+}
+$('#btnUpload').onclick = async () => {
+  const apiKey = $('#upKey').value.trim(), cid = $('#upId').value.trim(), ctype = $('#upType').value;
+  if (!apiKey || !/^\d+$/.test(cid)) return toast('Isi API key dan ID creator (angka).', true);
+  if (!anim.keys.length) return toast('Belum ada keyframe.', true);
+  let xml;
+  try { xml = buildRBXMX(anim); if (new DOMParser().parseFromString(xml, 'text/xml').getElementsByTagName('parsererror').length) throw new Error('xml'); }
+  catch (e) { return toast('Gagal membuat file animasi. Periksa nama dan data keyframe.', true); }
+  lsSet('sas_creator', JSON.stringify({ ctype, cid }));
+  $('#btnUpload').disabled = true; setUp('Mengupload…');
+  try {
+    const payload = { action: 'upload', apiKey, creatorType: ctype, creatorId: cid, name: anim.name, description: 'Dibuat dengan Saltoria Animation Studio', rbxmx: xml };
+    let r = await api(payload);
+    for (let i = 0; i < 3 && r._status === 429; i++) { const w = Math.min(30, r._retry || 4 * (i + 1)); setUp('Terkena rate limit, menunggu ' + w + ' detik…'); await sleep(w * 1000); r = await api(payload); }
+    if (r.error) throw new Error(friendlyError(r));
+    for (let i = 0; i < 30 && !r.assetId && !r.error && r.operationId; i++) {
+      setUp('Menunggu Roblox memproses…'); await sleep(i < 3 ? 1000 : 2000);
+      r = await api({ action: 'status', apiKey, operationId: r.operationId });
+      if (r.error) throw new Error(friendlyError(r));
+    }
+    if (!r.assetId) throw new Error('Roblox belum mengembalikan Asset ID (timeout). Cek di Creator Dashboard → Animations.');
+    setUp('Berhasil! Asset ID: ' + r.assetId, false);
+    $('#idIn').value = r.assetId; genId(); pushHist({ name: anim.name, id: r.assetId, rig: anim.rig });
+  } catch (e) { setUp(e.message, true); }
+  $('#btnUpload').disabled = false;
+};
+function copyText(t) { navigator.clipboard.writeText(t).then(() => toast('Disalin.'), () => toast('Gagal menyalin.', true)); }
+function genId() {
+  const m = $('#idIn').value.match(/\d+/);
+  if (!m) return toast('Isi Asset ID (angka) dulu.', true);
+  $('#idOut').value = 'rbxassetid://' + m[0]; $('#luaOut').value = luaSnippet(m[0]);
+}
+$('#btnGenId').onclick = genId;
+$('#btnCopyId').onclick = () => { if ($('#idOut').value) copyText($('#idOut').value); };
+$('#btnCopyLua').onclick = () => { if ($('#luaOut').value) copyText($('#luaOut').value); };
+function loadHist() { try { return JSON.parse(localStorage.getItem('sas_hist') || '[]'); } catch (e) { return []; } }
+const lsSet = (k, v) => { try { localStorage.setItem(k, v); } catch (e) { /* mode privat / penuh: abaikan */ } };
+function pushHist(h) { const l = loadHist(); l.unshift(h); lsSet('sas_hist', JSON.stringify(l.slice(0, 20))); renderHist(); }
+function renderHist() {
+  const box = $('#hist'); box.innerHTML = '';
+  for (const h of loadHist()) {
+    const d = document.createElement('div');
+    const s = document.createElement('span'); s.textContent = h.name + ' (' + h.rig + ') — ' + h.id;
+    const b = document.createElement('button'); b.textContent = 'Salin'; b.style.padding = '2px 8px';
+    b.onclick = () => copyText('rbxassetid://' + h.id);
+    d.appendChild(s); d.appendChild(b); box.appendChild(d);
+  }
+}
+
+/* ---------- Keyboard ---------- */
+window.addEventListener('keydown', e => {
+  const ae = document.activeElement, tag = (ae && ae.tagName) || '';
+  const isUndoKey = (e.ctrlKey || e.metaKey) && ['z', 'y'].includes(e.key.toLowerCase());
+  // Fokus di kolom ketik / slider / checkbox / tombol: biarkan perilaku bawaannya (panah menggeser slider, Space menekan tombol).
+  // Hanya Ctrl+Z / Ctrl+Y yang tetap berlaku untuk elemen non-teks.
+  const nativeText = /TEXTAREA|SELECT/.test(tag) || (tag === 'INPUT' && !['range', 'checkbox'].includes(ae.type));
+  if (nativeText) return;
+  if (!isUndoKey && (tag === 'INPUT' || tag === 'BUTTON')) return;
+  if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'z') { e.preventDefault(); e.shiftKey ? redo() : undo(); }
+  else if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'y') { e.preventDefault(); redo(); }
+  else if (e.ctrlKey || e.metaKey || e.altKey) return;
+  else if (e.code === 'Space') { e.preventDefault(); $('#btnPlay').click(); }
+  else if (e.key === 'e' || e.key === 'E') setGizmo('rotate');
+  else if (e.key === 'w' || e.key === 'W') setGizmo('move');
+  else if (e.key === 'k' || e.key === 'K') $('#kfAdd').click();
+  else if (e.key === 'Delete' || e.key === 'Backspace') $('#kfDel').click();
+  else if (e.key === 'ArrowLeft') step(-1);
+  else if (e.key === 'ArrowRight') step(1);
+});
+
+/* ---------- Loop ---------- */
+let last = performance.now();
+function loop(now) {
+  const dt = Math.min(0.1, (now - last) / 1000); last = now;
+  if (playing) {
+    cur += dt * speed;
+    if (cur >= anim.length) {
+      if (anim.loop && anim.length > 0) cur %= anim.length;
+      else { cur = anim.length; playing = false; syncPlay(); }
+    }
+    updateTime(); updateChannels();
+  }
+  try { updateScene(); renderer.render(scene, camera); }
+  catch (err) { if (!loop._warned) { loop._warned = true; console.error(err); toast('Terjadi kesalahan render. Coba muat ulang atau buka animasi lain.', true); } }
+  requestAnimationFrame(loop);
+}
+
+/* ---------- Init ---------- */
+(function init() {
+  $('#animPrio').innerHTML = PRIOS.map(p => '<option>' + p + '</option>').join('');
+  $('#kfStyle').innerHTML = STYLES.map(p => '<option>' + p + '</option>').join('');
+  $('#kfDir').innerHTML = DIRS.map(p => '<option>' + p + '</option>').join('');
+  $('#presetSel').innerHTML = Object.keys(PRESETS).map(id => '<option value="' + id + '">' + PRESETS[id].label + '</option>').join('');
+  try { const c = JSON.parse(localStorage.getItem('sas_creator') || 'null'); if (c) { $('#upType').value = c.ctype; $('#upId').value = c.cid; } } catch (e) {}
+  buildChannels(); rebuildRig(); renderAll(); renderHist(); resize();
+  requestAnimationFrame(loop);
+})();
+</script>
+<script src="../shared.js" defer></script>
+</body>
+</html>

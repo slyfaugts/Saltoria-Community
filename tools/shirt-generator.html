@@ -1,0 +1,542 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Shirt Generator — Saltoria Tools</title>
+<meta name="description" content="Desain Classic Shirt dan Pants Roblox di kanvas 585×559: isi panel dengan warna, gradient, gambar, atau teks, lalu ekspor PNG transparan.">
+<meta name="theme-color" content="#0E0E16">
+<meta property="og:title" content="Shirt Generator — Saltoria Tools">
+<meta property="og:description" content="Desain Classic Shirt dan Pants Roblox di kanvas 585×559: isi panel dengan warna, gradient, gambar, atau teks, lalu ekspor PNG transparan.">
+<meta property="og:image" content="https://saltoria.site/assets/og-image.png">
+<meta property="og:url" content="https://saltoria.site/tools/shirt-generator">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Saltoria Community">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="canonical" href="https://saltoria.site/tools/shirt-generator">
+<link rel="icon" type="image/png" href="../assets/favicon.png">
+<link rel="apple-touch-icon" href="../assets/favicon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700;800&family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<script>try{if(localStorage.getItem('saltoria-theme')==='light')document.documentElement.classList.add('light-mode')}catch(e){}</script>
+<link rel="stylesheet" href="../shared.css">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Inter',sans-serif;font-size:15px;line-height:1.7;overflow-x:hidden;-webkit-font-smoothing:antialiased;min-height:100vh}
+a{text-decoration:none;color:inherit}
+
+.sg-hint{font-size:12px;color:var(--muted);margin-top:.6rem}
+#cv{cursor:crosshair;width:100%;max-width:585px}
+.r6-wrap{position:relative;border-radius:12px;overflow:hidden;background:radial-gradient(ellipse at 50% 35%,#2b2745,#0b0b12 75%);border:1px solid var(--border)}
+#r6{display:block;width:100%;aspect-ratio:1/1.1;max-height:470px;touch-action:none;cursor:grab}
+@media(min-width:901px){.r6-card{position:sticky;top:84px}}
+#r6:active{cursor:grabbing}
+.r6-hint{position:absolute;left:0;right:0;bottom:8px;text-align:center;font:500 10px 'JetBrains Mono',monospace;letter-spacing:1px;color:rgba(200,196,230,.55);pointer-events:none}
+.r6-fallback{display:none}
+.r6-sw{display:flex;gap:6px;flex-wrap:wrap;align-items:center}
+.r6-sw button{width:26px;height:26px;border-radius:50%;border:2px solid var(--border-strong);cursor:pointer;padding:0}
+.r6-sw button.on{border-color:var(--accent2);box-shadow:0 0 0 2px rgba(124,92,252,.35)}
+.sg-prev{display:flex;gap:1rem;flex-wrap:wrap}
+.sg-prev figure{flex:1;min-width:150px;text-align:center}
+.sg-prev figcaption{font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:1.5px;color:var(--muted);margin-top:6px}
+.sg-prev canvas{width:100%;max-width:256px;image-rendering:pixelated}
+#selLabel{color:var(--accent2)}
+
+</style>
+</head>
+<body>
+<nav id="main-nav" data-tool="SHIRT GENERATOR"><a href="../index.html" class="nav-logo-text">SALTORIA</a></nav>
+
+<header class="tk-hero">
+  <div class="tk-badge">👕 CLOTHING TOOL</div>
+  <h1>Shirt <em>Generator</em></h1>
+  <p>Desain Classic Shirt &amp; Pants Roblox di kanvas <code>585×559</code>. Isi tiap panel dengan warna, gradient, gambar, atau teks, putar avatar R6 untuk melihat hasilnya dari semua sisi, lalu ekspor PNG transparan siap upload.</p>
+</header>
+<main class="tk-wrap"><div class="tk-grid">
+  <div class="tk-stack">
+    <div class="tk-card">
+      <h2>Kanvas <small>585 × 559 PX</small></h2>
+      <div class="tk-row" style="margin-bottom:.8rem">
+        <div class="tk-seg" id="modeSeg" role="group" aria-label="Jenis pakaian">
+          <button type="button" data-mode="shirt" class="on">Shirt</button>
+          <button type="button" data-mode="pants">Pants</button>
+        </div>
+        <label class="tk-check" style="margin:0"><input type="checkbox" id="guides" checked> Tampilkan panduan panel</label>
+      </div>
+      <div class="tk-checker"><canvas id="cv" width="585" height="559" aria-label="Kanvas template pakaian"></canvas></div>
+      <p class="sg-hint">Klik sebuah panel untuk memilihnya. Panduan (garis &amp; label) tidak ikut terekspor.</p>
+    </div>
+    <div class="tk-card r6-card">
+      <h2>Preview 360° · Avatar R6 <small id="r6Info">SHIRT + PANTS</small></h2>
+      <div class="r6-wrap"><canvas id="r6" width="400" height="500" aria-label="Preview 3D avatar R6, seret untuk memutar"></canvas><div class="r6-hint">SERET UNTUK MEMUTAR · SCROLL UNTUK ZOOM</div></div>
+      <div class="tk-row" style="margin-top:.8rem">
+        <div class="tk-seg" id="r6View" role="group" aria-label="Sudut pandang"><button type="button" data-yaw="0">Depan</button><button type="button" data-yaw="-90">Kanan</button><button type="button" data-yaw="180">Belakang</button><button type="button" data-yaw="90">Kiri</button></div>
+        <label class="tk-check" style="margin:0"><input type="checkbox" id="r6Auto" checked> Putar otomatis</label>
+      </div>
+      <div class="tk-row" style="margin-top:.7rem">
+        <label class="tk-check" style="margin:0"><input type="checkbox" id="r6Shirt" checked> Shirt</label>
+        <label class="tk-check" style="margin:0"><input type="checkbox" id="r6Pants" checked> Pants</label>
+        <label class="tk-check" style="margin:0"><input type="checkbox" id="r6Face" checked> Wajah</label>
+      </div>
+      <div class="tk-field" style="margin-top:.8rem"><label>Warna kulit (kepala, tangan, kaki)</label>
+        <div class="r6-sw" id="r6Skin"></div>
+      </div>
+      <div class="tk-note" id="r6Note" style="margin-top:.6rem">Shirt menutupi badan &amp; lengan; Pants menutupi pinggang &amp; kaki. Beralih tab Shirt/Pants di atas kanvas untuk mendesain keduanya.</div>
+      <div class="r6-fallback" id="r6Fallback">
+        <div class="tk-note warn" style="margin:.8rem 0">WebGL tidak tersedia di browser ini, jadi preview 3D dinonaktifkan. Pratinjau datar ditampilkan sebagai gantinya.</div>
+        <div class="sg-prev">
+          <figure><div class="tk-checker"><canvas id="pvFront" width="256" height="128"></canvas></div><figcaption>DEPAN</figcaption></figure>
+          <figure><div class="tk-checker"><canvas id="pvBack" width="256" height="128"></canvas></div><figcaption>BELAKANG</figcaption></figure>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="tk-stack">
+    <div class="tk-card">
+      <h2>Panel terpilih <small id="selLabel">—</small></h2>
+      <div class="tk-field">
+        <label for="scope">Terapkan perubahan ke</label>
+        <select class="tk-select" id="scope">
+          <option value="one">Panel ini saja</option>
+          <option value="group">Semua panel di bagian yang sama</option>
+          <option value="all">Semua panel</option>
+        </select>
+      </div>
+      <div class="tk-field">
+        <label for="fillType">Isi panel</label>
+        <select class="tk-select" id="fillType">
+          <option value="none">Kosong (transparan)</option>
+          <option value="solid">Warna solid</option>
+          <option value="gradient">Gradient</option>
+        </select>
+      </div>
+      <div class="tk-cols2" id="fillRow">
+        <div class="tk-field"><label for="c1">Warna 1</label><input class="tk-input" type="color" id="c1" value="#7c5cfc"></div>
+        <div class="tk-field" id="c2wrap"><label for="c2">Warna 2</label><input class="tk-input" type="color" id="c2" value="#1a1a28"></div>
+      </div>
+      <div class="tk-field" id="angleWrap"><label for="angle">Sudut gradient: <span id="angleV">90</span>°</label><input class="tk-input" type="range" id="angle" min="0" max="360" value="90"></div>
+
+      <div class="tk-field"><label>Gambar di panel</label>
+        <div class="tk-row">
+          <input type="file" id="imgFile" accept="image/*" class="tk-sr" aria-label="Pilih gambar">
+          <button class="tk-btn sec sm" type="button" id="imgBtn">Pilih gambar…</button>
+          <button class="tk-btn sec sm" type="button" id="imgClear">Hapus gambar</button>
+          <span class="tk-pill" id="imgName">belum ada</span>
+        </div>
+      </div>
+      <div class="tk-cols2">
+        <div class="tk-field"><label for="fit">Penyesuaian</label>
+          <select class="tk-select" id="fit"><option value="cover">Cover (penuh, dipotong)</option><option value="contain">Contain (utuh)</option><option value="stretch">Stretch</option></select></div>
+        <div class="tk-field"><label for="op">Opasitas: <span id="opV">100</span>%</label><input class="tk-input" type="range" id="op" min="0" max="100" value="100"></div>
+      </div>
+
+      <div class="tk-field"><label for="txt">Teks (boleh beberapa baris)</label><textarea class="tk-textarea" id="txt" rows="2" style="min-height:56px" placeholder="mis. SALTORIA"></textarea></div>
+      <div class="tk-cols3">
+        <div class="tk-field"><label for="tc">Warna teks</label><input class="tk-input" type="color" id="tc" value="#ffffff"></div>
+        <div class="tk-field"><label for="ts">Ukuran</label><input class="tk-input" type="number" id="ts" min="6" max="200" value="28"></div>
+        <div class="tk-field"><label for="tf">Font</label><select class="tk-select" id="tf"><option>Inter</option><option>Space Grotesk</option><option>JetBrains Mono</option></select></div>
+      </div>
+    </div>
+
+    <div class="tk-card">
+      <h2>Gambar dasar &amp; ekspor</h2>
+      <div class="tk-field"><label>Impor desain lengkap (opsional)</label>
+        <div class="tk-row">
+          <input type="file" id="baseFile" accept="image/png,image/jpeg,image/webp" class="tk-sr" aria-label="Pilih desain dasar">
+          <button class="tk-btn sec sm" type="button" id="baseBtn">Impor PNG/JPG…</button>
+          <button class="tk-btn sec sm" type="button" id="baseClear">Lepas</button>
+          <span class="tk-pill" id="baseName">tidak ada</span>
+        </div>
+        <p class="sg-hint">Dipakai sebagai lapisan paling bawah; gambar yang bukan 585×559 akan diskalakan ke ukuran itu.</p>
+      </div>
+      <div class="tk-row" style="margin-bottom:.8rem">
+        <button class="tk-btn" type="button" id="exportBtn">⬇ Unduh PNG 585×559</button>
+        <button class="tk-btn sec" type="button" id="guideBtn">Unduh template panduan</button>
+        <button class="tk-btn sec" type="button" id="bothBtn">Unduh Shirt + Pants</button>
+      </div>
+      <div class="tk-row">
+        <button class="tk-btn sec sm" type="button" id="copyArm">Salin lengan kanan → kiri</button>
+        <button class="tk-btn sec sm" type="button" id="resetBtn">Reset semua</button>
+      </div>
+      <div class="tk-note" style="margin-top:1rem" id="modeNote"></div>
+    </div>
+  </div>
+</div></main>
+
+<div class="tk-toast" id="toast" role="status" aria-live="polite"></div>
+<script src="../shared.js" defer></script>
+<script>
+
+/*@pure-start*/
+const W = 585, H = 559;
+// Koordinat panel Classic Shirt/Pants (sheet 585×559). Pants memakai layout yang sama:
+// panel torso = pinggang, panel lengan = kaki.
+const PANELS = [
+  {id:'t-up', g:'torso', n:'UP',    x:231, y:8,   w:128, h:64},
+  {id:'t-r',  g:'torso', n:'R',     x:165, y:74,  w:64,  h:128},
+  {id:'t-f',  g:'torso', n:'FRONT', x:231, y:74,  w:128, h:128},
+  {id:'t-l',  g:'torso', n:'L',     x:361, y:74,  w:64,  h:128},
+  {id:'t-b',  g:'torso', n:'BACK',  x:427, y:74,  w:128, h:128},
+  {id:'t-dn', g:'torso', n:'DOWN',  x:231, y:204, w:128, h:64},
+  {id:'ra-up',g:'ra',    n:'U',     x:217, y:289, w:64,  h:64},
+  {id:'ra-l', g:'ra',    n:'L',     x:19,  y:355, w:64,  h:128},
+  {id:'ra-b', g:'ra',    n:'B',     x:85,  y:355, w:64,  h:128},
+  {id:'ra-r', g:'ra',    n:'R',     x:151, y:355, w:64,  h:128},
+  {id:'ra-f', g:'ra',    n:'F',     x:217, y:355, w:64,  h:128},
+  {id:'ra-dn',g:'ra',    n:'D',     x:217, y:485, w:64,  h:64},
+  {id:'la-up',g:'la',    n:'U',     x:308, y:289, w:64,  h:64},
+  {id:'la-f', g:'la',    n:'F',     x:308, y:355, w:64,  h:128},
+  {id:'la-l', g:'la',    n:'L',     x:374, y:355, w:64,  h:128},
+  {id:'la-b', g:'la',    n:'B',     x:440, y:355, w:64,  h:128},
+  {id:'la-r', g:'la',    n:'R',     x:506, y:355, w:64,  h:128},
+  {id:'la-dn',g:'la',    n:'D',     x:308, y:485, w:64,  h:64},
+];
+const GROUP_NAMES = {
+  shirt: {torso:'Badan', ra:'Lengan kanan', la:'Lengan kiri'},
+  pants: {torso:'Pinggang', ra:'Kaki kanan', la:'Kaki kiri'},
+};
+function fitRect(sw, sh, dw, dh, mode) {
+  if (mode === 'stretch') return {x:0, y:0, w:dw, h:dh};
+  const k = mode === 'contain' ? Math.min(dw/sw, dh/sh) : Math.max(dw/sw, dh/sh);
+  const w = sw*k, h = sh*k;
+  return {x:(dw-w)/2, y:(dh-h)/2, w, h};
+}
+function panelAt(x, y) {
+  for (let i = PANELS.length-1; i >= 0; i--) {
+    const p = PANELS[i];
+    if (x >= p.x && x < p.x+p.w && y >= p.y && y < p.y+p.h) return p;
+  }
+  return null;
+}
+function panelsOverlap() {
+  for (let i = 0; i < PANELS.length; i++) for (let j = i+1; j < PANELS.length; j++) {
+    const a = PANELS[i], b = PANELS[j];
+    if (a.x < b.x+b.w && b.x < a.x+a.w && a.y < b.y+b.h && b.y < a.y+a.h) return [a.id, b.id];
+  }
+  return null;
+}
+function mirrorId(id) { const [g, s] = id.split('-'); return g === 'ra' ? 'la-'+s : g === 'la' ? 'ra-'+s : null; }
+
+// ── Avatar R6 (satuan stud: torso 2×2×1, lengan & kaki 1×2×1, kepala ≈ silinder) ──
+// Sudut tiap wajah kotak, urutan TL, TR, BR, BL seperti DILIHAT DARI LUAR (+z = depan avatar,
+// -x = sisi KANAN avatar, +x = sisi KIRI avatar). Urutan ini cocok dengan layout template 585×559.
+const FACES = {
+  f:{n:[0,0,1],  c:(x,y,z)=>[[-x,y,z],[x,y,z],[x,-y,z],[-x,-y,z]]},
+  b:{n:[0,0,-1], c:(x,y,z)=>[[x,y,-z],[-x,y,-z],[-x,-y,-z],[x,-y,-z]]},
+  r:{n:[-1,0,0], c:(x,y,z)=>[[-x,y,-z],[-x,y,z],[-x,-y,z],[-x,-y,-z]]},
+  l:{n:[1,0,0],  c:(x,y,z)=>[[x,y,z],[x,y,-z],[x,-y,-z],[x,-y,z]]},
+  u:{n:[0,1,0],  c:(x,y,z)=>[[-x,y,-z],[x,y,-z],[x,y,z],[-x,y,z]]},
+  d:{n:[0,-1,0], c:(x,y,z)=>[[-x,-y,z],[x,-y,z],[x,-y,-z],[-x,-y,-z]]},
+};
+const ARM_R = {f:'ra-f', b:'ra-b', r:'ra-r', l:'ra-l', u:'ra-up', d:'ra-dn'};
+const ARM_L = {f:'la-f', b:'la-b', r:'la-r', l:'la-l', u:'la-up', d:'la-dn'};
+const PARTS = [
+  {name:'torso', c:[0, 3, 0],    s:[2, 2, 1], map:{f:'t-f', b:'t-b', r:'t-r', l:'t-l', u:'t-up', d:'t-dn'}, shirt:true,  pants:true},
+  {name:'rarm',  c:[-1.5, 3, 0], s:[1, 2, 1], map:ARM_R, shirt:true,  pants:false},
+  {name:'larm',  c:[1.5, 3, 0],  s:[1, 2, 1], map:ARM_L, shirt:true,  pants:false},
+  {name:'rleg',  c:[-0.5, 1, 0], s:[1, 2, 1], map:ARM_R, shirt:false, pants:true},
+  {name:'lleg',  c:[0.5, 1, 0],  s:[1, 2, 1], map:ARM_L, shirt:false, pants:true},
+];
+function panelById(id) { return PANELS.find(p => p.id === id); }
+// Menambahkan satu wajah ke batch {pos, nor, uv, idx}. rect = panel (opsional → UV), grow = penebalan lapisan.
+function addFace(batch, part, face, rect, grow) {
+  const F = FACES[face], hx = part.s[0]/2 + grow, hy = part.s[1]/2 + grow, hz = part.s[2]/2 + grow;
+  const corners = F.c(hx, hy, hz), base = batch.pos.length / 3;
+  const ins = 0.5;   // setengah texel agar tepi panel tidak "bocor" ke panel tetangga
+  const uvs = rect ? [[(rect.x+ins)/W, (rect.y+ins)/H], [(rect.x+rect.w-ins)/W, (rect.y+ins)/H], [(rect.x+rect.w-ins)/W, (rect.y+rect.h-ins)/H], [(rect.x+ins)/W, (rect.y+rect.h-ins)/H]] : [[0,0],[1,0],[1,1],[0,1]];
+  corners.forEach((c, i) => { batch.pos.push(part.c[0]+c[0], part.c[1]+c[1], part.c[2]+c[2]); batch.nor.push(F.n[0], F.n[1], F.n[2]); batch.uv.push(uvs[i][0], uvs[i][1]); });
+  batch.idx.push(base, base+3, base+2, base, base+2, base+1);   // TL,BL,BR + TL,BR,TR (berlawanan jarum jam dari luar)
+}
+function newBatch() { return {pos:[], nor:[], uv:[], idx:[]}; }
+function buildLayer(kind, grow) {            // kind: 'skin' | 'shirt' | 'pants'
+  const b = newBatch();
+  PARTS.forEach(pt => { if (kind !== 'skin' && !pt[kind]) return; Object.keys(FACES).forEach(f => addFace(b, pt, f, kind === 'skin' ? null : panelById(pt.map[f]), grow)); });
+  return b;
+}
+// Kepala: silinder dengan tepi membulat (profil radius-tinggi), normal halus.
+function buildHead(seg) {
+  const b = newBatch(), cy = 4.5, R = 0.62;
+  const prof = [[0,5.0],[0.44,5.0],[0.58,4.95],[R,4.84],[R,4.16],[0.58,4.05],[0.44,4.0],[0,4.0]];
+  const nrm = prof.map((p, i) => { const a = prof[Math.max(0, i-1)], c = prof[Math.min(prof.length-1, i+1)]; const tx = c[0]-a[0], ty = c[1]-a[1]; const l = Math.hypot(tx, ty) || 1; return [-ty/l, tx/l]; });   // profil digambar dari atas ke bawah → normal keluar = (-ty, tx)
+  // normal dipaksa menghadap keluar: titik tutup atas (0,5.0) → ke atas, bawah → ke bawah
+  nrm[0] = [0, 1]; nrm[prof.length-1] = [0, -1];
+  for (let i = 0; i < prof.length - 1; i++) for (let k = 0; k < seg; k++) {
+    const t0 = 2*Math.PI*k/seg, t1 = 2*Math.PI*(k+1)/seg, base = b.pos.length/3;
+    [[i,t0],[i,t1],[i+1,t1],[i+1,t0]].forEach(([j, t]) => {
+      b.pos.push(prof[j][0]*Math.sin(t), prof[j][1], prof[j][0]*Math.cos(t)); b.nor.push(nrm[j][0]*Math.sin(t), nrm[j][1], nrm[j][0]*Math.cos(t)); b.uv.push(0, 0);
+    });
+    // arah segitiga: samakan dengan normal rata-rata keempat titik (menghadap keluar)
+    const P = b.pos, N = b.nor, v = n => [P[(base+n)*3], P[(base+n)*3+1], P[(base+n)*3+2]];
+    const tri = (i, j, k) => { const a = v(i), bb = v(j), c = v(k), e1 = [bb[0]-a[0], bb[1]-a[1], bb[2]-a[2]], e2 = [c[0]-a[0], c[1]-a[1], c[2]-a[2]]; return [e1[1]*e2[2]-e1[2]*e2[1], e1[2]*e2[0]-e1[0]*e2[2], e1[0]*e2[1]-e1[1]*e2[0]]; };
+    const gA = tri(0, 1, 2), gB = tri(0, 2, 3), avg = [0, 0, 0];
+    for (let q = 0; q < 4; q++) { avg[0] += N[(base+q)*3]; avg[1] += N[(base+q)*3+1]; avg[2] += N[(base+q)*3+2]; }
+    const flip = ((gA[0]+gB[0])*avg[0] + (gA[1]+gB[1])*avg[1] + (gA[2]+gB[2])*avg[2]) < 0;
+    if (flip) b.idx.push(base, base+2, base+1, base, base+3, base+2); else b.idx.push(base, base+1, base+2, base, base+2, base+3);
+  }
+  return b;
+}
+// Wajah: potongan permukaan depan kepala (lengkung mengikuti silinder), UV 0..1.
+function buildFace(seg) {
+  const b = newBatch(), R = 0.6225, th = 0.78, y0 = 4.78, y1 = 4.26;
+  for (let k = 0; k <= seg; k++) { const t = -th + 2*th*k/seg, u = k/seg; [[y0, 0],[y1, 1]].forEach(([y, v]) => { b.pos.push(R*Math.sin(t), y, R*Math.cos(t)); b.nor.push(Math.sin(t), 0, Math.cos(t)); b.uv.push(u, v); }); }
+  for (let k = 0; k < seg; k++) { const a = k*2; b.idx.push(a, a+1, a+3, a, a+3, a+2); }
+  return b;
+}
+// ── matriks (kolom-mayor) ──
+function mPerspective(fovy, asp, n, f) { const t = 1/Math.tan(fovy/2), q = 1/(n-f); return [t/asp,0,0,0, 0,t,0,0, 0,0,(f+n)*q,-1, 0,0,2*f*n*q,0]; }
+function mLookAt(e, t, u) {
+  const z = [e[0]-t[0], e[1]-t[1], e[2]-t[2]], zl = Math.hypot(...z); z[0]/=zl; z[1]/=zl; z[2]/=zl;
+  let x = [u[1]*z[2]-u[2]*z[1], u[2]*z[0]-u[0]*z[2], u[0]*z[1]-u[1]*z[0]]; const xl = Math.hypot(...x); x = x.map(v => v/xl);
+  const y = [z[1]*x[2]-z[2]*x[1], z[2]*x[0]-z[0]*x[2], z[0]*x[1]-z[1]*x[0]];
+  return [x[0],y[0],z[0],0, x[1],y[1],z[1],0, x[2],y[2],z[2],0, -(x[0]*e[0]+x[1]*e[1]+x[2]*e[2]), -(y[0]*e[0]+y[1]*e[1]+y[2]*e[2]), -(z[0]*e[0]+z[1]*e[1]+z[2]*e[2]), 1];
+}
+function mMul(a, b) { const o = new Array(16).fill(0); for (let c = 0; c < 4; c++) for (let r = 0; r < 4; r++) for (let k = 0; k < 4; k++) o[c*4+r] += a[k*4+r] * b[c*4+k]; return o; }
+function camPos(yaw, pitch, dist, tgt) { return [tgt[0] + dist*Math.sin(yaw)*Math.cos(pitch), tgt[1] + dist*Math.sin(pitch), tgt[2] + dist*Math.cos(yaw)*Math.cos(pitch)]; }
+/*@pure-end*/
+
+const $ = id => document.getElementById(id);
+const cv = $('cv'), ctx = cv.getContext('2d');
+function newDesign() { const off = document.createElement('canvas'); off.width = W; off.height = H; return {panels:{}, base:null, baseName:'tidak ada', off, octx:off.getContext('2d'), rev:0}; }
+const designs = {shirt:newDesign(), pants:newDesign()};
+const state = {mode:'shirt', sel:'t-f'};
+const cur = () => designs[state.mode];
+const DEF = {fill:'none', c1:'#7c5cfc', c2:'#1a1a28', angle:90, img:null, fit:'cover', op:100, text:'', tc:'#ffffff', ts:28, tf:'Inter'};
+const ps = id => { const d = cur(); return d.panels[id] || (d.panels[id] = Object.assign({}, DEF)); };
+const pById = panelById;
+
+function toast(msg) { const t = $('toast'); t.textContent = msg; t.classList.add('show'); clearTimeout(toast._t); toast._t = setTimeout(() => t.classList.remove('show'), 2200); }
+function dl(blob, name) { const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = name; document.body.appendChild(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(a.href), 3000); }
+
+function drawPanel(c, p, st) {
+  c.save(); c.beginPath(); c.rect(p.x, p.y, p.w, p.h); c.clip();
+  if (st.fill === 'solid') { c.fillStyle = st.c1; c.fillRect(p.x, p.y, p.w, p.h); }
+  else if (st.fill === 'gradient') {
+    const a = st.angle*Math.PI/180, cx = p.x+p.w/2, cy = p.y+p.h/2, r = Math.hypot(p.w, p.h)/2;
+    const dx = Math.cos(a)*r, dy = Math.sin(a)*r;
+    const g = c.createLinearGradient(cx-dx, cy-dy, cx+dx, cy+dy);
+    g.addColorStop(0, st.c1); g.addColorStop(1, st.c2);
+    c.fillStyle = g; c.fillRect(p.x, p.y, p.w, p.h);
+  }
+  if (st.img) {
+    const f = fitRect(st.img.w, st.img.h, p.w, p.h, st.fit);
+    c.globalAlpha = st.op/100; c.drawImage(st.img.bmp, p.x+f.x, p.y+f.y, f.w, f.h); c.globalAlpha = 1;
+  }
+  if (st.text) {
+    c.fillStyle = st.tc; c.font = '800 ' + st.ts + 'px "' + st.tf + '", sans-serif';
+    c.textAlign = 'center'; c.textBaseline = 'middle';
+    const lines = st.text.split('\n'), lh = st.ts*1.15, y0 = p.y+p.h/2 - (lines.length-1)*lh/2;
+    lines.forEach((ln, i) => c.fillText(ln, p.x+p.w/2, y0 + i*lh, p.w-4));
+  }
+  c.restore();
+}
+function drawContent(d) {
+  const c = d.octx; c.clearRect(0, 0, W, H);
+  if (d.base) c.drawImage(d.base, 0, 0, W, H);
+  PANELS.forEach(p => { const st = d.panels[p.id]; if (st) drawPanel(c, p, st); });
+  d.rev++;
+}
+function drawGuides(c) {
+  c.save(); c.lineWidth = 1; c.font = '600 10px "JetBrains Mono", monospace'; c.textBaseline = 'top';
+  const gcol = {torso:'255,255,255', ra:'110,231,183', la:'252,211,77'};
+  PANELS.forEach(p => {
+    const sel = p.id === state.sel;
+    c.fillStyle = sel ? 'rgba(124,92,252,.28)' : 'rgba(' + gcol[p.g] + ',.07)'; c.fillRect(p.x, p.y, p.w, p.h);
+    c.strokeStyle = sel ? '#C3B4FF' : 'rgba(' + gcol[p.g] + ',.6)'; c.lineWidth = sel ? 2 : 1;
+    c.setLineDash(sel ? [] : [4, 3]); c.strokeRect(p.x+.5, p.y+.5, p.w-1, p.h-1);
+    c.setLineDash([]); c.fillStyle = 'rgba(' + gcol[p.g] + ',.95)'; c.fillText(p.n, p.x+4, p.y+4);
+  });
+  c.restore();
+}
+function drawFlat(cnv, parts) {   // fallback tanpa WebGL
+  const c = cnv.getContext('2d'); c.clearRect(0, 0, 256, 128);
+  parts.forEach(([id, dx, kind]) => { const p = pById(id); c.drawImage(designs[kind].off, p.x, p.y, p.w, p.h, dx, 0, p.w, p.h); });
+}
+function render() {
+  drawContent(designs.shirt); drawContent(designs.pants);
+  const d = cur(); ctx.clearRect(0, 0, W, H); ctx.drawImage(d.off, 0, 0);
+  if ($('guides').checked) drawGuides(ctx);
+  if (R6.gl) R6.dirty = true;
+  else { drawFlat($('pvFront'), [['ra-f',0,'shirt'],['t-f',64,'shirt'],['la-f',192,'shirt']]); drawFlat($('pvBack'), [['la-b',0,'shirt'],['t-b',64,'shirt'],['ra-b',192,'shirt']]); }
+}
+
+function targets() {
+  const sc = $('scope').value, c = pById(state.sel);
+  return sc === 'all' ? PANELS : sc === 'group' ? PANELS.filter(p => p.g === c.g) : [c];
+}
+// Satu "blok" pengaturan selalu diterapkan utuh ke semua target, supaya mengubah warna di cakupan
+// grup/semua tidak diam-diam gagal pada panel lain yang masih berisi "kosong".
+const BLOCKS = {fill:['fill','c1','c2','angle'], c1:['fill','c1','c2','angle'], c2:['fill','c1','c2','angle'], angle:['fill','c1','c2','angle'],
+                img:['img','fit','op'], fit:['img','fit','op'], op:['img','fit','op'], text:['text','tc','ts','tf'], tc:['text','tc','ts','tf'], ts:['text','tc','ts','tf'], tf:['text','tc','ts','tf']};
+function setProp(k, v) {
+  const c = ps(state.sel); c[k] = v;
+  targets().forEach(p => { if (p.id !== state.sel) BLOCKS[k].forEach(key => { ps(p.id)[key] = c[key]; }); });
+  render();
+}
+function selLabel() { const p = pById(state.sel); $('selLabel').textContent = (state.mode === 'shirt' ? 'Shirt' : 'Pants') + ' · ' + GROUP_NAMES[state.mode][p.g] + ' · ' + p.n; }
+function syncControls() {
+  const s = ps(state.sel);
+  $('fillType').value = s.fill; $('c1').value = s.c1; $('c2').value = s.c2;
+  $('angle').value = s.angle; $('angleV').textContent = s.angle;
+  $('fit').value = s.fit; $('op').value = s.op; $('opV').textContent = s.op;
+  $('txt').value = s.text; $('tc').value = s.tc; $('ts').value = s.ts; $('tf').value = s.tf;
+  $('imgName').textContent = s.img ? s.img.name : 'belum ada';
+  $('baseName').textContent = cur().baseName;
+  $('c2wrap').style.display = s.fill === 'gradient' ? '' : 'none';
+  $('angleWrap').style.display = s.fill === 'gradient' ? '' : 'none';
+  $('fillRow').style.display = s.fill === 'none' ? 'none' : '';
+  selLabel();
+}
+function select(id) { state.sel = id; syncControls(); render(); }
+function updateNote() {
+  $('modeNote').innerHTML = state.mode === 'shirt'
+    ? 'Tab <b>Shirt</b>: panel badan = torso, panel kanan-bawah &amp; kiri-bawah = lengan. Upload di Creator Hub sebagai <b>Classic Shirt</b> (PNG 585×559). Area di luar panel diabaikan Roblox.'
+    : 'Tab <b>Pants</b>: layout sama persis. Panel badan = pinggang, panel lengan dipakai sebagai kaki. Upload sebagai <b>Classic Pants</b> (PNG 585×559). Shirt dan Pants punya desain terpisah.';
+}
+
+cv.addEventListener('click', e => {
+  const r = cv.getBoundingClientRect();
+  const p = panelAt((e.clientX-r.left)*W/r.width, (e.clientY-r.top)*H/r.height);
+  if (p) select(p.id);
+});
+$('guides').addEventListener('change', render);
+$('modeSeg').addEventListener('click', e => {
+  const b = e.target.closest('button'); if (!b) return;
+  state.mode = b.dataset.mode;
+  [...$('modeSeg').children].forEach(x => x.classList.toggle('on', x === b));
+  syncControls(); updateNote(); render();
+});
+$('fillType').addEventListener('change', e => { setProp('fill', e.target.value); syncControls(); });
+$('c1').addEventListener('input', e => setProp('c1', e.target.value));
+$('c2').addEventListener('input', e => setProp('c2', e.target.value));
+$('angle').addEventListener('input', e => { $('angleV').textContent = e.target.value; setProp('angle', +e.target.value); });
+$('fit').addEventListener('change', e => setProp('fit', e.target.value));
+$('op').addEventListener('input', e => { $('opV').textContent = e.target.value; setProp('op', +e.target.value); });
+$('txt').addEventListener('input', e => setProp('text', e.target.value));
+$('tc').addEventListener('input', e => setProp('tc', e.target.value));
+$('ts').addEventListener('input', e => setProp('ts', Math.max(6, Math.min(200, +e.target.value || 28))));
+$('tf').addEventListener('change', e => { setProp('tf', e.target.value); document.fonts.load('800 20px "' + e.target.value + '"').then(render); });
+$('imgBtn').addEventListener('click', () => $('imgFile').click());
+$('imgFile').addEventListener('change', async e => {
+  const f = e.target.files[0]; e.target.value = ''; if (!f) return;
+  try { const bmp = await createImageBitmap(f); setProp('img', {bmp, w:bmp.width, h:bmp.height, name:f.name.slice(0, 24)}); syncControls(); }
+  catch { toast('Gambar tidak bisa dibaca.'); }
+});
+$('imgClear').addEventListener('click', () => { setProp('img', null); syncControls(); });
+$('baseBtn').addEventListener('click', () => $('baseFile').click());
+$('baseFile').addEventListener('change', async e => {
+  const f = e.target.files[0]; e.target.value = ''; if (!f) return;
+  try { const d = cur(); d.base = await createImageBitmap(f); d.baseName = f.name.slice(0, 22) + ' (' + d.base.width + '×' + d.base.height + ')'; syncControls(); render(); }
+  catch { toast('Gambar tidak bisa dibaca.'); }
+});
+$('baseClear').addEventListener('click', () => { const d = cur(); d.base = null; d.baseName = 'tidak ada'; syncControls(); render(); });
+$('copyArm').addEventListener('click', () => {
+  const d = cur();
+  PANELS.filter(p => p.g === 'ra').forEach(p => { const m = mirrorId(p.id); if (d.panels[p.id]) d.panels[m] = Object.assign({}, d.panels[p.id]); else delete d.panels[m]; });
+  render(); syncControls(); toast((state.mode === 'shirt' ? 'Lengan' : 'Kaki') + ' kanan disalin ke kiri (sisi dengan nama sama).');
+});
+$('resetBtn').addEventListener('click', () => {
+  if (!confirm('Reset desain ' + (state.mode === 'shirt' ? 'Shirt' : 'Pants') + ' ini (panel dan gambar dasar)?')) return;
+  const d = cur(); d.panels = {}; d.base = null; d.baseName = 'tidak ada'; syncControls(); render();
+});
+function exportDesign(kind) { return new Promise(res => { drawContent(designs[kind]); designs[kind].off.toBlob(b => { dl(b, kind + '-585x559.png'); res(); }, 'image/png'); }); }
+$('exportBtn').addEventListener('click', () => exportDesign(state.mode));
+$('bothBtn').addEventListener('click', async () => { await exportDesign('shirt'); setTimeout(() => exportDesign('pants'), 400); });
+$('guideBtn').addEventListener('click', () => {
+  const t = document.createElement('canvas'); t.width = W; t.height = H; const c = t.getContext('2d');
+  const col = {torso:'#ffffff', ra:'#6EE7B7', la:'#FCD34D'};
+  c.font = '700 12px sans-serif'; c.textBaseline = 'top';
+  PANELS.forEach(p => { c.fillStyle = col[p.g] + '33'; c.fillRect(p.x, p.y, p.w, p.h); c.strokeStyle = col[p.g]; c.strokeRect(p.x+.5, p.y+.5, p.w-1, p.h-1); c.fillStyle = col[p.g]; c.fillText(p.n, p.x+5, p.y+5); });
+  t.toBlob(b => dl(b, 'template-panduan-585x559.png'), 'image/png');
+});
+
+/* ═════════ Preview 360° — renderer WebGL kecil tanpa library ═════════ */
+const R6 = {gl:null, dirty:true, yaw:0.6, pitch:0.12, dist:11.5, tgt:[0, 2.55, 0], auto:true, skin:'#e8b98a', drag:null, revs:{shirt:-1, pants:-1}, snap:null};
+const SKINS = ['#f5cd30', '#f1c9a5', '#e0a97b', '#b9835a', '#7a4f33', '#ffe0bd'];
+(function initR6() {
+  const canvas = $('r6'); let gl = null;
+  try { gl = canvas.getContext('webgl', {antialias:true, alpha:true, premultipliedAlpha:false, preserveDrawingBuffer:true}) || canvas.getContext('experimental-webgl'); } catch (e) {}
+  if (!gl) { $('r6Fallback').style.display = 'block'; canvas.parentNode.style.display = 'none'; $('r6View').parentNode.style.display = 'none'; return; }
+  R6.gl = gl;
+  const vs = 'attribute vec3 aPos;attribute vec3 aNor;attribute vec2 aUV;uniform mat4 uMVP;uniform mat4 uView;varying vec3 vN;varying vec2 vUV;void main(){gl_Position=uMVP*vec4(aPos,1.0);vN=(uView*vec4(aNor,0.0)).xyz;vUV=aUV;}';
+  const fs = 'precision mediump float;varying vec3 vN;varying vec2 vUV;uniform sampler2D uTex;uniform vec4 uColor;uniform float uUseTex;uniform float uLit;void main(){vec4 c=mix(uColor,texture2D(uTex,vUV),uUseTex);vec3 n=normalize(vN);float d=max(dot(n,normalize(vec3(0.45,0.75,0.65))),0.0);float l=mix(1.0,0.5+0.62*d,uLit);gl_FragColor=vec4(c.rgb*l,c.a);}';
+  function sh(type, src) { const s = gl.createShader(type); gl.shaderSource(s, src); gl.compileShader(s); if (!gl.getShaderParameter(s, gl.COMPILE_STATUS)) throw new Error(gl.getShaderInfoLog(s)); return s; }
+  let prog; try { prog = gl.createProgram(); gl.attachShader(prog, sh(gl.VERTEX_SHADER, vs)); gl.attachShader(prog, sh(gl.FRAGMENT_SHADER, fs)); gl.linkProgram(prog); if (!gl.getProgramParameter(prog, gl.LINK_STATUS)) throw new Error('link'); }
+  catch (e) { R6.gl = null; $('r6Fallback').style.display = 'block'; canvas.parentNode.style.display = 'none'; $('r6View').parentNode.style.display = 'none'; return; }
+  gl.useProgram(prog);
+  const loc = {pos:gl.getAttribLocation(prog, 'aPos'), nor:gl.getAttribLocation(prog, 'aNor'), uv:gl.getAttribLocation(prog, 'aUV'),
+    mvp:gl.getUniformLocation(prog, 'uMVP'), view:gl.getUniformLocation(prog, 'uView'), tex:gl.getUniformLocation(prog, 'uTex'), color:gl.getUniformLocation(prog, 'uColor'), useTex:gl.getUniformLocation(prog, 'uUseTex'), lit:gl.getUniformLocation(prog, 'uLit')};
+  function upload(b) {
+    const mk = (target, data, Type) => { const buf = gl.createBuffer(); gl.bindBuffer(target, buf); gl.bufferData(target, new Type(data), gl.STATIC_DRAW); return buf; };
+    return {pos:mk(gl.ARRAY_BUFFER, b.pos, Float32Array), nor:mk(gl.ARRAY_BUFFER, b.nor, Float32Array), uv:mk(gl.ARRAY_BUFFER, b.uv, Float32Array), idx:mk(gl.ELEMENT_ARRAY_BUFFER, b.idx, Uint16Array), n:b.idx.length};
+  }
+  const G = {skinBox:upload(buildLayer('skin', 0)), pants:upload(buildLayer('pants', 0.014)), shirt:upload(buildLayer('shirt', 0.028)), head:upload(buildHead(32)), face:upload(buildFace(14))};
+  // bayangan lantai (cakram)
+  { const b = newBatch(); b.pos.push(0, 0.01, 0); b.nor.push(0, 1, 0); b.uv.push(0, 0); for (let i = 0; i <= 32; i++) { const t = 2*Math.PI*i/32; b.pos.push(2.1*Math.sin(t), 0.01, 1.5*Math.cos(t)); b.nor.push(0, 1, 0); b.uv.push(0, 0); } for (let i = 1; i <= 32; i++) b.idx.push(0, i+1, i); G.shadow = upload(b); }
+  function mkTex() { const t = gl.createTexture(); gl.bindTexture(gl.TEXTURE_2D, t); gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE); gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE); gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR); gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR); return t; }
+  const T = {shirt:mkTex(), pants:mkTex(), face:mkTex()};
+  function drawFaceTex() {   // wajah "smile" klasik
+    const c = document.createElement('canvas'); c.width = 160; c.height = 100; const x = c.getContext('2d');
+    x.fillStyle = '#1a1a1a'; x.beginPath(); x.ellipse(52, 36, 8, 12, 0, 0, 7); x.ellipse(108, 36, 8, 12, 0, 0, 7); x.fill();
+    x.strokeStyle = '#1a1a1a'; x.lineWidth = 7; x.lineCap = 'round'; x.beginPath(); x.arc(80, 48, 36, 0.28*Math.PI, 0.72*Math.PI); x.stroke();
+    gl.bindTexture(gl.TEXTURE_2D, T.face); gl.pixelStorei(gl.UNPACK_PREMULTIPLY_ALPHA_WEBGL, false); gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, c);
+  }
+  drawFaceTex();
+  function hex(h) { const n = parseInt(h.slice(1), 16); return [(n >> 16 & 255)/255, (n >> 8 & 255)/255, (n & 255)/255]; }
+  function bind(b) {
+    gl.bindBuffer(gl.ARRAY_BUFFER, b.pos); gl.enableVertexAttribArray(loc.pos); gl.vertexAttribPointer(loc.pos, 3, gl.FLOAT, false, 0, 0);
+    gl.bindBuffer(gl.ARRAY_BUFFER, b.nor); gl.enableVertexAttribArray(loc.nor); gl.vertexAttribPointer(loc.nor, 3, gl.FLOAT, false, 0, 0);
+    gl.bindBuffer(gl.ARRAY_BUFFER, b.uv);  gl.enableVertexAttribArray(loc.uv);  gl.vertexAttribPointer(loc.uv, 2, gl.FLOAT, false, 0, 0);
+    gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, b.idx);
+  }
+  function draw(b, o) { bind(b); gl.uniform4f(loc.color, o.c[0], o.c[1], o.c[2], o.c[3] == null ? 1 : o.c[3]); gl.uniform1f(loc.useTex, o.tex ? 1 : 0); gl.uniform1f(loc.lit, o.lit === false ? 0 : 1); if (o.tex) gl.bindTexture(gl.TEXTURE_2D, o.tex); gl.drawElements(gl.TRIANGLES, b.n, gl.UNSIGNED_SHORT, 0); }
+  function resize() { const dpr = Math.min(2, window.devicePixelRatio || 1), w = Math.round(canvas.clientWidth * dpr), h = Math.round(canvas.clientHeight * dpr); if (w && (canvas.width !== w || canvas.height !== h)) { canvas.width = w; canvas.height = h; R6.dirty = true; } }
+  function frame(t) {
+    resize();
+    if (R6.snap) { let d = R6.snap - R6.yaw; d = Math.atan2(Math.sin(d), Math.cos(d)); if (Math.abs(d) < 0.01) { R6.yaw = R6.snap; R6.snap = null; } else R6.yaw += d * 0.18; R6.dirty = true; }
+    else if (R6.auto && !R6.drag) { R6.yaw += 0.012; R6.dirty = true; }
+    ['shirt', 'pants'].forEach(k => { if (R6.revs[k] !== designs[k].rev) { R6.revs[k] = designs[k].rev; gl.bindTexture(gl.TEXTURE_2D, T[k]); gl.pixelStorei(gl.UNPACK_PREMULTIPLY_ALPHA_WEBGL, false); gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, designs[k].off); } });
+    if (R6.dirty) {
+      R6.dirty = false;
+      gl.viewport(0, 0, canvas.width, canvas.height); gl.clearColor(0, 0, 0, 0); gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+      gl.enable(gl.DEPTH_TEST); gl.depthFunc(gl.LEQUAL); gl.enable(gl.CULL_FACE); gl.cullFace(gl.BACK); gl.enable(gl.BLEND); gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
+      const asp = canvas.width / Math.max(1, canvas.height), P = mPerspective(0.58, asp, 0.5, 60), V = mLookAt(camPos(R6.yaw, R6.pitch, R6.dist, R6.tgt), R6.tgt, [0, 1, 0]);
+      gl.uniformMatrix4fv(loc.mvp, false, new Float32Array(mMul(P, V))); gl.uniformMatrix4fv(loc.view, false, new Float32Array(V)); gl.uniform1i(loc.tex, 0); gl.activeTexture(gl.TEXTURE0);
+      gl.depthMask(false); gl.disable(gl.CULL_FACE); draw(G.shadow, {c:[0, 0, 0, 0.28], lit:false}); gl.enable(gl.CULL_FACE); gl.depthMask(true);
+      const skin = hex(R6.skin); draw(G.skinBox, {c:[...skin, 1]}); draw(G.head, {c:[...skin, 1]});
+      gl.depthMask(false);
+      if ($('r6Face').checked) draw(G.face, {c:[1, 1, 1, 1], tex:T.face, lit:false});
+      if ($('r6Pants').checked) draw(G.pants, {c:[1, 1, 1, 1], tex:T.pants});
+      if ($('r6Shirt').checked) draw(G.shirt, {c:[1, 1, 1, 1], tex:T.shirt});
+      gl.depthMask(true);
+    }
+    requestAnimationFrame(frame);
+  }
+  // interaksi: seret = putar, roda = zoom, pinch lewat pointer events
+  const ptrs = new Map(); let pinch = 0;
+  canvas.addEventListener('pointerdown', e => { canvas.setPointerCapture(e.pointerId); ptrs.set(e.pointerId, [e.clientX, e.clientY]); R6.drag = {x:e.clientX, y:e.clientY}; R6.snap = null; if (ptrs.size === 2) { const a = [...ptrs.values()]; pinch = Math.hypot(a[0][0]-a[1][0], a[0][1]-a[1][1]); } });
+  canvas.addEventListener('pointermove', e => {
+    if (!ptrs.has(e.pointerId)) return; ptrs.set(e.pointerId, [e.clientX, e.clientY]);
+    if (ptrs.size === 2) { const a = [...ptrs.values()], d = Math.hypot(a[0][0]-a[1][0], a[0][1]-a[1][1]); if (pinch) R6.dist = Math.max(6, Math.min(22, R6.dist * pinch / d)); pinch = d; R6.dirty = true; return; }
+    if (!R6.drag) return; R6.yaw -= (e.clientX - R6.drag.x) * 0.012; R6.pitch = Math.max(-0.6, Math.min(1.2, R6.pitch + (e.clientY - R6.drag.y) * 0.008)); R6.drag = {x:e.clientX, y:e.clientY}; R6.dirty = true;
+  });
+  const up = e => { ptrs.delete(e.pointerId); if (!ptrs.size) { R6.drag = null; pinch = 0; } else { const a = [...ptrs.values()][0]; R6.drag = {x:a[0], y:a[1]}; pinch = 0; } };
+  canvas.addEventListener('pointerup', up); canvas.addEventListener('pointercancel', up);
+  canvas.addEventListener('wheel', e => { e.preventDefault(); R6.dist = Math.max(6, Math.min(22, R6.dist * (1 + Math.sign(e.deltaY) * 0.08))); R6.dirty = true; }, {passive:false});
+  ['r6Shirt', 'r6Pants', 'r6Face'].forEach(id => $(id).addEventListener('change', () => { R6.dirty = true; }));
+  $('r6Auto').addEventListener('change', e => { R6.auto = e.target.checked; });
+  $('r6View').addEventListener('click', e => { const b = e.target.closest('button'); if (!b) return; $('r6Auto').checked = false; R6.auto = false; R6.snap = +b.dataset.yaw * Math.PI / 180; R6.pitch = 0.08; });
+  const sw = $('r6Skin'); SKINS.forEach((c, i) => { const b = document.createElement('button'); b.type = 'button'; b.style.background = c; b.title = c; b.setAttribute('aria-label', 'Warna kulit ' + c); if (c === R6.skin || (i === 0 && !SKINS.includes(R6.skin))) b.classList.add('on');
+    b.addEventListener('click', () => { R6.skin = c; [...sw.children].forEach(x => x.classList.toggle('on', x === b)); R6.dirty = true; }); sw.appendChild(b); });
+  window.__r6 = {R6, gl, canvas, setView(yaw, pitch) { R6.auto = false; R6.snap = null; R6.yaw = yaw; R6.pitch = pitch; R6.dirty = true; }, ready() { return new Promise(r => requestAnimationFrame(() => requestAnimationFrame(r))); },
+    px(x, y) { const o = new Uint8Array(4); gl.readPixels(x, canvas.height - 1 - y, 1, 1, gl.RGBA, gl.UNSIGNED_BYTE, o); return Array.from(o); }};
+  requestAnimationFrame(frame);
+})();
+
+document.fonts.ready.then(render);
+syncControls(); updateNote(); render();
+
+</script>
+</body>
+</html>
